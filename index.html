@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>لوحة التحكم</title>
+<style>
+:root{--bg:#0f172a;--panel:#1e293b;--text:#f8fafc;--muted:#94a3b8;--cyan:#22d3ee;--border:#334155;--green:#4ade80;--red:#f87171}
+body{font-family:'Segoe UI',sans-serif;background:var(--bg);color:var(--text);margin:0;padding:22px}
+.header,.panel{background:var(--panel);border:1px solid var(--border);border-radius:18px}.header{padding:20px 24px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+button,a.btn{background:transparent;border:1px solid var(--cyan);color:var(--cyan);padding:10px 14px;border-radius:10px;text-decoration:none;cursor:pointer;font-weight:700}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}.stat{padding:20px}.stat small{color:var(--muted)}.stat b{display:block;font-size:28px;margin-top:8px}
+.menu{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:18px}.menu a{display:block;background:var(--panel);border:1px solid var(--border);padding:22px;border-radius:16px;color:#fff;text-decoration:none;font-weight:700}
+.hidden{display:none}.perm-group{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}.perm{padding:8px 12px;border-radius:999px;border:1px solid var(--border);cursor:pointer}.perm.on{background:#0f5132;border-color:#198754}.perm.off{background:#58151c;border-color:#dc3545}
+table{width:100%;border-collapse:collapse}th,td{padding:10px;border-bottom:1px solid var(--border);text-align:center}
+</style>
+</head>
+<body>
+<div class="header">
+  <div><h1 style="margin:0">🏭 لوحة التحكم</h1><div id="welcome" style="color:var(--muted);margin-top:6px"></div></div>
+  <div style="display:flex;gap:10px;flex-wrap:wrap">
+    <button id="backupZipBtn" onclick="exportSystemBackup('zip')">📦 Export ZIP</button>
+    <button id="backupDbBtn" onclick="exportSystemBackup('db')">🗃️ Export DB</button>
+    <button id="importBtn" onclick="triggerImportBackup()">📥 Import البيانات</button>
+    <input id="backupFileInput" type="file" accept=".zip,.db,.sqlite,.sqlite3" style="display:none" onchange="handleImportBackup(event)">
+    <a class="btn" id="usersBtn" href="users.html">👥 المستخدمين</a>
+    <div style="position:relative"><button onclick="toggleAlerts()">🔔</button><span id="alertCount" style="position:absolute;top:-6px;right:-6px;background:red;color:#fff;border-radius:50%;padding:2px 6px;font-size:12px">0</span></div>
+    <button onclick="logout()">🚪 خروج</button>
+  </div>
+</div>
+<div id="alertsBox" class="panel hidden" style="padding:14px;margin-bottom:16px"></div>
+<div class="grid">
+  <div class="panel stat"><small>رصيد الورق</small><b id="s5">0</b></div>
+  <div class="panel stat"><small>رصيد الشنط الجاهزة</small><b id="s6">0</b></div>
+  <div class="panel stat"><small>رصيد اليد</small><b id="s7">0</b></div>
+</div>
+<div class="menu" id="menu">
+  <a data-perm="perm_add_order" href="add_order.html">➕ أوردر جديد</a>
+  <a data-perm="perm_view_orders" href="orders_list.html">📋 متابعة الأوردرات</a>
+  <a data-perm="perm_view_inventory" href="inventory.html">📄 مخزن الورق</a>
+  <a data-perm="perm_view_bags" href="bags.html">👜 مخزن الشنط الجاهزة</a>
+    <a data-perm="perm_customers" href="customers.html">👤 العملاء</a>
+  <a data-perm="perm_calculator" href="calculator.html">🧮 احسب أوردر</a>
+  <a data-perm="perm_view_handles" href="handles.html">🧵 مخزن اليد</a>
+  <a data-perm="perm_view_accounts" href="accounts.html">💰 الحسابات</a>
+  <a data-perm="perm_view_debts" href="debts.html">📒 المديونيات</a>
+  <a data-perm-any="perm_suppliers,perm_purchases" href="purchases.html">🛒 المشتريات والموردين</a>
+  <a data-perm="perm_view_reports" href="reports.html">📊 التقارير</a>
+  <a data-perm="perm_view_orders" href="artisans.html">🧑‍🏭 الصنايعية والتنفيذ الخارجي</a>
+  <a data-perm="perm_activity_logs" href="activity_logs.html">🛡️ سجل الأدمن</a>
+</div>
+
+
+<script>
+const token=localStorage.getItem('token'); const user=JSON.parse(localStorage.getItem('user')||'null'); if(!token||!user) location.href='login.html';
+function authFetch(url,opts={}){opts.headers=Object.assign({},opts.headers||{},{Authorization:'Bearer '+token});return fetch(url,opts).then(async r=>{const data=await r.json().catch(()=>({})); if(r.status===401){logout();throw new Error('unauthorized')} if(!r.ok) throw new Error(data.error||'error'); return data;});}
+function money(v){return Number(v||0).toLocaleString('en-US',{maximumFractionDigits:2})+' ج';}
+function roleLabel(role){ return ({admin:'مدير عام',moderator:'مودريتور',operation:'أوبريشن',production:'إنتاج',store:'مخزن',accountant:'محاسب'})[role] || role; }
+function hasPerm(key){ return user.role==='admin' || Number(user[key]||0)===1; }
+function hasAnyPerm(list){ return String(list||'').split(',').map(v=>v.trim()).filter(Boolean).some(hasPerm); }
+function applyMenuPerms(){ document.querySelectorAll('[data-perm]').forEach(a=>{ if(!hasPerm(a.dataset.perm)) a.style.display='none'; }); document.querySelectorAll('[data-perm-any]').forEach(a=>{ if(!hasAnyPerm(a.dataset.permAny)) a.style.display='none'; });}
+async function loadDashboard(){const d=await authFetch('/dashboard-data'); welcome.innerText=`${user.full_name} | ${roleLabel(user.role)}`; s5.innerText=Math.round(d.paperSheetsTotal)+' فرخ'; s6.innerText=Math.round(d.bagsQtyTotal)+' شنطة'; s7.innerText=Math.round(d.handlesQtyTotal)+' يد'; const low=await authFetch('/low-stock'); let html=''; if(!low.paper.length && !low.bags.length && !low.handles.length){html='<div style="color:#86efac">✅ لا توجد نواقص حالياً</div>';} else { html += `<div style="display:flex;flex-direction:column;gap:10px">`; html += `<div><b>نواقص مخزن الورق</b><div style="color:#cbd5e1;margin-top:4px">${low.paper.length?low.paper.map(p=>`${p.color} ${p.length}×${p.width} - ${p.grammage} جم`).join('<br>'):'لا يوجد'}</div></div>`; html += `<div><b>نواقص مخزن الشنط</b><div style="color:#cbd5e1;margin-top:4px">${low.bags.length?low.bags.map(b=>`${b.color} - ${b.handle} (${b.length}×${b.width}×${b.gusset})`).join('<br>'):'لا يوجد'}</div></div>`; html += `<div><b>نواقص مخزن اليد</b><div style="color:#cbd5e1;margin-top:4px">${low.handles.length?low.handles.map(h=>`${h.color} (${h.qty}/${h.min_qty})`).join('<br>'):'لا يوجد'}</div></div>`; html += `</div>`;} alertsBox.innerHTML=html; alertCount.innerText=(low.paper.length+low.bags.length+low.handles.length); if(!(user.role==='admin' || Number(user.perm_backup_restore||0))){backupZipBtn.style.display='none';backupDbBtn.style.display='none';importBtn.style.display='none';} if(!(user.role==='admin' || Number(user.perm_users||0))){usersBtn.style.display='none';}}
+async function exportSystemBackup(format='zip'){const url=format==='db'?'/backup-db-file':'/backup-db'; const d=await authFetch(url,{method:'POST'}); alert(format==='db'?'تم تجهيز نسخة قاعدة البيانات بصيغة DB':'تم تجهيز نسخة احتياطية كاملة تشمل قاعدة البيانات والملفات المرفوعة'); const finalUrl=(d.url||'') + ((d.url||'').includes('token=')?'':(((d.url||'').includes('?')?'&':'?')+'token='+encodeURIComponent(token))); window.open(finalUrl,'_blank')}
+function triggerImportBackup(){ backupFileInput.value=''; backupFileInput.click(); }
+async function handleImportBackup(event){ const file=event.target.files?.[0]; if(!file) return; const ok=confirm('استيراد النسخة الاحتياطية سيستبدل البيانات الحالية والملفات المرفوعة. هل أنت متأكد؟'); if(!ok){ event.target.value=''; return; } const fd=new FormData(); fd.append('backupFile', file); try{ const res=await fetch('/import-backup',{method:'POST',headers:{Authorization:'Bearer '+token},body:fd}); const data=await res.json().catch(()=>({})); if(res.status===401){ localStorage.clear(); location.href='login.html'; throw new Error('unauthorized'); } if(!res.ok) throw new Error(data.error||'error'); alert('تم استيراد النسخة الاحتياطية بنجاح. سيتم تحديث الصفحة الآن.'); location.reload(); }catch(e){ alert(e.message||'فشل الاستيراد'); } finally { event.target.value=''; } }
+function toggleAlerts(){alertsBox.classList.toggle('hidden');}
+async function logout(){try{await fetch('/logout',{method:'POST',headers:{Authorization:'Bearer '+token}})}catch(e){} localStorage.clear(); location.href='login.html'}
+applyMenuPerms(); loadDashboard();
+</script></body></html>

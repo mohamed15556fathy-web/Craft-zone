@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>المشتريات والموردين</title>
+<style>
+:root{--bg:#0f172a;--panel:#1e293b;--border:#334155;--text:#f8fafc;--muted:#94a3b8;--cyan:#22d3ee;--green:#4ade80;--red:#f87171}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Segoe UI',Tahoma,sans-serif;background:linear-gradient(180deg,#020617,#0f172a);color:var(--text);padding:18px}
+.wrap{max-width:1500px;margin:auto}
+.panel,.stat,.modal-content{background:rgba(15,23,42,.95);border:1px solid var(--border);border-radius:18px;box-shadow:0 14px 34px rgba(0,0,0,.22)}
+.panel{padding:16px;margin-bottom:16px}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.btn{border:none;border-radius:12px;padding:10px 14px;font-weight:800;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:8px}
+.cyan{background:var(--cyan);color:#06202a}.green{background:var(--green);color:#052012}.red{background:var(--red);color:#fff}.dark{background:#0b1220;color:#fff;border:1px solid var(--border)}
+.layout{display:grid;grid-template-columns:470px 1fr;gap:16px}.layout-suppliers{display:grid;grid-template-columns:420px 1fr;gap:16px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.grid .full{grid-column:1/-1}
+label{display:block;margin-bottom:6px;color:#cbd5e1;font-size:13px}
+input,textarea,select{width:100%;padding:11px 12px;background:#020617;color:#fff;border:1px solid var(--border);border-radius:12px;outline:none}
+textarea{min-height:84px;resize:vertical}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}.stat{padding:14px}.stat small{color:var(--muted);display:block}.stat b{display:block;font-size:26px;margin-top:6px}
+table{width:100%;border-collapse:collapse}.table-wrap{overflow:auto}th,td{padding:12px;border-bottom:1px solid var(--border);text-align:center;vertical-align:top}th{background:#020617;color:var(--cyan);position:sticky;top:0}
+.muted{color:var(--muted)}.actions{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.modal{display:none;position:fixed;inset:0;background:rgba(2,6,23,.78);padding:18px;overflow:auto;z-index:1000}.modal-content{max-width:1100px;margin:30px auto;padding:20px}
+.history{max-height:360px;overflow:auto;background:#020617;border:1px solid var(--border);border-radius:14px;padding:12px;line-height:1.8}
+.search{min-width:240px}.hint{font-size:12px;color:var(--muted);margin-top:6px}.tag{display:inline-block;padding:6px 8px;border-radius:999px;background:#0b1220;border:1px solid var(--border)}
+.chips{display:flex;gap:8px;flex-wrap:wrap}.chip{background:#0b1220;border:1px solid var(--border);padding:8px 10px;border-radius:999px;font-size:13px}
+.anchor-nav{display:flex;gap:8px;flex-wrap:wrap}.note{padding:12px 14px;border-radius:14px;background:#0b1220;border:1px solid var(--border);color:#cbd5e1;line-height:1.9}.hidden{display:none!important}
+@media(max-width:1180px){.layout,.layout-suppliers{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:640px){.stats{grid-template-columns:1fr}.grid{grid-template-columns:1fr}.search{min-width:0;width:100%}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="panel top">
+    <div>
+      <h2 style="margin:0">🛒 المشتريات والموردين</h2>
+      <div class="muted" style="margin-top:6px">تم دمج الموردين مع المشتريات في صفحة واحدة لأنهم مرتبطين ببعض.</div>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+      <div class="anchor-nav">
+        <a href="#purchaseSection" class="btn dark" id="purchaseAnchor">🧾 المشتريات</a>
+        <a href="#suppliersSection" class="btn dark" id="suppliersAnchor">🏢 الموردين</a>
+      </div>
+      <a href="index.html" class="btn dark">🏠 الرئيسية</a>
+    </div>
+  </div>
+
+  <div class="panel note">دلوقتي فاتورة المشتريات بتتغير حسب النوع: الورق له مقاس وجرام ولون، واليد لها لون وكمية فقط. ولو ربطت فاتورة اليد بمخزن اليد الكمية هتزيد تلقائيًا.</div>
+
+  <section id="purchaseSection">
+    <div class="top" style="margin:18px 0 12px">
+      <div>
+        <h3 style="margin:0">المشتريات</h3>
+        <div class="muted" style="margin-top:6px">فاتورة شراء + دفعات المورد + إضافة للمخزن من نفس الصفحة</div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+        <input id="purchaseSearch" class="search" placeholder="بحث باسم الصنف أو المورد" oninput="renderPurchases()">
+        <button class="btn cyan" onclick="exportPurchases()">📥 Excel</button>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="stat"><small>عدد الفواتير</small><b id="sCount">0</b></div>
+      <div class="stat"><small>إجمالي المشتريات</small><b id="sPurchases">0 ج</b></div>
+      <div class="stat"><small>المدفوع</small><b id="sPaid">0 ج</b></div>
+      <div class="stat"><small>المتبقي</small><b id="sRemaining">0 ج</b></div>
+    </div>
+    <div class="layout">
+      <div class="panel">
+        <h3 style="margin-top:0">فاتورة شراء جديدة</h3>
+        <div class="grid">
+          <div><label>تاريخ الشراء</label><input id="p_date" type="date"></div>
+          <div><label>المورد</label><select id="p_supplier"></select></div>
+        </div>
+
+        <div class="panel" style="margin-top:14px;padding:14px">
+          <div class="top" style="padding:0"><div><b>الصنف الحالي</b><div class="hint">اضغط إضافة صنف للفاتورة عشان تجمع أكتر من صنف مختلف في نفس الفاتورة.</div></div></div>
+          <div class="grid" style="margin-top:10px">
+            <div><label>نوع الشراء</label><select id="p_type" onchange="refreshPurchaseTypeUI()"><option>ورق</option><option>يد</option><option>شنط</option><option>طباعة</option><option>نقل</option><option>خامة أخرى</option></select></div>
+            <div><label>وحدة القياس</label><select id="p_unit" onchange="syncTotals()"></select></div>
+
+            <div id="itemNameWrap" class="full"><label>اسم الصنف / البيان</label><input id="p_name" placeholder="مثال: خامة طباعة أو نقل"></div>
+
+            <div id="paperFields" class="full hidden">
+              <div class="grid">
+                <div><label>جرام الورق</label><input id="p_paper_grammage" type="number" placeholder="مثال 70" oninput="syncDerivedPurchaseName()"></div>
+                <div><label>اللون (اختياري)</label><select id="p_paper_color" onchange="syncDerivedPurchaseName()"><option value="">بدون تحديد</option><option>بني</option><option>أبيض</option><option>أسود</option></select></div>
+                <div><label>الطول</label><input id="p_paper_length" type="number" placeholder="سم" oninput="syncDerivedPurchaseName()"></div>
+                <div><label>العرض</label><input id="p_paper_width" type="number" placeholder="سم" oninput="syncDerivedPurchaseName()"></div>
+              </div>
+              <div class="hint">في مشتريات الورق تكتب المقاس والجرام واللون، واسم الصنف بيتكوّن تلقائيًا.</div>
+            </div>
+
+            <div id="handleFields" class="full hidden">
+              <div class="grid">
+                <div><label>لون اليد (اختياري)</label><select id="p_handle_color" onchange="syncDerivedPurchaseName()"><option value="">بدون تحديد</option><option>أبيض</option><option>أسود</option><option>بني</option><option>كرافت</option><option>أحمر</option><option>أزرق</option><option>أخضر</option></select></div>
+                <div><label>الكمية</label><input id="p_qty_handle" type="number" oninput="syncHandleQtyToMain()"></div>
+              </div>
+              <div class="hint">في اليد بنكتفي باللون والكمية، واسم الصنف بيتكوّن تلقائيًا.</div>
+            </div>
+
+            <div id="mainQtyWrap"><label>الكمية</label><input id="p_qty" type="number" oninput="syncTotals()"></div>
+            <div><label>سعر الوحدة</label><input id="p_unit_price" type="number" oninput="syncTotals()"></div>
+            <div><label>إجمالي الصنف الحالي</label><input id="p_item_total" type="number" oninput="syncTotals()"></div>
+          </div>
+
+          <div class="panel" style="margin-top:14px;padding:14px">
+            <div class="top" style="padding:0">
+              <div><b>ربط بالمخزن</b><div class="hint">اختياري: لو فعلته سيتم إضافة الكمية مباشرة للمخزن وتسجيل حركة شراء.</div></div>
+            </div>
+            <div class="grid" style="margin-top:10px">
+              <div><label>أضف للمخزن</label><select id="p_stock_type" onchange="toggleStockSection()"><option value="">لا</option><option value="paper">ورق</option><option value="handle">يد</option><option value="bag">شنط جاهزة</option></select></div>
+              <div id="stockModeWrap" class="hidden"><label>نوع الربط</label><select id="p_stock_mode" onchange="toggleStockSection()"><option value="existing">صنف موجود</option><option value="new">صنف جديد</option></select></div>
+              <div id="stockRefWrap" class="full hidden"><label>الصنف الموجود بالمخزن</label><select id="p_stock_ref" onchange="fillFromStock()"><option value="">اختر</option></select></div>
+              <div id="stockNewWrap" class="full hidden"><div class="note">سيتم إنشاء صنف جديد بالمخزن من نفس بيانات الفاتورة وربطه تلقائيًا.</div></div>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px">
+            <button class="btn green" onclick="addPurchaseItem()">➕ إضافة صنف للفاتورة</button>
+            <button class="btn cyan" onclick="clearCurrentPurchaseItem()">تفريغ الصنف الحالي</button>
+          </div>
+        </div>
+
+        <div class="panel" style="margin-top:14px;padding:14px">
+          <div class="top" style="padding:0"><div><b>أصناف الفاتورة</b><div class="hint">تقدر تعدل أو تمسح أي صنف قبل حفظ الفاتورة.</div></div></div>
+          <div class="table-wrap" style="margin-top:10px"><table><thead><tr><th>النوع</th><th>الصنف</th><th>الكمية</th><th>الإجمالي</th><th>المخزن</th><th>التحكم</th></tr></thead><tbody id="invoiceItemsBody"><tr><td colspan="6">لا توجد أصناف مضافة</td></tr></tbody></table></div>
+        </div>
+
+        <div class="grid" style="margin-top:14px">
+          <div><label>إجمالي الفاتورة</label><input id="p_total" type="number" readonly></div>
+          <div><label>المدفوع الآن</label><input id="p_paid" type="number" oninput="syncPaid()"></div>
+          <div><label>المتبقي</label><input id="p_remaining" type="number" readonly></div>
+          <div><label>ميعاد السداد</label><input id="p_due" type="date"></div>
+          <div class="full"><label>ملاحظات</label><textarea id="p_notes"></textarea></div>
+        </div>
+
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px">
+          <button class="btn green" onclick="savePurchase()">💾 حفظ الفاتورة</button>
+          <button class="btn cyan" onclick="resetPurchaseForm()">فاتورة جديدة</button>
+          <button class="btn dark" onclick="goToSuppliers()">🏢 إدارة الموردين</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="top" style="padding:0">
+          <div><h3 style="margin:0">فواتير الشراء</h3><div class="muted" style="margin-top:6px">التعديل المباشر غير مفعل لتفادي كسر أرصدة المخزن. احذف وأعد الإضافة عند الحاجة.</div></div>
+        </div>
+        <div class="table-wrap"><table><thead><tr><th>#</th><th>التاريخ</th><th>المورد</th><th>الصنف</th><th>الإجمالي</th><th>المتبقي</th><th>المخزن</th><th>التحكم</th></tr></thead><tbody id="body"></tbody></table></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="suppliersSection" style="margin-top:24px">
+    <div class="top" style="margin:18px 0 12px">
+      <div>
+        <h3 style="margin:0">الموردين</h3>
+        <div class="muted" style="margin-top:6px">بيانات المورد + رصيده + فواتيره + دفعاته</div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+        <input id="supplierSearch" class="search" placeholder="بحث بالاسم أو التليفون" oninput="renderSuppliers()">
+        <button class="btn cyan" onclick="exportSuppliers()">📥 Excel</button>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="stat"><small>إجمالي الموردين</small><b id="supCount">0</b></div>
+      <div class="stat"><small>إجمالي المشتريات</small><b id="supPurchases">0 ج</b></div>
+      <div class="stat"><small>إجمالي المدفوع</small><b id="supPaid">0 ج</b></div>
+      <div class="stat"><small>المتبقي</small><b id="supRemaining">0 ج</b></div>
+    </div>
+    <div class="layout-suppliers">
+      <div class="panel">
+        <h3 style="margin-top:0">بيانات المورد</h3>
+        <input id="s_id" type="hidden">
+        <div class="grid">
+          <div class="full"><label>اسم المورد</label><input id="s_name"></div>
+          <div><label>نوع المورد</label><select id="s_type"><option>ورق</option><option>يد</option><option>شنط</option><option>طباعة</option><option>نقل</option><option>أخرى</option></select></div>
+          <div><label>التليفون</label><input id="s_phone"></div>
+          <div class="full"><label>العنوان</label><input id="s_address"></div>
+          <div><label>رصيد افتتاحي</label><input id="s_opening" type="number" placeholder="لو عليك مبلغ قديم"></div>
+          <div><label>الحالة</label><select id="s_active"><option value="1">نشط</option><option value="0">موقوف</option></select></div>
+          <div class="full"><label>ملاحظات</label><textarea id="s_notes"></textarea></div>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px">
+          <button class="btn green" onclick="saveSupplier()">💾 حفظ المورد</button>
+          <button class="btn cyan" onclick="resetSupplierForm()">مورد جديد</button>
+          <button class="btn dark" onclick="goToPurchases()">🧾 رجوع للمشتريات</button>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="top" style="padding:0"><div><h3 style="margin:0">قائمة الموردين</h3><div class="muted" style="margin-top:6px">افتح كشف الحساب لمراجعة المشتريات والدفعات.</div></div></div>
+        <div class="table-wrap"><table><thead><tr><th>المورد</th><th>النوع</th><th>المشتريات</th><th>المتبقي</th><th>التحكم</th></tr></thead><tbody id="supBody"></tbody></table></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div id="paymentsModal" class="modal"><div class="modal-content"><div class="top"><div><h3 style="margin:0">💵 دفعات فاتورة الشراء</h3><div id="paymentsTitle" class="muted" style="margin-top:6px"></div></div><button class="btn red" onclick="closePayments()">إغلاق</button></div><div class="grid" style="margin-top:14px"><div><label>المبلغ</label><input id="pp_amount" type="number"></div><div><label>التاريخ</label><input id="pp_date" type="date"></div><div class="full"><label>ملاحظة</label><input id="pp_note"></div></div><div style="display:flex;gap:10px;margin-top:14px"><button class="btn green" onclick="savePurchasePayment()">➕ تسجيل دفعة</button></div><div id="paymentsSummary" class="panel" style="padding:12px;margin-top:14px"></div><div id="paymentsBox" class="history" style="margin-top:12px"></div></div></div>
+
+<div id="statementModal" class="modal"><div class="modal-content"><div class="top"><div><h3 style="margin:0">📒 كشف حساب المورد</h3><div id="statementTitle" class="muted" style="margin-top:6px"></div></div><button class="btn red" onclick="closeStatement()">إغلاق</button></div><div class="chips" id="statementChips" style="margin:14px 0"></div><div class="grid"><div class="panel" style="margin:0"><h4 style="margin-top:0">فواتير الشراء</h4><div id="purchasesBox" class="history"></div></div><div class="panel" style="margin:0"><h4 style="margin-top:0">دفعات المورد</h4><div id="supplierPaymentsBox" class="history"></div></div></div></div></div>
+
+<script>
+const token = localStorage.getItem('token');
+const user = JSON.parse(localStorage.getItem('user') || 'null');
+if(!token || !user) location.href = 'login.html';
+const canManagePurchases = user.role === 'admin' || Number(user.perm_purchases || 0) === 1;
+const canManageSuppliers = user.role === 'admin' || Number(user.perm_suppliers || 0) === 1 || canManagePurchases;
+if(!canManagePurchases && !canManageSuppliers) location.href = 'index.html';
+
+let suppliers = [], purchases = [], stockCache = { paper: [], handle: [], bag: [] }, currentPurchaseGroupKey = null;
+let invoiceItems = [], editingInvoiceItemIndex = -1;
+
+function authFetch(url, opts = {}){ opts.headers = Object.assign({}, opts.headers || {}, { Authorization:'Bearer ' + token }); return fetch(url, opts).then(async r => { const d = await r.json().catch(() => ({})); if(r.status===401){ localStorage.clear(); location.href='login.html'; throw new Error('unauthorized'); } if(!r.ok) throw new Error(d.error || 'error'); return d; }); }
+function money(v){ return Number(v || 0).toLocaleString('en-US', { maximumFractionDigits:2 }) + ' ج'; }
+function esc(s){ return String(s || '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+function today(){ return new Date().toISOString().slice(0,10); }
+function goToSuppliers(){ document.getElementById('suppliersSection')?.scrollIntoView({ behavior:'smooth', block:'start' }); }
+function goToPurchases(){ document.getElementById('purchaseSection')?.scrollIntoView({ behavior:'smooth', block:'start' }); }
+function round2(v){ return Math.round((Number(v) || 0) * 100) / 100; }
+
+const PURCHASE_UNITS = { 'ورق':['كجم','فرخ'], 'يد':['عدد'], 'شنط':['شنطة'], 'طباعة':['عملية'], 'نقل':['نقلة'], 'خامة أخرى':['وحدة'] };
+
+function setPurchaseUnitOptions(type, selected=''){
+  const units = PURCHASE_UNITS[type] || ['وحدة'];
+  p_unit.innerHTML = units.map(u => `<option value="${u}" ${String(selected||'')===String(u)?'selected':''}>${u}</option>`).join('');
+  if(!selected || !units.includes(selected)) p_unit.value = units[0];
+}
+
+function syncTotals(){
+  const qty = Number(p_qty.value) || 0;
+  const unit = Number(p_unit_price.value) || 0;
+  if(!p_item_total.dataset.manual) p_item_total.value = (qty * unit) || '';
+}
+function refreshInvoiceTotals(){
+  const total = round2(invoiceItems.reduce((sum, item) => sum + Number(item.total_price || 0), 0));
+  p_total.value = total ? total : 0;
+  syncPaid();
+}
+function syncPaid(){
+  const total = Number(p_total.value) || 0;
+  let paid = Number(p_paid.value) || 0;
+  if(paid > total) paid = total;
+  if(paid < 0) paid = 0;
+  p_paid.value = paid;
+  p_remaining.value = round2(Math.max(total - paid, 0));
+}
+p_item_total.addEventListener('input', () => { p_item_total.dataset.manual = '1'; });
+
+function makePaperName(){
+  const grams = Number(p_paper_grammage.value) || 0;
+  const len = Number(p_paper_length.value) || 0;
+  const wid = Number(p_paper_width.value) || 0;
+  const color = String(p_paper_color.value || '').trim();
+  let txt = 'ورق';
+  if(color) txt += ' ' + color;
+  if(len && wid) txt += ` ${len}×${wid}`;
+  if(grams) txt += ` - ${grams} جم`;
+  return txt.trim();
+}
+function makeHandleName(){
+  const color = String(p_handle_color.value || '').trim();
+  return (`يد${color ? ' ' + color : ''}`).trim();
+}
+function syncDerivedPurchaseName(){
+  if(p_type.value === 'ورق') p_name.value = makePaperName();
+  else if(p_type.value === 'يد') p_name.value = makeHandleName();
+}
+function syncHandleQtyToMain(){ p_qty.value = p_qty_handle.value; syncTotals(); }
+function syncMainQtyToHandle(){ if(p_type.value === 'يد') p_qty_handle.value = p_qty.value; }
+
+function clearCurrentPurchaseItem(){
+  p_type.value = 'ورق';
+  setPurchaseUnitOptions('ورق');
+  p_name.value = '';
+  p_qty.value = '';
+  p_qty_handle.value = '';
+  p_unit_price.value = '';
+  p_item_total.value = '';
+  delete p_item_total.dataset.manual;
+  p_stock_type.value = 'paper';
+  p_stock_mode.value = 'existing';
+  p_stock_ref.innerHTML = '<option value="">اختر</option>';
+  p_paper_grammage.value = '';
+  p_paper_color.value = '';
+  p_paper_length.value = '';
+  p_paper_width.value = '';
+  p_handle_color.value = '';
+  editingInvoiceItemIndex = -1;
+  refreshPurchaseTypeUI();
+}
+
+function resetPurchaseForm(){
+  p_date.value = today();
+  p_supplier.value = '';
+  clearCurrentPurchaseItem();
+  invoiceItems = [];
+  p_total.value = 0;
+  p_paid.value = '0';
+  p_remaining.value = '0';
+  p_due.value = '';
+  p_notes.value = '';
+  renderInvoiceItems();
+  refreshInvoiceTotals();
+}
+
+function renderSupplierSelect(){ p_supplier.innerHTML = '<option value="">اختر المورد</option>' + suppliers.filter(s => Number(s.is_active)!==0).map(s => `<option value="${s.id}">${esc(s.name)} - ${esc(s.supplier_type || '')}</option>`).join(''); }
+
+async function loadStockOptions(selectedValue=''){
+  const t = p_stock_type.value;
+  const current = String(selectedValue || p_stock_ref.value || '');
+  p_stock_ref.innerHTML = '<option value="">اختر</option>';
+  if(!t) return;
+  const rows = stockCache[t] || [];
+  const label = (r) => {
+    if(t === 'paper') return `${r.paper_name || ''} ${r.color || ''} ${r.length}×${r.width} - ${r.grammage} جم`;
+    if(t === 'handle') return `${r.color || 'بدون تحديد لون'}${Number(r.qty||0) ? ` | رصيد ${r.qty}` : ''}`;
+    return `${r.color || ''} - ${r.handle || ''} (${r.length}×${r.width}×${r.gusset})`;
+  };
+  p_stock_ref.innerHTML = '<option value="">اختر</option>' + rows.map(r => `<option value="${r.id}" ${String(r.id)===current?'selected':''}>${esc(label(r))}</option>`).join('');
+  if(current) p_stock_ref.value = current;
+}
+
+function fillFromStock(){
+  const t = p_stock_type.value, id = Number(p_stock_ref.value) || 0;
+  if(!t || !id) return;
+  const row = (stockCache[t] || []).find(r => Number(r.id) === id);
+  if(!row) return;
+  if(t === 'paper'){
+    p_type.value = 'ورق';
+    setPurchaseUnitOptions('ورق', p_unit.value || 'كجم');
+    p_paper_grammage.value = row.grammage || '';
+    p_paper_color.value = row.color || '';
+    p_paper_length.value = row.length || '';
+    p_paper_width.value = row.width || '';
+    syncDerivedPurchaseName();
+  } else if(t === 'handle'){
+    p_type.value = 'يد';
+    setPurchaseUnitOptions('يد');
+    p_handle_color.value = row.color || '';
+    syncDerivedPurchaseName();
+  } else if(t === 'bag'){
+    p_type.value = 'شنط';
+    setPurchaseUnitOptions('شنط');
+    p_name.value = `${row.color || ''} - ${row.handle || ''} (${row.length}×${row.width}×${row.gusset})`.trim();
+  }
+  refreshPurchaseTypeUI();
+  loadStockOptions(String(id));
+  p_stock_ref.value = String(id);
+}
+
+function refreshPurchaseTypeUI(){
+  const type = p_type.value;
+  setPurchaseUnitOptions(type, p_unit.value);
+  const isPaper = type === 'ورق';
+  const isHandle = type === 'يد';
+  const isBag = type === 'شنط';
+  paperFields.classList.toggle('hidden', !isPaper);
+  handleFields.classList.toggle('hidden', !isHandle);
+  itemNameWrap.classList.toggle('hidden', isPaper || isHandle);
+  mainQtyWrap.classList.toggle('hidden', isHandle);
+  if(isPaper) syncDerivedPurchaseName();
+  if(isHandle){ p_qty_handle.value = p_qty.value; syncDerivedPurchaseName(); }
+  if(['ورق','يد','شنط'].includes(type)) p_stock_type.value = isPaper ? 'paper' : (isHandle ? 'handle' : 'bag');
+  if(!['ورق','يد','شنط'].includes(type)) p_stock_type.value = '';
+  toggleStockSection();
+  syncTotals();
+}
+
+function toggleStockSection(){
+  const supportsStock = ['ورق','يد','شنط'].includes(p_type.value);
+  if(supportsStock && !p_stock_type.value) p_stock_type.value = p_type.value==='ورق' ? 'paper' : (p_type.value==='يد' ? 'handle' : 'bag');
+  if(!supportsStock) p_stock_type.value = '';
+  const activeType = p_stock_type.value;
+  const selectedRef = p_stock_ref.value;
+  stockModeWrap.classList.toggle('hidden', !activeType);
+  const allowNew = activeType === 'paper' || activeType === 'handle';
+  if(!allowNew) p_stock_mode.value = 'existing';
+  stockRefWrap.classList.toggle('hidden', !activeType || (allowNew && p_stock_mode.value === 'new'));
+  stockNewWrap.classList.toggle('hidden', !activeType || !(allowNew && p_stock_mode.value === 'new'));
+  if(activeType) loadStockOptions(selectedRef);
+}
+
+function collectCurrentPurchaseItem(){
+  const itemType = String(p_type.value || '').trim();
+  if(itemType === 'ورق' && !(Number(p_paper_grammage.value) || 0)) throw new Error('حدد جرام الورق');
+  if(itemType === 'يد') syncHandleQtyToMain();
+  const quantity = Number(p_qty.value) || 0;
+  if(quantity <= 0) throw new Error('حدد الكمية');
+  syncDerivedPurchaseName();
+  const itemName = String(p_name.value || '').trim();
+  if(!itemName) throw new Error('اسم الصنف مطلوب');
+  const totalPrice = round2(Number(p_item_total.value) || 0);
+  if(totalPrice <= 0) throw new Error('إجمالي الصنف الحالي مطلوب');
+  const stockType = String(p_stock_type.value || '').trim();
+  const stockMode = String(p_stock_mode.value || '').trim() || 'existing';
+  const stockRefId = stockType && stockMode === 'existing' ? String(p_stock_ref.value || '').trim() : '';
+  if(stockType && stockMode === 'existing' && !stockRefId) throw new Error('اختر الصنف الموجود بالمخزن أو غيّر الوضع إلى صنف جديد');
+  let stockLabel = 'بدون ربط';
+  if(stockType) stockLabel = `${stockMode === 'new' ? 'صنف جديد' : 'صنف موجود'}${stockType === 'paper' ? ' | ورق' : stockType === 'handle' ? ' | يد' : ' | شنط'}`;
+  return {
+    item_type: itemType,
+    item_name: itemName,
+    quantity,
+    unit: String(p_unit.value || '').trim() || 'وحدة',
+    unit_price: round2(Number(p_unit_price.value) || 0),
+    total_price: totalPrice,
+    stock_type: stockType,
+    stock_mode: stockMode,
+    stock_ref_id: stockRefId,
+    paper_length: Number(p_paper_length.value) || 0,
+    paper_width: Number(p_paper_width.value) || 0,
+    paper_grammage: Number(p_paper_grammage.value) || 0,
+    paper_color: String(p_paper_color.value || '').trim(),
+    handle_color: String(p_handle_color.value || '').trim(),
+    stock_label: stockLabel
+  };
+}
+
+function renderInvoiceItems(){
+  invoiceItemsBody.innerHTML = invoiceItems.length ? invoiceItems.map((item, idx) => `
+    <tr>
+      <td>${esc(item.item_type || '-')}</td>
+      <td><b>${esc(item.item_name || '-')}</b></td>
+      <td>${item.quantity || 0} ${esc(item.unit || '')}</td>
+      <td>${money(item.total_price || 0)}</td>
+      <td>${esc(item.stock_label || 'بدون ربط')}</td>
+      <td><div class="actions"><button class="btn dark" onclick="editPurchaseItem(${idx})">تعديل</button><button class="btn red" onclick="removePurchaseItem(${idx})">حذف</button></div></td>
+    </tr>`).join('') : '<tr><td colspan="6">لا توجد أصناف مضافة</td></tr>';
+  refreshInvoiceTotals();
+}
+
+function addPurchaseItem(){
+  try {
+    const item = collectCurrentPurchaseItem();
+    if(editingInvoiceItemIndex > -1) invoiceItems[editingInvoiceItemIndex] = item;
+    else invoiceItems.push(item);
+    clearCurrentPurchaseItem();
+    renderInvoiceItems();
+  } catch(err) { alert(err.message || 'تعذر إضافة الصنف'); }
+}
+
+function editPurchaseItem(index){
+  const item = invoiceItems[index];
+  if(!item) return;
+  editingInvoiceItemIndex = index;
+  p_type.value = item.item_type || 'خامة أخرى';
+  setPurchaseUnitOptions(p_type.value, item.unit || 'وحدة');
+  p_name.value = item.item_name || '';
+  p_qty.value = item.quantity || '';
+  p_qty_handle.value = item.item_type === 'يد' ? (item.quantity || '') : '';
+  p_unit_price.value = item.unit_price || '';
+  p_item_total.value = item.total_price || '';
+  p_item_total.dataset.manual = '1';
+  p_stock_type.value = item.stock_type || '';
+  p_stock_mode.value = item.stock_mode || 'existing';
+  p_paper_length.value = item.paper_length || '';
+  p_paper_width.value = item.paper_width || '';
+  p_paper_grammage.value = item.paper_grammage || '';
+  p_paper_color.value = item.paper_color || '';
+  p_handle_color.value = item.handle_color || '';
+  refreshPurchaseTypeUI();
+  loadStockOptions(String(item.stock_ref_id || ''));
+  p_stock_ref.value = String(item.stock_ref_id || '');
+}
+
+function removePurchaseItem(index){
+  invoiceItems.splice(index, 1);
+  if(editingInvoiceItemIndex === index) clearCurrentPurchaseItem();
+  else if(editingInvoiceItemIndex > index) editingInvoiceItemIndex -= 1;
+  renderInvoiceItems();
+}
+
+function hasDraftCurrentItem(){
+  return !!(
+    String(p_name.value || '').trim() || Number(p_qty.value) || Number(p_qty_handle.value) || Number(p_unit_price.value) || Number(p_item_total.value)
+    || Number(p_paper_length.value) || Number(p_paper_width.value) || Number(p_paper_grammage.value) || String(p_handle_color.value || '').trim() || String(p_paper_color.value || '').trim()
+  );
+}
+
+
+function statsPurchases(summary){ sCount.innerText = summary.purchasesCount || 0; sPurchases.innerText = money(summary.totalPurchases); sPaid.innerText = money(summary.totalPaid); sRemaining.innerText = money(summary.totalRemaining); }
+function purchaseGroupKey(row){ const g = String(row?.invoice_group_no || '').trim(); return g ? `group:${g}` : `single:${row?.id || 0}`; }
+function purchaseGroupDisplayNo(row){ return String(row?.invoice_group_no || row?.invoice_no || '').trim() || String(row?.id || row?.purchase_no || ''); }
+async function nextPurchaseInvoiceNo(){ const r = await authFetch('/next-purchase-invoice-no'); return String(r?.invoice_group_no || '').trim(); }
+function groupedPurchases(rows = []){
+  const map = new Map();
+  rows.forEach(row => {
+    const key = purchaseGroupKey(row);
+    if (!map.has(key)) {
+      map.set(key, {
+        key,
+        displayNo: purchaseGroupDisplayNo(row),
+        purchase_date: row.purchase_date || '',
+        supplier_name: row.supplier_name || '',
+        total_price: 0,
+        paid_amount: 0,
+        remaining_amount: 0,
+        items: [],
+        rows: [],
+        has_stock: false,
+        stock_labels: new Set()
+      });
+    }
+    const group = map.get(key);
+    group.total_price += Number(row.total_price || 0);
+    group.paid_amount += Number(row.paid_amount || 0);
+    group.remaining_amount += Number(row.remaining_amount || 0);
+    group.items.push(row.item_name || '-');
+    group.rows.push(row);
+    if (Number(row.stock_applied) === 1) {
+      group.has_stock = true;
+      group.stock_labels.add(String(row.stock_mode || 'existing') === 'new' ? 'صنف جديد' : 'صنف موجود');
+    }
+  });
+  return [...map.values()].sort((a,b)=> String(b.purchase_date||'').localeCompare(String(a.purchase_date||'')) || Number(b.rows?.[0]?.id||0) - Number(a.rows?.[0]?.id||0));
+}
+
+
+function renderPurchases(){
+  const s = (purchaseSearch.value || '').trim().toLowerCase();
+  const groups = groupedPurchases(purchases).filter(g => {
+    const hay = `${g.supplier_name || ''} ${(g.items || []).join(' ')}`.toLowerCase();
+    return !s || hay.includes(s);
+  });
+  body.innerHTML = groups.length ? groups.map(g => {
+    const itemsText = g.rows.length === 1
+      ? `<b>${esc(g.rows[0].item_name || '-')}</b><br><small class="muted">${esc(g.rows[0].item_type || '')} | كمية ${g.rows[0].quantity || 0} ${esc(g.rows[0].unit || '')}${Number(g.rows[0].paper_grammage||0)>0?` | ${g.rows[0].paper_grammage} جم`:''}${String(g.rows[0].handle_color||'').trim()?` | لون اليد: ${esc(g.rows[0].handle_color)}`:''}</small>`
+      : `<b>${g.rows.length} أصناف داخل الفاتورة</b><br><small class="muted">${g.rows.map(r => esc(r.item_name || '-')).join(' | ')}</small>`;
+    const stockText = g.has_stock ? `<span class="tag">${[...g.stock_labels].join(' | ')}</span>` : '-';
+    return `<tr><td>#${esc(g.displayNo)}</td><td>${esc(g.purchase_date || '-')}</td><td>${esc(g.supplier_name || '-')}</td><td>${itemsText}</td><td>${money(g.total_price)}<br><small class="muted">مدفوع ${money(g.paid_amount)}</small></td><td>${money(g.remaining_amount)}</td><td>${stockText}</td><td><div class="actions"><button class="btn dark" onclick="openPayments('${encodeURIComponent(g.key)}')">دفعات</button><button class="btn red" onclick="delPurchaseGroup('${encodeURIComponent(g.key)}')">حذف</button></div></td></tr>`;
+  }).join('') : '<tr><td colspan="8">لا توجد مشتريات</td></tr>';
+}
+
+async function savePurchase(){
+  if(!canManagePurchases){ alert('غير مصرح لك بإضافة مشتريات'); return; }
+  if(!String(p_supplier.value || '').trim()){ alert('اختر المورد'); return; }
+  if(editingInvoiceItemIndex > -1){ alert('أنت فاتح صنف للتعديل. حدّثه أو امسحه الأول.'); return; }
+  if(hasDraftCurrentItem()){
+    try {
+      const item = collectCurrentPurchaseItem();
+      invoiceItems.push(item);
+      clearCurrentPurchaseItem();
+      renderInvoiceItems();
+    } catch(err) {
+      if(invoiceItems.length === 0){
+        alert(err.message || 'أضف صنف واحد على الأقل');
+        return;
+      }
+      // لو في أصناف مضافة بالفعل، نكمّل حفظ الفاتورة مباشرة وما نوقفش الحفظ بسبب الصنف الجاري لو ناقص.
+      clearCurrentPurchaseItem();
+    }
+  }
+  if(!invoiceItems.length){ alert('أضف صنف واحد على الأقل للفاتورة'); return; }
+  const totalInvoice = round2(invoiceItems.reduce((sum, item) => sum + Number(item.total_price || 0), 0));
+  const paidInvoice = round2(Math.min(Math.max(Number(p_paid.value) || 0, 0), totalInvoice));
+  p_total.value = totalInvoice;
+  p_paid.value = paidInvoice;
+  syncPaid();
+  let remainingPaid = paidInvoice;
+  const invoiceGroupNo = await nextPurchaseInvoiceNo();
+  if(!invoiceGroupNo){ alert('تعذر تجهيز رقم الفاتورة'); return; }
+  const allocations = invoiceItems.map((item, idx) => {
+    if(idx === invoiceItems.length - 1) return round2(remainingPaid);
+    const proportional = totalInvoice > 0 ? round2((paidInvoice * Number(item.total_price || 0)) / totalInvoice) : 0;
+    const safe = Math.min(round2(Number(item.total_price || 0)), proportional, remainingPaid);
+    remainingPaid = round2(remainingPaid - safe);
+    return safe;
+  });
+  for(let i = 0; i < invoiceItems.length; i++){
+    const item = invoiceItems[i];
+    const body = {
+      purchase_date: p_date.value,
+      supplier_id: p_supplier.value,
+      item_type: item.item_type,
+      item_name: item.item_name,
+      quantity: item.quantity,
+      unit: item.unit,
+      unit_price: item.unit_price,
+      total_price: item.total_price,
+      paid_amount: allocations[i] || 0,
+      invoice_group_no: invoiceGroupNo,
+      due_date: p_due.value,
+      notes: p_notes.value,
+      stock_type: item.stock_type,
+      stock_mode: item.stock_mode,
+      stock_ref_id: (item.stock_type && item.stock_mode === 'existing') ? item.stock_ref_id : '',
+      paper_length: item.paper_length,
+      paper_width: item.paper_width,
+      paper_grammage: item.paper_grammage,
+      paper_color: item.paper_color,
+      handle_color: item.handle_color
+    };
+    await authFetch('/save-purchase', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
+  }
+  resetPurchaseForm();
+  await reloadAll();
+}
+
+async function delPurchase(id){ if(!canManagePurchases){ alert('غير مصرح لك بحذف فاتورة شراء'); return; } if(!confirm('حذف فاتورة الشراء؟ لو كانت مضافة للمخزن سيتم عكسها تلقائيًا.')) return; await authFetch('/delete-purchase/' + id, { method:'DELETE' }); await reloadAll(); }
+async function delPurchaseGroup(key){ if(!canManagePurchases){ alert('غير مصرح لك بحذف فاتورة شراء'); return; } if(!confirm('حذف الفاتورة بكل أصنافها؟ لو كانت مضافة للمخزن سيتم عكسها تلقائيًا.')) return; await authFetch('/delete-purchase-group/' + key, { method:'DELETE' }); await reloadAll(); }
+async function openPayments(key){ if(!canManagePurchases){ alert('غير مصرح لك بإدارة الدفعات'); return; } currentPurchaseGroupKey = decodeURIComponent(String(key || '')); const group = groupedPurchases(purchases).find(x => x.key === currentPurchaseGroupKey); paymentsTitle.innerText = `فاتورة #${group?.displayNo || '-'} | ${group?.supplier_name || ''}`; pp_amount.value=''; pp_date.value=today(); pp_note.value=''; await refreshPayments(); paymentsModal.style.display='block'; }
+async function refreshPayments(){ if(!currentPurchaseGroupKey) return; const payload = await authFetch('/purchase-group/' + encodeURIComponent(currentPurchaseGroupKey)); const summary = payload?.summary || {}; paymentsSummary.innerHTML = `<b>الإجمالي:</b> ${money(summary.total_price || 0)} | <b>المدفوع:</b> ${money(summary.paid_amount || 0)} | <b>المتبقي:</b> ${money(summary.remaining_amount || 0)} | <b>عدد الأصناف:</b> ${summary.items_count || 0}`; const rows = payload?.payments || []; paymentsBox.innerHTML = rows.length ? rows.map(r => `<div style="padding:10px;border-bottom:1px solid #334155"><b>${money(r.amount)}</b><br><small>${esc(r.payment_date || '-')} | ${esc(r.created_by || '-')}</small><br><small>${esc(r.note || '-')}</small><br><small>فاتورة #${esc(purchaseGroupDisplayNo(r))}</small><div style="margin-top:8px"><button class="btn red" onclick="deletePurchasePayment(${r.id})">حذف الدفعة</button></div></div>`).join('') : 'لا توجد دفعات'; }
+async function savePurchasePayment(){ if(!canManagePurchases){ alert('غير مصرح لك بإدارة الدفعات'); return; } await authFetch('/add-purchase-group-payment/' + encodeURIComponent(currentPurchaseGroupKey), { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ amount: pp_amount.value, payment_date: pp_date.value, note: pp_note.value }) }); await reloadAll(); await refreshPayments(); }
+async function deletePurchasePayment(id){ if(!canManagePurchases){ alert('غير مصرح لك بحذف الدفعات'); return; } if(!confirm('حذف الدفعة؟')) return; await authFetch('/purchase-payment/' + id, { method:'DELETE' }); await reloadAll(); await refreshPayments(); }
+function closePayments(){ paymentsModal.style.display='none'; currentPurchaseGroupKey=null; }
+function exportPurchases(){ const headers=['رقم الفاتورة','التاريخ','المورد','النوع','الصنف','الكمية','الوحدة','الإجمالي','المدفوع','المتبقي','ميعاد السداد']; let csv=headers.join(';')+'\n'; purchases.forEach(r=>{ const row=[purchaseGroupDisplayNo(r),r.purchase_date,r.supplier_name,r.item_type,r.item_name,r.quantity,r.unit,r.total_price,r.paid_amount,r.remaining_amount,r.due_date||'']; csv += row.map(v=>`"${String(v??'').replace(/"/g,'""')}"`).join(';')+'\n'; }); const blob=new Blob(["﻿"+csv],{type:'text/csv;charset=utf-8;'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='purchases.csv'; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),500); }
+
+function supplierStats(){ supCount.innerText = suppliers.length; supPurchases.innerText = money(suppliers.reduce((s,r)=>s+Number(r.totalPurchases||0),0)); supPaid.innerText = money(suppliers.reduce((s,r)=>s+Number(r.totalPaid||0),0)); supRemaining.innerText = money(suppliers.reduce((s,r)=>s+Number(r.totalRemaining||0),0)); }
+function resetSupplierForm(){ s_id.value=''; s_name.value=''; s_type.value='ورق'; s_phone.value=''; s_address.value=''; s_opening.value='0'; s_active.value='1'; s_notes.value=''; }
+function fillSupplierForm(row){ s_id.value=row.id||''; s_name.value=row.name||''; s_type.value=row.supplier_type||'ورق'; s_phone.value=row.phone||''; s_address.value=row.address||''; s_opening.value=row.opening_balance||0; s_active.value=String(Number(row.is_active)!==0?1:0); s_notes.value=row.notes||''; }
+function renderSuppliers(){ const s=(supplierSearch.value||'').trim().toLowerCase(); const rows=suppliers.filter(r=> String(r.name||'').toLowerCase().includes(s) || String(r.phone||'').toLowerCase().includes(s)); supBody.innerHTML=rows.length?rows.map(r=>`<tr><td><b>${esc(r.name||'')}</b><br><small class="muted">${esc(r.phone||'')} - ${esc(r.address||'')}</small></td><td>${esc(r.supplier_type||'-')}</td><td>${money(r.totalPurchases)}<br><small class="muted">${r.purchasesCount||0} فاتورة</small></td><td>${money(r.totalRemaining)}</td><td><div class="actions"><button class="btn dark" onclick="selectSupplier(${r.id})">تعديل</button><button class="btn green" onclick="openSupplierStatement(${r.id})">كشف حساب</button><button class="btn red" onclick="delSupplier(${r.id})">حذف</button></div></td></tr>`).join(''):'<tr><td colspan="5">لا يوجد موردين</td></tr>'; supplierStats(); }
+function selectSupplier(id){ const row=suppliers.find(x=>Number(x.id)===Number(id)); if(row){ fillSupplierForm(row); goToSuppliers(); } }
+async function saveSupplier(){ if(!canManageSuppliers){ alert('غير مصرح لك بإدارة الموردين'); return; } const body={ id:s_id.value, name:s_name.value, supplier_type:s_type.value, phone:s_phone.value, address:s_address.value, opening_balance:s_opening.value, is_active:s_active.value, notes:s_notes.value }; await authFetch('/save-supplier',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}); resetSupplierForm(); await reloadAll(); }
+async function delSupplier(id){ if(!canManageSuppliers){ alert('غير مصرح لك بإدارة الموردين'); return; } if(!confirm('حذف المورد؟')) return; await authFetch('/delete-supplier/' + id,{method:'DELETE'}); await reloadAll(); }
+async function openSupplierStatement(id){ const d=await authFetch('/supplier-statement/' + id); statementTitle.innerText=`${d.supplier.name||''} | ${d.supplier.phone||''}`; statementChips.innerHTML=`<div class="chip">إجمالي المشتريات: ${money(d.summary.totalPurchases)}</div><div class="chip">المدفوع: ${money(d.summary.totalPaid)}</div><div class="chip">المتبقي: ${money(d.summary.totalRemaining)}</div><div class="chip">عدد الفواتير: ${d.summary.purchasesCount||0}</div><div class="chip">رصيد افتتاحي: ${money(d.summary.openingBalance||0)}</div>`; purchasesBox.innerHTML=d.purchases.length?d.purchases.map(p=>`<div style="padding:10px;border-bottom:1px solid #334155"><b>فاتورة #${esc(purchaseGroupDisplayNo(p))}</b> - ${esc(p.item_name||'')}<br><small>${esc(p.purchase_date||'')} | ${esc(p.item_type||'')} | كمية ${p.quantity||0} ${esc(p.unit||'')}</small><br><small>الإجمالي ${money(p.total_price)} | المدفوع ${money(p.paid_amount)} | المتبقي ${money(p.remaining_amount)}</small></div>`).join(''):'لا توجد مشتريات'; supplierPaymentsBox.innerHTML=d.payments.length?d.payments.map(p=>`<div style="padding:10px;border-bottom:1px solid #334155"><b>${money(p.amount)}</b><br><small>${esc(p.payment_date||'')} | فاتورة #${esc(purchaseGroupDisplayNo(p))}</small><br><small>${esc(p.note||'-')}</small></div>`).join(''):'لا توجد دفعات'; statementModal.style.display='block'; }
+function closeStatement(){ statementModal.style.display='none'; }
+function exportSuppliers(){ const headers=['الاسم','النوع','التليفون','العنوان','إجمالي المشتريات','المدفوع','المتبقي']; let csv=headers.join(';')+'\n'; suppliers.forEach(r=>{ const row=[r.name,r.supplier_type,r.phone,r.address,r.totalPurchases,r.totalPaid,r.totalRemaining]; csv += row.map(v=>`"${String(v??'').replace(/"/g,'""')}"`).join(';')+'\n'; }); const blob=new Blob(["﻿"+csv],{type:'text/csv;charset=utf-8;'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='suppliers.csv'; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),500); }
+
+async function reloadAll(){
+  const [supplierRows, summary, purchaseRows, paper, handles, bags] = await Promise.all([
+    canManageSuppliers ? authFetch('/suppliers').catch(()=>[]) : Promise.resolve([]),
+    canManagePurchases ? authFetch('/purchases-summary').catch(()=>({totalPurchases:0,totalPaid:0,totalRemaining:0,purchasesCount:0})) : Promise.resolve({totalPurchases:0,totalPaid:0,totalRemaining:0,purchasesCount:0}),
+    canManagePurchases ? authFetch('/purchases').catch(()=>[]) : Promise.resolve([]),
+    canManagePurchases ? authFetch('/get-paper').catch(()=>[]) : Promise.resolve([]),
+    canManagePurchases ? authFetch('/get-handles').catch(()=>[]) : Promise.resolve([]),
+    canManagePurchases ? authFetch('/get-bags').catch(()=>[]) : Promise.resolve([])
+  ]);
+  suppliers = supplierRows || [];
+  purchases = purchaseRows || [];
+  stockCache.paper = paper || [];
+  stockCache.handle = handles || [];
+  stockCache.bag = bags || [];
+  renderSupplierSelect();
+  statsPurchases(summary || {});
+  renderPurchases();
+  renderSuppliers();
+  toggleStockSection();
+}
+
+window.openPayments = openPayments;
+window.delPurchase = delPurchase;
+window.deletePurchasePayment = deletePurchasePayment;
+window.selectSupplier = selectSupplier;
+window.delSupplier = delSupplier;
+window.openSupplierStatement = openSupplierStatement;
+window.closeStatement = closeStatement;
+
+if(!canManagePurchases){
+  document.getElementById('purchaseSection').style.display='none';
+  document.getElementById('purchaseAnchor').style.display='none';
+}else{
+  resetPurchaseForm();
+  refreshPurchaseTypeUI();
+}
+if(!canManageSuppliers){
+  document.getElementById('suppliersSection').style.display='none';
+  document.getElementById('suppliersAnchor').style.display='none';
+}else{
+  resetSupplierForm();
+}
+reloadAll();
+if(location.hash==='#suppliers' || location.hash==='#suppliersSection') setTimeout(()=>goToSuppliers(),120);
+</script>
+</body>
+</html>

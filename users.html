@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>إدارة المستخدمين</title>
+<style>
+:root{--bg:#0f172a;--panel:#111827;--card:#1e293b;--border:#334155;--text:#f8fafc;--muted:#94a3b8;--primary:#22c55e;--info:#22d3ee;--danger:#ef4444;--warn:#f59e0b}
+*{box-sizing:border-box}body{margin:0;font-family:'Segoe UI',Tahoma,sans-serif;background:linear-gradient(180deg,#020617,#0f172a);color:var(--text);padding:22px}
+.wrap{max-width:1280px;margin:auto}.header,.panel,.stat{background:rgba(15,23,42,.95);border:1px solid var(--border);border-radius:18px;box-shadow:0 14px 34px rgba(0,0,0,.24)}
+.header{padding:18px 20px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap}a.btn,button{border:none;border-radius:12px;padding:11px 15px;font-weight:700;cursor:pointer}a.btn{text-decoration:none;display:inline-flex;align-items:center}
+.btn-line{background:transparent;border:1px solid var(--border);color:var(--text)}.btn-main{background:linear-gradient(135deg,#16a34a,#22c55e);color:#04130a}.btn-info{background:linear-gradient(135deg,#0891b2,#22d3ee);color:#06202a}.btn-danger{background:#3f1010;color:#fecaca;border:1px solid rgba(239,68,68,.35)}
+.layout{display:grid;grid-template-columns:440px 1fr;gap:18px}.panel{padding:18px}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}.stat{padding:16px}.stat small{color:var(--muted);display:block}.stat b{display:block;font-size:28px;margin-top:8px}
+label{display:block;margin-bottom:7px;color:#cbd5e1;font-size:14px}input,select{width:100%;padding:12px 13px;border-radius:12px;border:1px solid var(--border);background:#020617;color:var(--text);outline:none}input:focus,select:focus{border-color:var(--info);box-shadow:0 0 0 3px rgba(34,211,238,.10)}
+.form-grid{display:grid;gap:12px}.roles{display:grid;gap:10px;margin-top:14px}.role{border:1px solid var(--border);background:#020617;border-radius:14px;padding:14px;cursor:pointer}.role.active{border-color:var(--info);box-shadow:0 0 0 2px rgba(34,211,238,.12) inset}.role h4{margin:0 0 8px 0}.role p{margin:0;color:#cbd5e1;line-height:1.7;font-size:14px}
+.role ul{margin:8px 0 0 0;padding-right:18px;color:#94a3b8;font-size:13px;line-height:1.8}.hint{margin-top:14px;padding:12px;border-radius:14px;background:#020617;border:1px dashed var(--border);color:#cbd5e1;line-height:1.8}
+.table-wrap{overflow:auto}.list-table{width:100%;border-collapse:collapse}.list-table th,.list-table td{padding:12px;border-bottom:1px solid var(--border);text-align:center;vertical-align:top}.list-table th{background:#020617;color:var(--info);position:sticky;top:0}.muted{color:var(--muted)}
+.tag{display:inline-flex;align-items:center;padding:6px 10px;border-radius:999px;font-size:13px;font-weight:700}.tag.ok{background:rgba(34,197,94,.15);color:#bbf7d0}.tag.stop{background:rgba(239,68,68,.12);color:#fecaca}.tag.role{background:rgba(34,211,238,.12);color:#a5f3fc}
+.quick{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.chip{padding:7px 10px;border-radius:999px;background:#020617;border:1px solid var(--border);font-size:13px;color:#cbd5e1}.chip.off{opacity:.6;text-decoration:line-through}
+.search{max-width:320px}.actions{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}.empty{padding:18px;text-align:center;color:var(--muted)}
+.permissions{margin-top:16px;padding:14px;border-radius:16px;background:#020617;border:1px solid var(--border)}.permissions-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}.perm-item{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px;border-radius:12px;background:#0b1220;border:1px solid var(--border)}.perm-item b{font-size:14px}.perm-item small{display:block;color:var(--muted);margin-top:4px}.switch{position:relative;width:52px;height:30px;flex:0 0 auto}.switch input{display:none}.slider{position:absolute;inset:0;background:#3f1010;border:1px solid rgba(239,68,68,.35);border-radius:999px;transition:.2s}.slider:before{content:"";position:absolute;top:3px;right:4px;width:22px;height:22px;border-radius:50%;background:#fecaca;transition:.2s}input:checked + .slider{background:#0f5132;border-color:#198754}input:checked + .slider:before{right:24px;background:#bbf7d0}.section-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.hidden{display:none}
+@media (max-width:980px){.layout{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}.permissions-grid{grid-template-columns:1fr}}
+@media (max-width:640px){body{padding:14px}.stats{grid-template-columns:1fr}.search{max-width:none;width:100%}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header">
+    <div>
+      <h1 style="margin:0">👥 إدارة المستخدمين</h1>
+      <div id="welcome" class="muted" style="margin-top:6px"></div>
+    </div>
+    <div class="toolbar">
+      <a class="btn btn-line" href="index.html">🏠 الرئيسية</a>
+      <button class="btn-line" type="button" onclick="resetForm()">مستخدم جديد</button>
+      <button class="btn-line" type="button" onclick="logout()">خروج</button>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><small>إجمالي المستخدمين</small><b id="statUsers">0</b></div>
+    <div class="stat"><small>النشطين</small><b id="statActive">0</b></div>
+    <div class="stat"><small>الموقوفين</small><b id="statInactive">0</b></div>
+    <div class="stat"><small>المعدلين يدويًا</small><b id="statCustomRoles">0</b></div>
+  </div>
+
+  <div class="layout">
+    <div class="panel">
+      <h3 style="margin-top:0">بيانات المستخدم</h3>
+      <div class="form-grid">
+        <input id="u_id" type="hidden">
+        <div><label>اسم الدخول</label><input id="u_username" placeholder="مثال: mod01"></div>
+        <div><label>كلمة المرور</label><input id="u_password" type="password" placeholder="اتركها فارغة للحفاظ على كلمة المرور الحالية"></div>
+        <div><label>الاسم الكامل</label><input id="u_name" placeholder="الاسم الظاهر داخل النظام"></div>
+        <div><label>الحالة</label><select id="u_active"><option value="1">نشط</option><option value="0">موقوف</option></select></div>
+      </div>
+
+      <div style="margin-top:16px">
+        <label>اختر الدور الأساسي</label>
+        <div class="roles" id="rolesBox"></div>
+      </div>
+
+      <div class="hint" id="roleHint"></div>
+      <div class="quick" id="quickAccess"></div>
+
+      <div class="permissions">
+        <div class="section-head">
+          <div>
+            <b>الصلاحيات الفعلية</b>
+            <div class="muted" style="margin-top:4px">اضغط "تعديل الأدوار" وحدد كل صلاحية بنفسك.</div>
+          </div>
+          <div class="toolbar">
+            <button class="btn-line" type="button" onclick="toggleManualPerms()" id="manualBtn">🎛️ تعديل الأدوار</button>
+            <button class="btn-line hidden" type="button" onclick="applyRolePreset()" id="presetBtn">↺ رجوع لصلاحيات الدور</button>
+          </div>
+        </div>
+        <div class="permissions-grid" id="permissionsGrid"></div>
+      </div>
+
+      <div class="toolbar" style="margin-top:16px">
+        <button class="btn-main" type="button" onclick="saveUser()">💾 حفظ</button>
+        <button class="btn-info" type="button" onclick="resetForm()">تفريغ</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px">
+        <div>
+          <h3 style="margin:0">المستخدمون الحاليون</h3>
+          <div class="muted" style="margin-top:6px">اختار دور أساسي وبعدها عدل الصلاحيات يدويًا لو عايز.</div>
+        </div>
+        <input id="searchInput" class="search" placeholder="بحث بالاسم أو اسم الدخول" oninput="renderUsersTable()">
+      </div>
+      <div class="table-wrap">
+        <table class="list-table">
+          <thead>
+            <tr><th>الاسم</th><th>اسم الدخول</th><th>الدور</th><th>الحالة</th><th>المتاح له</th><th>التحكم</th></tr>
+          </thead>
+          <tbody id="usersBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const token=localStorage.getItem('token');
+const user=JSON.parse(localStorage.getItem('user')||'null');
+if(!token||!user) location.href='login.html';
+if(user.role!=='admin' && !Number(user.perm_users||0)) location.href='index.html';
+
+const permMeta={
+  perm_view_orders:{title:'عرض الأوردرات',desc:'فتح صفحة متابعة الأوردرات فقط'},
+  perm_add_order:{title:'إضافة أوردر',desc:'إنشاء أوردر جديد'},
+  perm_edit_order:{title:'تعديل أوردر',desc:'فتح تعديل الأوردر وتعديل بياناته'},
+  perm_delete_order:{title:'حذف أوردر',desc:'حذف الأوردرات من النظام'},
+  perm_change_status:{title:'تغيير حالة أوردر',desc:'تحريك الأوردر بين الحالات'},
+  perm_customers:{title:'صفحة العملاء',desc:'فتح صفحة العملاء وسجل تعاملهم'},
+  perm_calculator:{title:'صفحة احسب أوردر',desc:'تشغيل الحاسبة واقتراح الأفرخ'},
+
+  perm_view_inventory:{title:'عرض مخزن الورق',desc:'فتح صفحة مخزن الورق فقط'},
+  perm_manage_paper:{title:'إضافة/تعديل الورق',desc:'إضافة أصناف الورق وتعديلها وحذفها وحدودها'},
+  perm_cut_paper:{title:'قص الورق',desc:'تنفيذ القص وربطه بالأوردرات'},
+  perm_paper_history:{title:'سجل الورق',desc:'عرض تاريخ حركات الورق'},
+
+  perm_view_bags:{title:'عرض مخزن الشنط',desc:'فتح صفحة مخزن الشنط الجاهزة'},
+  perm_manage_bags:{title:'إدارة الشنط',desc:'إضافة/تعديل/حذف الشنط وأوامر التشغيل'},
+  perm_bags_history:{title:'سجل الشنط',desc:'عرض تاريخ حركات الشنط'},
+
+  perm_view_handles:{title:'عرض مخزن اليد',desc:'فتح صفحة مخزن اليد'},
+  perm_manage_handles:{title:'إدارة اليد',desc:'إضافة/تعديل رصيد اليد'},
+  perm_handles_history:{title:'سجل اليد',desc:'عرض تاريخ حركات اليد'},
+
+  perm_view_accounts:{title:'عرض الحسابات',desc:'فتح صفحة الحسابات والملخصات'},
+  perm_view_financial_totals:{title:'عرض الإجماليات المالية',desc:'رؤية كروت إجمالي المخزون والموجودات والإجماليات المالية الحساسة'},
+  perm_manage_expenses:{title:'إدارة المصاريف',desc:'إضافة وتعديل وحذف المصاريف'},
+  perm_manage_current_cash:{title:'إدارة السيولة الحالية',desc:'فتح وتعديل سجل السيولة الحالية'},
+  perm_use_admin_cash_on_expense:{title:'الخصم من عهدة الشغل',desc:'اختيار محمد أو بودا للخصم من عهدة الشغل عند تسجيل مصروف'},
+  perm_edit_expense_records:{title:'تعديل سجلات المصاريف',desc:'تعديل المصاريف والتكاليف المرتبطة من السجلات'},
+  perm_delete_expense_records:{title:'حذف سجلات المصاريف',desc:'حذف المصاريف والتكاليف المرتبطة من السجلات'},
+  perm_edit_cash_records:{title:'تعديل سجل السيولة',desc:'تعديل حركات السيولة الحالية'},
+  perm_delete_cash_records:{title:'حذف سجل السيولة',desc:'حذف حركات السيولة الحالية'},
+  perm_edit_admin_cash_records:{title:'تعديل عهدة الشغل',desc:'تعديل عهدة محمد وبودا والتحويل بينهم'},
+  perm_delete_admin_cash_records:{title:'حذف عهدة الشغل',desc:'حذف حركات عهدة الشغل اليدوية'},
+  perm_view_cost_logs:{title:'سجل التكاليف',desc:'عرض سجل التكاليف على الأوردرات'},
+  perm_view_sales_logs:{title:'سجل المبيعات',desc:'عرض سجل المبيعات والأرباح'},
+
+  perm_view_debts:{title:'عرض المديونيات',desc:'فتح صفحة المديونيات وكشفها'},
+  perm_manage_debts:{title:'إدارة المديونيات',desc:'إضافة المديونيات وسدادها وحذفها'},
+  perm_view_reports:{title:'صفحة التقارير',desc:'عرض تقارير الإدارة والربحية والنواقص'},
+  perm_suppliers:{title:'صفحة الموردين',desc:'إدارة الموردين وكشف حساب كل مورد'},
+  perm_purchases:{title:'صفحة المشتريات',desc:'تسجيل فواتير الشراء وسدادها وربطها بالمخزون'},
+
+  perm_users:{title:'إدارة المستخدمين',desc:'فتح صفحة المستخدمين وتغيير الصلاحيات'},
+  perm_activity_logs:{title:'سجل الأدمن',desc:'عرض سجل النشاط والجلسات'},
+  perm_edit_activity_records:{title:'تعديل عمليات السيستم',desc:'تعديل وصف العملية داخل سجل الأدمن'},
+  perm_delete_activity_records:{title:'حذف عمليات السيستم',desc:'حذف العملية من السجل ومن قلب السيستم لو كانت مدعومة'},
+  perm_backup_restore:{title:'النسخ الاحتياطي',desc:'تصدير واستيراد النسخ الاحتياطية'},
+  perm_act_as_other_admin:{title:'العمل باسم أدمن آخر',desc:'يسمح بتسجيل أو تعديل العملية أو العهدة باسم مستخدم آخر'}
+};
+const permKeys=Object.keys(permMeta);
+const roles={
+  admin:{title:'مدير عام',desc:'كل الصلاحيات مفتوحة بالكامل.',perms:Object.fromEntries(permKeys.map(k=>[k,1]))},
+  moderator:{title:'مودريتور',desc:'أوردرات كاملة بدون مخازن أو حسابات.',perms:{perm_view_orders:1,perm_add_order:1,perm_edit_order:1,perm_delete_order:1,perm_change_status:1,perm_customers:1,perm_calculator:1,perm_view_inventory:0,perm_manage_paper:0,perm_cut_paper:0,perm_paper_history:0,perm_view_bags:0,perm_manage_bags:0,perm_bags_history:0,perm_view_handles:0,perm_manage_handles:0,perm_handles_history:0,perm_view_accounts:0,perm_view_financial_totals:0,perm_manage_expenses:0,perm_manage_current_cash:0,perm_use_admin_cash_on_expense:0,perm_edit_expense_records:0,perm_delete_expense_records:0,perm_edit_cash_records:0,perm_delete_cash_records:0,perm_edit_admin_cash_records:0,perm_delete_admin_cash_records:0,perm_view_cost_logs:0,perm_view_sales_logs:0,perm_view_debts:0,perm_manage_debts:0,perm_view_reports:0,perm_suppliers:0,perm_purchases:0,perm_users:0,perm_activity_logs:0,perm_edit_activity_records:0,perm_delete_activity_records:0,perm_backup_restore:0,perm_act_as_other_admin:0}},
+  operation:{title:'أوبريشن',desc:'متابعة تشغيل وحالات الأوردرات مع رؤية الحسابات.',perms:{perm_view_orders:1,perm_add_order:0,perm_edit_order:1,perm_delete_order:0,perm_change_status:1,perm_customers:1,perm_calculator:1,perm_view_inventory:0,perm_manage_paper:0,perm_cut_paper:0,perm_paper_history:0,perm_view_bags:0,perm_manage_bags:0,perm_bags_history:0,perm_view_handles:0,perm_manage_handles:0,perm_handles_history:0,perm_view_accounts:1,perm_view_financial_totals:0,perm_manage_expenses:1,perm_manage_current_cash:0,perm_use_admin_cash_on_expense:0,perm_edit_expense_records:0,perm_delete_expense_records:0,perm_edit_cash_records:0,perm_delete_cash_records:0,perm_edit_admin_cash_records:0,perm_delete_admin_cash_records:0,perm_view_cost_logs:1,perm_view_sales_logs:1,perm_view_debts:1,perm_manage_debts:0,perm_view_reports:1,perm_suppliers:0,perm_purchases:0,perm_users:0,perm_activity_logs:0,perm_edit_activity_records:0,perm_delete_activity_records:0,perm_backup_restore:0,perm_act_as_other_admin:0}},
+  production:{title:'إنتاج',desc:'مخازن + قص + تشغيل + أوردرات بدون حسابات.',perms:{perm_view_orders:1,perm_add_order:1,perm_edit_order:1,perm_delete_order:0,perm_change_status:1,perm_customers:1,perm_calculator:1,perm_view_inventory:1,perm_manage_paper:1,perm_cut_paper:1,perm_paper_history:1,perm_view_bags:1,perm_manage_bags:1,perm_bags_history:1,perm_view_handles:1,perm_manage_handles:1,perm_handles_history:1,perm_view_accounts:0,perm_view_financial_totals:0,perm_manage_expenses:0,perm_manage_current_cash:0,perm_use_admin_cash_on_expense:0,perm_edit_expense_records:0,perm_delete_expense_records:0,perm_edit_cash_records:0,perm_delete_cash_records:0,perm_edit_admin_cash_records:0,perm_delete_admin_cash_records:0,perm_view_cost_logs:0,perm_view_sales_logs:0,perm_view_debts:0,perm_manage_debts:0,perm_view_reports:0,perm_suppliers:0,perm_purchases:0,perm_users:0,perm_activity_logs:0,perm_edit_activity_records:0,perm_delete_activity_records:0,perm_backup_restore:0,perm_act_as_other_admin:0}},
+  store:{title:'مخزن',desc:'المخازن فقط بالتفصيل.',perms:{perm_view_orders:0,perm_add_order:0,perm_edit_order:0,perm_delete_order:0,perm_change_status:0,perm_customers:0,perm_calculator:0,perm_view_inventory:1,perm_manage_paper:1,perm_cut_paper:1,perm_paper_history:1,perm_view_bags:1,perm_manage_bags:1,perm_bags_history:1,perm_view_handles:1,perm_manage_handles:1,perm_handles_history:1,perm_view_accounts:0,perm_view_financial_totals:0,perm_manage_expenses:0,perm_manage_current_cash:0,perm_use_admin_cash_on_expense:0,perm_edit_expense_records:0,perm_delete_expense_records:0,perm_edit_cash_records:0,perm_delete_cash_records:0,perm_edit_admin_cash_records:0,perm_delete_admin_cash_records:0,perm_view_cost_logs:0,perm_view_sales_logs:0,perm_view_debts:0,perm_manage_debts:0,perm_view_reports:0,perm_suppliers:0,perm_purchases:0,perm_users:0,perm_activity_logs:0,perm_edit_activity_records:0,perm_delete_activity_records:0,perm_backup_restore:0,perm_act_as_other_admin:0}},
+  accountant:{title:'محاسب',desc:'حسابات ومديونيات وسجلات مالية وموردين ومشتريات.',perms:{perm_view_orders:1,perm_add_order:0,perm_edit_order:0,perm_delete_order:0,perm_change_status:0,perm_customers:1,perm_calculator:0,perm_view_inventory:1,perm_manage_paper:0,perm_cut_paper:0,perm_paper_history:1,perm_view_bags:1,perm_manage_bags:0,perm_bags_history:1,perm_view_handles:1,perm_manage_handles:0,perm_handles_history:1,perm_view_accounts:1,perm_view_financial_totals:1,perm_manage_expenses:1,perm_manage_current_cash:0,perm_use_admin_cash_on_expense:0,perm_edit_expense_records:0,perm_delete_expense_records:0,perm_edit_cash_records:0,perm_delete_cash_records:0,perm_edit_admin_cash_records:0,perm_delete_admin_cash_records:0,perm_view_cost_logs:1,perm_view_sales_logs:1,perm_view_debts:1,perm_manage_debts:1,perm_view_reports:1,perm_suppliers:1,perm_purchases:1,perm_users:0,perm_activity_logs:0,perm_edit_activity_records:0,perm_delete_activity_records:0,perm_backup_restore:0,perm_act_as_other_admin:0}}
+};
+let usersData=[];
+let selectedRole='moderator';
+let manualMode=false;
+let currentPerms={...roles.moderator.perms};
+
+function authFetch(url,opts={}){opts.headers=Object.assign({},opts.headers||{},{Authorization:'Bearer '+token});return fetch(url,opts).then(async r=>{const data=await r.json().catch(()=>({})); if(r.status===401){logout();throw new Error('unauthorized')} if(!r.ok) throw new Error(data.error||'error'); return data;});}
+function logout(){try{fetch('/logout',{method:'POST',headers:{Authorization:'Bearer '+token}})}catch(e){} localStorage.clear(); location.href='login.html';}
+function roleTitle(key){return roles[key]?.title || key || '-';}
+function activeTag(v){return Number(v)?'<span class="tag ok">نشط</span>':'<span class="tag stop">موقوف</span>';}
+function currentAccessNames(perms){return permKeys.filter(k=>Number(perms[k]||0)).map(k=>permMeta[k].title);}
+function accessList(u){const list=currentAccessNames(u);return list.length?list.join(' - '):'بدون صلاحيات';}
+function isPresetMatch(role, perms){const preset=roles[role]?.perms||{};return permKeys.every(k=>Number(perms[k]||0)===Number(preset[k]||0));}
+function clonePreset(role){return JSON.parse(JSON.stringify(roles[role].perms));}
+function permGroupLabel(key){
+  if(key.includes('order') || key==='perm_customers' || key==='perm_calculator') return 'الأوردرات';
+  if(key.includes('paper') || key.includes('inventory')) return 'الورق';
+  if(key.includes('bag')) return 'الشنط';
+  if(key.includes('handle')) return 'اليد';
+  if(key.includes('account') || key.includes('financial') || key.includes('cost') || key.includes('sales') || key.includes('report') || key.includes('expense') || key.includes('cash')) return 'الحسابات والتقارير';
+  if(key.includes('debt')) return 'المديونيات';
+  if(key.includes('supplier') || key.includes('purchase')) return 'الموردين والمشتريات';
+  if(key.includes('user')) return 'المستخدمين';
+  if(key.includes('activity') || key.includes('backup')) return 'الإدارة';
+  return 'عام';
+}
+
+function renderPermissions(){
+  permissionsGrid.innerHTML=permKeys.map(key=>`<label class="perm-item"><div><b>${permMeta[key].title}</b><small>${permGroupLabel(key)} - ${permMeta[key].desc}</small></div><span class="switch"><input type="checkbox" ${Number(currentPerms[key]||0)?'checked':''} ${manualMode?'':'disabled'} onchange="togglePerm('${key}',this.checked)"><span class="slider"></span></span></label>`).join('');
+  const names=currentAccessNames(currentPerms);
+  quickAccess.innerHTML=names.length?names.map(x=>`<span class="chip">${x}</span>`).join(''):'<span class="chip off">بدون صلاحيات</span>';
+  const presetMatch=isPresetMatch(selectedRole,currentPerms);
+  roleHint.innerHTML=`<b>الدور المختار:</b> ${roles[selectedRole].title}<br>${roles[selectedRole].desc}<br><span class="muted">${manualMode?(presetMatch?'أنت تعدل يدويًا ولكنها مساوية لصلاحيات الدور':'أنت تعدل الصلاحيات يدويًا حاليًا بالتفصيل'):'حاليًا الصلاحيات ماشية على صلاحيات الدور المختار'}</span>`;
+  presetBtn.classList.toggle('hidden',!manualMode);
+  manualBtn.textContent=manualMode?'✅ إنهاء تعديل الصلاحيات':'🎛️ تعديل الصلاحيات بالتفصيل';
+}
+function renderRoles(){
+  rolesBox.innerHTML=Object.entries(roles).map(([key,meta])=>`<div class="role ${selectedRole===key?'active':''}" onclick="pickRole('${key}')"><h4>${meta.title}</h4><p>${meta.desc}</p><ul>${currentAccessNames(meta.perms).map(x=>`<li>${x}</li>`).join('')}</ul></div>`).join('');
+  renderPermissions();
+}
+function pickRole(role){ selectedRole=role; if(!manualMode) currentPerms=clonePreset(role); renderRoles(); }
+function toggleManualPerms(){ manualMode=!manualMode; if(!manualMode && !u_id.value) currentPerms=clonePreset(selectedRole); renderPermissions(); }
+function applyRolePreset(){ currentPerms=clonePreset(selectedRole); renderPermissions(); }
+function togglePerm(key,val){ currentPerms[key]=val?1:0; renderPermissions(); }
+function resetForm(){ u_id.value=''; u_username.value=''; u_password.value=''; u_name.value=''; u_active.value='1'; selectedRole='moderator'; manualMode=false; currentPerms=clonePreset(selectedRole); renderRoles(); window.scrollTo({top:0,behavior:'smooth'}); }
+async function saveUser(){
+  if(!u_username.value.trim()) return alert('اكتب اسم الدخول');
+  if(!u_name.value.trim()) return alert('اكتب الاسم الكامل');
+  if(!u_id.value && !u_password.value.trim()) return alert('اكتب كلمة المرور للمستخدم الجديد');
+  await authFetch('/save-user',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:u_id.value||undefined,username:u_username.value.trim(),password:u_password.value,full_name:u_name.value.trim(),role:selectedRole,is_active:u_active.value,...currentPerms})});
+  alert('تم حفظ المستخدم');
+  resetForm();
+  await loadUsers();
+}
+function editUser(u){
+  u_id.value=u.id; u_username.value=u.username||''; u_password.value=''; u_name.value=u.full_name||''; u_active.value=Number(u.is_active)?'1':'0';
+  selectedRole=roles[u.role]?u.role:'moderator';
+  currentPerms={}; permKeys.forEach(k=>currentPerms[k]=Number(u[k]||0));
+  manualMode=!isPresetMatch(selectedRole,currentPerms);
+  renderRoles();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+async function deleteUser(id){ const target=usersData.find(x=>x.id===id); if(!target) return; if(!confirm(`حذف المستخدم ${target.full_name}؟`)) return; await authFetch('/delete-user/'+id,{method:'DELETE'}); await loadUsers(); }
+function renderUsersTable(){
+  const q=(searchInput.value||'').trim().toLowerCase();
+  const rows=usersData.filter(u=>!q || String(u.full_name||'').toLowerCase().includes(q) || String(u.username||'').toLowerCase().includes(q));
+  usersBody.innerHTML = rows.length ? rows.map(u=>`<tr><td>${u.full_name||''}</td><td>${u.username||''}</td><td><span class="tag role">${roleTitle(u.role)}</span></td><td>${activeTag(u.is_active)}</td><td style="white-space:normal;max-width:360px">${accessList(u)}</td><td><div class="actions"><button class="btn-info" onclick='editUser(${JSON.stringify(u).replace(/'/g,"&#39;")})'>تعديل</button>${u.username!=='admin'?`<button class="btn-danger" onclick='deleteUser(${u.id})'>حذف</button>`:''}</div></td></tr>`).join('') : '<tr><td colspan="6" class="empty">لا يوجد مستخدمون</td></tr>';
+  statUsers.innerText=usersData.length;
+  statActive.innerText=usersData.filter(u=>Number(u.is_active)).length;
+  statInactive.innerText=usersData.filter(u=>!Number(u.is_active)).length;
+  statCustomRoles.innerText=usersData.filter(u=>!isPresetMatch(u.role,Object.fromEntries(permKeys.map(k=>[k,Number(u[k]||0)])))).length;
+}
+async function loadUsers(){ usersData = await authFetch('/users'); renderUsersTable(); }
+welcome.innerText=`${user.full_name} | ${roleTitle(user.role)}`;
+resetForm();
+loadUsers();
+</script>
+</body>
+</html>
