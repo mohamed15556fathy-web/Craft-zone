@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>المديونيات</title>
+<style>
+:root{--bg:#0f172a;--panel:#1e293b;--line:#334155;--text:#f8fafc;--muted:#cbd5e1;--cyan:#22d3ee;--red:#ef4444;--green:#22c55e;--yellow:#f59e0b}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:'Segoe UI',Tahoma,sans-serif;padding:20px}
+.wrap{max-width:1400px;margin:auto}.header,.panel,.stat{background:var(--panel);border:1px solid var(--line);border-radius:18px}.header{padding:18px 20px;display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:16px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}.stat{padding:16px}.stat small{color:var(--muted);display:block}.stat span{display:block;font-size:26px;font-weight:800;margin-top:6px}
+.panel{padding:16px;margin-top:14px}label{display:block;color:#cbd5e1;margin-bottom:6px} input,select,textarea,button,a.btn{width:100%;padding:12px;border-radius:12px;border:1px solid var(--line);background:#0b1220;color:#fff;font:inherit}
+button,a.btn{background:#22d3ee;color:#06202a;text-decoration:none;border:none;font-weight:800;cursor:pointer}.secondary{background:transparent!important;color:#67e8f9!important;border:1px solid #67e8f9!important}.red{background:#7f1d1d!important;color:#fee2e2!important}.mini{padding:8px 10px;font-size:13px;width:auto}.toolbar,.actions,.line{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.section{display:none}.section.show{display:block}.muted{color:var(--muted)}
+.table-wrap{overflow:auto} table{width:100%;border-collapse:collapse} th,td{padding:12px;border-bottom:1px solid var(--line);text-align:center;vertical-align:top} th{background:#0b1220;color:#67e8f9}.late{color:#fca5a5;font-weight:800}.ok{color:#86efac;font-weight:800}.sub{font-size:12px;color:#94a3b8}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}.span2{grid-column:1/-1}.hidden{display:none!important}.badge{display:inline-block;padding:5px 10px;border-radius:999px;border:1px solid var(--line)}
+.modal{display:none;position:fixed;inset:0;background:rgba(2,6,23,.8);padding:20px;overflow:auto}.modal .box{max-width:840px;margin:auto;background:#1e293b;border:1px solid var(--line);border-radius:16px;padding:18px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header">
+    <div>
+      <h2 style="margin:0">📒 المديونيات</h2>
+      <div class="muted" style="margin-top:6px">تابع اللي علينا واللي لينا من مكان واحد وبشكل بسيط.</div>
+    </div>
+    <div class="toolbar">
+      <button class="secondary mini" onclick="showSection('payablesSection')">اللي علينا</button>
+      <button class="secondary mini" onclick="showSection('receivablesSection')">اللي لينا</button>
+      <a class="btn mini" href="index.html">🏠 الرئيسية</a>
+    </div>
+  </div>
+
+  <section id="payablesSection" class="section show">
+    <div class="grid">
+      <div class="stat"><small>إجمالي علينا</small><span id="s1">0</span></div>
+      <div class="stat"><small>إجمالي المدفوع</small><span id="s2">0</span></div>
+      <div class="stat"><small>المتبقي</small><span id="s3">0</span></div>
+    </div>
+
+    <div class="panel">
+      <div class="line" style="justify-content:space-between">
+        <div>
+          <h3 style="margin:0">إضافة / تعديل مديونية</h3>
+          <div class="sub">نفس الجزء الحالي للي علينا.</div>
+        </div>
+      </div>
+      <div class="form-grid" style="margin-top:12px">
+        <input id="debt_id" type="hidden">
+        <div><label>اسم الجهة / الشخص</label><input id="creditor_name"></div>
+        <div><label>النوع</label><select id="debt_type"><option>ورق</option><option>يد</option><option>طباعة</option><option>نقل</option><option>صيانة</option><option>أخرى</option></select></div>
+        <div><label>بخصوص</label><input id="subject" placeholder="مثال: ورق 100×70 أبيض 200 كجم"></div>
+        <div><label>إجمالي المبلغ</label><input id="total_amount" type="number"></div>
+        <div><label>المدفوع حتى الآن</label><input id="paid_amount" type="number" value="0"></div>
+        <div><label>ميعاد السداد</label><input id="due_date" type="date"></div>
+        <div class="span2"><label>ملاحظات</label><textarea id="notes" rows="2"></textarea></div>
+        <div class="actions"><button class="mini" onclick="saveDebt()">حفظ</button><button class="secondary mini" onclick="resetDebtForm()" type="button">مسح</button></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3 style="margin-top:0">تفاصيل اللي علينا</h3>
+      <div class="table-wrap"><table><thead><tr><th>الجهة</th><th>النوع</th><th>بخصوص</th><th>الإجمالي</th><th>المدفوع</th><th>المتبقي</th><th>ميعاد السداد</th><th>الحالة</th><th>تحكم</th></tr></thead><tbody id="debtsBody"></tbody></table></div>
+    </div>
+  </section>
+
+  <section id="receivablesSection" class="section">
+    <div class="grid">
+      <div class="stat"><small>إجمالي اللي لينا</small><span id="rTotal">0</span></div>
+      <div class="stat"><small>المتحصل</small><span id="rPaid">0</span></div>
+      <div class="stat"><small>المتبقي</small><span id="rRemain">0</span></div>
+      <div class="stat"><small>عدد السجلات</small><span id="rCount">0</span></div>
+    </div>
+
+    <div class="panel">
+      <div class="line" style="justify-content:space-between">
+        <div>
+          <h3 style="margin:0">الفلوس اللي لينا</h3>
+          <div class="sub">تقدر تضيف فلوس لينا عند أي شخص أو جهة حتى لو ملوش علاقة بالأوردرات.</div>
+        </div>
+        <button class="mini secondary" onclick="toggleManualReceivableForm()">➕ إضافة فلوس لينا</button>
+      </div>
+      <div id="manualReceivableFormWrap" class="hidden" style="margin-top:14px">
+        <div class="form-grid">
+          <input id="mr_id" type="hidden">
+          <div><label>اسم الشخص / الجهة</label><input id="mr_name"></div>
+          <div><label>النوع</label><select id="mr_type"><option>سلفة</option><option>بيع خارجي</option><option>نقل</option><option>خدمة</option><option>أخرى</option></select></div>
+          <div><label>بخصوص</label><input id="mr_subject" placeholder="سبب الفلوس"></div>
+          <div><label>إجمالي المبلغ</label><input id="mr_total" type="number"></div>
+          <div><label>المتحصل حتى الآن</label><input id="mr_paid" type="number" value="0"></div>
+          <div><label>ميعاد التحصيل</label><input id="mr_due" type="date"></div>
+          <div class="span2"><label>ملاحظات</label><textarea id="mr_notes" rows="2"></textarea></div>
+          <div class="actions"><button class="mini" onclick="saveManualReceivable()">حفظ</button><button class="secondary mini" type="button" onclick="resetManualReceivableForm()">مسح</button></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3 style="margin-top:0">سجلات اللي لينا خارج الشغل</h3>
+      <div class="table-wrap"><table><thead><tr><th>الاسم</th><th>النوع</th><th>بخصوص</th><th>الإجمالي</th><th>المتحصل</th><th>المتبقي</th><th>ميعاد التحصيل</th><th>الحالة</th><th>تحكم</th></tr></thead><tbody id="manualReceivablesBody"></tbody></table></div>
+    </div>
+
+    <div class="panel">
+      <h3 style="margin-top:0">اللي لينا من الأوردرات</h3>
+      <div class="muted" style="margin-bottom:10px">دي جاية تلقائيًا من الأوردرات اللي لسه فيها رصيد على العميل.</div>
+      <div class="table-wrap"><table><thead><tr><th>الأوردر</th><th>العميل</th><th>التليفون</th><th>التاريخ</th><th>الحالة</th><th>إجمالي الأوردر</th><th>المدفوع</th><th>المتبقي</th><th>طريقة الدفع</th><th>ملاحظات</th></tr></thead><tbody id="receivablesBody"></tbody></table></div>
+    </div>
+  </section>
+</div>
+
+<div id="payModal" class="modal"><div class="box"><h3 id="payModalTitle">💵 تسجيل دفعة</h3><input id="pay_target_type" type="hidden"><input id="pay_target_id" type="hidden"><div class="form-grid"><div><label>المبلغ</label><input id="pay_amount" type="number"></div><div><label>التاريخ</label><input id="pay_date" type="date"></div><div class="span2"><label>ملاحظات</label><textarea id="pay_note" rows="2"></textarea></div></div><div class="actions" style="margin-top:14px"><button class="mini" onclick="savePayment()">حفظ</button><button class="secondary mini" onclick="closePayModal()">إغلاق</button></div><div style="margin-top:18px"><h4>سجل الدفعات</h4><div class="table-wrap"><table><thead><tr><th>التاريخ</th><th>المبلغ</th><th>الملاحظة</th><th>بواسطة</th></tr></thead><tbody id="paymentsBody"></tbody></table></div></div></div></div>
+
+<script>
+const token=localStorage.getItem('token');
+const user=JSON.parse(localStorage.getItem('user')||'null');
+if(!token||!user) location.href='login.html';
+if(user.role!=='admin' && !Number(user.perm_view_debts||0)) location.href='index.html';
+let debts=[]; let orderReceivables=[]; let manualReceivables=[];
+function authFetch(url,opts={}){opts.headers=Object.assign({},opts.headers||{},{Authorization:'Bearer '+token});return fetch(url,opts).then(async r=>{const data=await r.json().catch(()=>({}));if(r.status===401){localStorage.clear();location.href='login.html';throw new Error('unauthorized')}if(!r.ok) throw new Error(data.error||'error');return data;});}
+function money(v){return Number(v||0).toLocaleString('en-US',{maximumFractionDigits:2})+' ج';}
+function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+function today(){return new Date().toISOString().slice(0,10)}
+function isLate(r){ return r.due_date && Number(r.remaining_amount||0)>0 && r.due_date < today(); }
+function showSection(id){document.querySelectorAll('.section').forEach(s=>s.classList.remove('show'));document.getElementById(id).classList.add('show');}
+function setHtml(id, html){document.getElementById(id).innerHTML=html;}
+async function loadPayablesSummary(){ const s=await authFetch('/debts-summary'); s1.innerText=money(s.total_amount); s2.innerText=money(s.paid_amount); s3.innerText=money(s.remaining_amount); }
+async function loadDebts(){ debts=await authFetch('/debts'); setHtml('debtsBody', debts.length?debts.map(r=>`<tr><td>${esc(r.creditor_name||'-')}<br><small>${esc(r.notes||'')}</small></td><td>${esc(r.debt_type||'-')}</td><td>${esc(r.subject||'-')}</td><td>${money(r.total_amount)}</td><td>${money(r.paid_amount)}</td><td>${money(r.remaining_amount)}</td><td>${r.due_date||'-'}</td><td class="${isLate(r)?'late':'ok'}">${Number(r.remaining_amount||0)<=0?'تم السداد':(isLate(r)?'متأخرة':'قائمة')}</td><td><button class="mini" onclick="editDebt(${r.id})">تعديل</button> <button class="mini secondary" onclick="openPayModal('debt',${r.id})">دفعة</button> <button class="mini red" onclick="delDebt(${r.id})">حذف</button></td></tr>`).join(''):'<tr><td colspan="9">لا توجد مديونيات</td></tr>'); }
+async function loadOrderReceivables(){ const [summary,rows]=await Promise.all([authFetch('/receivables-summary'),authFetch('/receivables')]); orderReceivables=rows; window.orderReceivablesSummary=summary||{}; setHtml('receivablesBody', rows.length?rows.map(r=>`<tr><td>#${r.id}</td><td>${esc(r.custName||'-')}<br><small>${esc(r.custAddress||'')}</small></td><td>${esc(r.custPhone||'-')}</td><td>${esc(r.orderDate||'-')}</td><td>${esc(r.status||'-')}</td><td>${money(r.total_price)}</td><td>${money(r.paid_amount)}</td><td class="late">${money(r.remaining_amount)}</td><td>${esc(r.paymentType||'-')}</td><td>${esc(r.notes||'-')}</td></tr>`).join(''):'<tr><td colspan="10">لا توجد مستحقات من الأوردرات الآن.</td></tr>'); }
+async function loadManualReceivables(){ const [summary, rows]=await Promise.all([authFetch('/manual-receivables-summary'), authFetch('/manual-receivables')]); window.manualReceivablesSummary=summary||{}; manualReceivables=rows; setHtml('manualReceivablesBody', rows.length?rows.map(r=>`<tr><td>${esc(r.debtor_name||'-')}<br><small>${esc(r.notes||'')}</small></td><td>${esc(r.receivable_type||'-')}</td><td>${esc(r.subject||'-')}</td><td>${money(r.total_amount)}</td><td>${money(r.paid_amount)}</td><td>${money(r.remaining_amount)}</td><td>${r.due_date||'-'}</td><td class="${isLate(r)?'late':'ok'}">${Number(r.remaining_amount||0)<=0?'تم التحصيل':(isLate(r)?'متأخرة':'قائمة')}</td><td><button class="mini" onclick="editManualReceivable(${r.id})">تعديل</button> <button class="mini secondary" onclick="openPayModal('manual',${r.id})">تحصيل</button> <button class="mini red" onclick="delManualReceivable(${r.id})">حذف</button></td></tr>`).join(''):'<tr><td colspan="9">لا توجد سجلات إضافية</td></tr>'); }
+function updateReceivablesCards(){ const os=window.orderReceivablesSummary||{}; const ms=window.manualReceivablesSummary||{}; const total=(Number(os.total_amount||0)+Number(ms.total_amount||0)); const paid=(Number(os.paid_amount||0)+Number(ms.paid_amount||0)); const remain=(Number(os.remaining_amount||0)+Number(ms.remaining_amount||0)); const count=(Number(os.orders_count||0)+Number(ms.rows_count||0)); rTotal.innerText=money(total); rPaid.innerText=money(paid); rRemain.innerText=money(remain); rCount.innerText=count; }
+async function reloadAll(){ await Promise.all([loadPayablesSummary(), loadDebts(), loadOrderReceivables(), loadManualReceivables()]); updateReceivablesCards(); }
+function resetDebtForm(){ debt_id.value=''; creditor_name.value=''; debt_type.value='ورق'; subject.value=''; total_amount.value=''; paid_amount.value='0'; due_date.value=''; notes.value=''; }
+function editDebt(id){ const r=debts.find(x=>x.id===id); if(!r) return; debt_id.value=r.id; creditor_name.value=r.creditor_name||''; debt_type.value=r.debt_type||'ورق'; subject.value=r.subject||''; total_amount.value=r.total_amount||0; paid_amount.value=r.paid_amount||0; due_date.value=r.due_date||''; notes.value=r.notes||''; showSection('payablesSection'); window.scrollTo({top:0,behavior:'smooth'}); }
+async function saveDebt(){ const body={id:debt_id.value||undefined, creditor_name:creditor_name.value, debt_type:debt_type.value, subject:subject.value, total_amount:total_amount.value, paid_amount:paid_amount.value, due_date:due_date.value, notes:notes.value}; await authFetch('/save-debt',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}); resetDebtForm(); reloadAll(); }
+async function delDebt(id){ if(!confirm('حذف المديونية؟')) return; await authFetch('/delete-debt/'+id,{method:'DELETE'}); reloadAll(); }
+function toggleManualReceivableForm(forceShow){ const el=document.getElementById('manualReceivableFormWrap'); if(forceShow===true) el.classList.remove('hidden'); else el.classList.toggle('hidden'); }
+function resetManualReceivableForm(){ mr_id.value=''; mr_name.value=''; mr_type.value='سلفة'; mr_subject.value=''; mr_total.value=''; mr_paid.value='0'; mr_due.value=''; mr_notes.value=''; }
+function editManualReceivable(id){ const r=manualReceivables.find(x=>x.id===id); if(!r) return; mr_id.value=r.id; mr_name.value=r.debtor_name||''; mr_type.value=r.receivable_type||'أخرى'; mr_subject.value=r.subject||''; mr_total.value=r.total_amount||0; mr_paid.value=r.paid_amount||0; mr_due.value=r.due_date||''; mr_notes.value=r.notes||''; showSection('receivablesSection'); toggleManualReceivableForm(true); window.scrollTo({top:0,behavior:'smooth'}); }
+async function saveManualReceivable(){ const body={id:mr_id.value||undefined, debtor_name:mr_name.value, receivable_type:mr_type.value, subject:mr_subject.value, total_amount:mr_total.value, paid_amount:mr_paid.value, due_date:mr_due.value, notes:mr_notes.value}; await authFetch('/save-manual-receivable',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}); resetManualReceivableForm(); reloadAll(); }
+async function delManualReceivable(id){ if(!confirm('حذف السجل؟')) return; await authFetch('/delete-manual-receivable/'+id,{method:'DELETE'}); reloadAll(); }
+async function openPayModal(type,id){ pay_target_type.value=type; pay_target_id.value=id; pay_amount.value=''; pay_date.value=today(); pay_note.value=''; if(type==='debt'){ payModalTitle.innerText='💵 تسجيل دفعة للمديونية'; const rows=await authFetch('/debt-payments/'+id); setHtml('paymentsBody', rows.length?rows.map(r=>`<tr><td>${r.payment_date||'-'}</td><td>${money(r.amount)}</td><td>${esc(r.note||'-')}</td><td>${esc(r.created_by||'-')}</td></tr>`).join(''):'<tr><td colspan="4">لا توجد دفعات</td></tr>'); } else { payModalTitle.innerText='💰 تسجيل تحصيل'; const rows=await authFetch('/manual-receivable-payments/'+id); setHtml('paymentsBody', rows.length?rows.map(r=>`<tr><td>${r.payment_date||'-'}</td><td>${money(r.amount)}</td><td>${esc(r.note||'-')}</td><td>${esc(r.created_by||'-')}</td></tr>`).join(''):'<tr><td colspan="4">لا توجد تحصيلات</td></tr>'); } payModal.style.display='block'; }
+function closePayModal(){ payModal.style.display='none'; }
+async function savePayment(){ const type=pay_target_type.value; const id=pay_target_id.value; const url = type==='debt' ? '/pay-debt/'+id : '/pay-manual-receivable/'+id; await authFetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({amount:pay_amount.value,payment_date:pay_date.value,note:pay_note.value})}); closePayModal(); reloadAll(); }
+reloadAll().catch(e=>alert(e.message||'حدث خطأ'));
+</script>
+</body>
+</html>

@@ -1,0 +1,221 @@
+const token=localStorage.getItem('token');const user=JSON.parse(localStorage.getItem('user')||'null');if(!token||!user)location.href='login.html';if(user.username!=='admin'&&!Number(user.perm_view_inventory||0))location.href='index.html';let paperData=[];let selectedCutOption=null;let cuttableOrders=[];let currentCutPlan=null;let selectedCutGram=null;let readyBagStockRows=[];let readyVisibleItems=1;let readyPreviewRequested=false;function authFetch(url,opts={}){opts.headers=Object.assign({},opts.headers||{},{Authorization:'Bearer '+token});return fetch(url,opts).then(async r=>{const data=await r.json().catch(()=>({}));if(r.status===401){localStorage.clear();location.href='login.html';throw new Error('unauthorized')}if(!r.ok)throw new Error(data.error||'error');return data;});}function toNum(v){const n=Number(v);return Number.isFinite(n)?n:0}function kgToSheets(kg,l,w,g){if(!l||!w||!g)return '';return Math.round((kg*10000000)/(l*w*g));}function sheetsToKg(s,l,w,g){if(!l||!w||!g)return '';return ((l*w*g*s)/10000000).toFixed(2);}function money(v){return Number(v||0).toLocaleString('en-US',{maximumFractionDigits:2})+' ج';}function esc(s){return String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}function weightSheet(l,w,g){return (toNum(l)*toNum(w)*toNum(g))/10000000;}function paperLabel(p,withColor=true){const base=`${p.length}×${p.width} - ${p.grammage} جم${String(p.paper_name||'').trim()?` - ${p.paper_name}`:''}`;return withColor?`${p.color} ${base}`:base;}function syncPaperFilterOptions(){const gramSel=document.getElementById('filterPaperGram'),colorSel=document.getElementById('filterPaperColor');if(!gramSel||!colorSel)return;const currentGram=String(gramSel.value||'').trim(),currentColor=String(colorSel.value||'').trim();const grams=[...new Set(paperData.map(p=>Number(p.grammage||0)).filter(v=>v>0))].sort((a,b)=>a-b);const colors=[...new Set(paperData.map(p=>String(p.color||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'ar'));gramSel.innerHTML='<option value="">كل الجرامات</option>'+grams.map(g=>`<option value="${g}">${g} جم</option>`).join('');colorSel.innerHTML='<option value="">كل الألوان</option>'+colors.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('');gramSel.value=grams.some(g=>String(g)===currentGram)?currentGram:'';colorSel.value=colors.includes(currentColor)?currentColor:'';}function getFilteredPaperRows(){const gram=String(document.getElementById('filterPaperGram')?.value||'').trim();const color=String(document.getElementById('filterPaperColor')?.value||'').trim();return paperData.filter(p=>{if(gram&&String(Number(p.grammage||0))!==gram)return false;if(color&&String(p.color||'').trim()!==color)return false;return true;});}function clearPaperFilters(){const gramSel=document.getElementById('filterPaperGram'),colorSel=document.getElementById('filterPaperColor');if(gramSel)gramSel.value='';if(colorSel)colorSel.value='';renderPaperRows();}function getCutDrawingTarget(mode){return document.getElementById(String(mode||'current_order')==='ready_bags'?'readyCutDrawing':'cutDrawing');}function updateReadyBagItemVisibility(){[1,2,3].forEach(index=>{const card=document.getElementById(`rb${index}_card`);if(card)card.classList.toggle('hidden',index>readyVisibleItems);});const addBtn=document.getElementById('addReadyBagItemBtn');if(addBtn){const disabled=readyVisibleItems>=3;addBtn.disabled=disabled;addBtn.style.opacity=disabled?'0.6':'1';addBtn.style.cursor=disabled?'not-allowed':'pointer';}}function getReadyBagStockChoices(){const byKey=new Map();readyBagStockRows.forEach(row=>{const key=`${toNum(row.length)}|${toNum(row.width)}|${toNum(row.gusset)}`;if(!byKey.has(key)){byKey.set(key,{key:key,length:toNum(row.length),width:toNum(row.width),gusset:toNum(row.gusset),label:`${toNum(row.length)} × ${toNum(row.width)} × ${toNum(row.gusset)}`});}});return [...byKey.values()].sort((a,b)=>a.length-b.length||a.width-b.width||a.gusset-b.gusset);}async function loadReadyBagStockChoices(){try{readyBagStockRows=await authFetch('/get-bags');}catch(_){readyBagStockRows=[];}const options=getReadyBagStockChoices();[1,2,3].forEach(index=>{const select=document.getElementById(`rb${index}_stock_item`);if(!select)return;const current=String(select.value||'').trim();select.innerHTML='<option value="">اختار مقاس من مخزن الشنط</option>'+options.map(item=>`<option value="${esc(item.key)}">${esc(item.label)}</option>`).join('');if(options.some(item=>item.key===current))select.value=current;});}function fillReadyBagItemFromStock(index){const select=document.getElementById(`rb${index}_stock_item`);if(!select)return;const choice=getReadyBagStockChoices().find(item=>item.key===String(select.value||'').trim());if(!choice)return;document.getElementById(`rb${index}_l`).value=choice.length||'';document.getElementById(`rb${index}_w`).value=choice.width||'';document.getElementById(`rb${index}_g`).value=choice.gusset||'';onReadyBagInput();}function renderPaperRows(){const rows=getFilteredPaperRows();let stockValue=0;paperData.forEach(p=>{stockValue+=toNum(p.total_kg)*toNum(p.buy_price_kg);});pBody.innerHTML=rows.length?rows.map(p=>{const value=toNum(p.total_kg)*toNum(p.buy_price_kg);return `<tr><td>${paperLabel(p)}</td><td class="${((+p.min_kg>0&&+p.total_kg<=+p.min_kg)||(+p.min_sheets>0&&+p.total_sheets<=+p.min_sheets))?'low':''}">${(+p.total_kg).toFixed(2)} كجم<br><small>${Math.round(p.total_sheets)} فرخ</small></td><td>${(+p.min_kg).toFixed(2)} كجم<br><small>${Math.round(p.min_sheets)} فرخ</small></td><td>${money(p.buy_price_kg)}</td><td>${money(p.buy_price_sheet)}</td><td>${money(value)}</td><td><div class="op-wrap"><div class="op-row"><input id="k${p.id}" type="number" placeholder="كجم" oninput="rowCalc(${p.id},${p.length},${p.width},${p.grammage},'k')"><input id="s${p.id}" type="number" placeholder="فرخ" oninput="rowCalc(${p.id},${p.length},${p.width},${p.grammage},'s')"></div><div class="op-row"><button class="op-btn" onclick="quickMovePaper(${p.id},1)">+</button><button class="op-btn" onclick="quickMovePaper(${p.id},-1)">-</button></div></div></td><td><button onclick="openCut(${p.id})">قص</button></td><td><button onclick="editPaper(${p.id})">✏️</button></td><td>${user.username==='admin'?`<button onclick="del(${p.id})">🗑️</button>`:'-'}</td></tr>`}).join(''):`<tr><td colspan="10">لا يوجد ورق مطابق للفلاتر الحالية</td></tr>`;totalPaperValue.innerText=money(stockValue);const countEl=document.getElementById('filterPaperCount');if(countEl)countEl.innerText=`الظاهر ${rows.length} صنف من ${paperData.length}`;}function calcNew(mode){const l=toNum(nl.value),w=toNum(nw.value),g=toNum(ng.value);if(!l||!w||!g)return; if(mode==='k') ns.value=nk.value?kgToSheets(toNum(nk.value),l,w,g):''; if(mode==='s') nk.value=ns.value?sheetsToKg(toNum(ns.value),l,w,g):''; if(mode==='mk') globalMinSheets.value=globalMinKg.value?kgToSheets(toNum(globalMinKg.value),l,w,g):''; if(mode==='ms') globalMinKg.value=globalMinSheets.value?sheetsToKg(toNum(globalMinSheets.value),l,w,g):''; updatePriceInfo();}function updatePriceInfo(){const ws=weightSheet(nl.value,nw.value,ng.value);let kgPrice=toNum(buy_price_kg.value);if(!kgPrice&&toNum(total_price_input.value)>0&&toNum(nk.value)>0){kgPrice=toNum(total_price_input.value)/toNum(nk.value);buy_price_kg.value=kgPrice.toFixed(2);}price_sheet.value=ws&&kgPrice?(ws*kgPrice).toFixed(2):'';}function calcKgFromTotal(){if(toNum(total_price_input.value)>0&&toNum(buy_price_kg.value)>0&&!toNum(nk.value)){nk.value=(toNum(total_price_input.value)/toNum(buy_price_kg.value)).toFixed(2);calcNew('k')} updatePriceInfo();}
+function optionGram(opt){const direct=Number(opt?.paperGrammage??opt?.gram??opt?.grammage??0);if(Number.isFinite(direct)&&direct>0)return direct;const m=String(opt?.paperLabel||'').match(/(\d+(?:\.\d+)?)\s*جم/);return m?Number(m[1]):0;}
+function chooseBestOption(options){return(options||[]).slice().sort((x,y)=>{const xe=Number(x?.availableSheets||0)>=Number(x?.neededSheets||0),ye=Number(y?.availableSheets||0)>=Number(y?.neededSheets||0);if(xe!==ye)return xe?-1:1;if(Number(x?.wastePercent||0)!==Number(y?.wastePercent||0))return Number(x?.wastePercent||0)-Number(y?.wastePercent||0);return Number(x?.neededSheets||0)-Number(y?.neededSheets||0);})[0]||null;}
+function parseDimsFromLabel(label){const m=String(label||'').match(/(\d+(?:\.\d+)?)\s*[x×]\s*(\d+(?:\.\d+)?)/i);return m?{w:toNum(m[1]),h:toNum(m[2])}:{w:0,h:0};}
+function getLayoutData(option,plan){const labelDims=parseDimsFromLabel(option.paperLabel);const layout=option.layoutKey==='pieceByPiece'?(plan.layouts?.pieceByPiece||{}):(plan.layouts?.singlePiece||{});const sheetW=toNum(option.sheetWidth||option.paperWidth||option.width||option.paper_w||option.sheet_w||option.w||labelDims.w);const sheetH=toNum(option.sheetHeight||option.paperHeight||option.length||option.paper_h||option.sheet_h||option.h||labelDims.h);const cutW=toNum(option.cutWidth||layout.cutWidth);const cutH=toNum(option.cutLength||layout.cutLength);let cols=toNum(option.cols||option.columns);let rows=toNum(option.rows);if(!cols&&sheetW&&cutW)cols=Math.floor(sheetW/cutW);if(!rows&&sheetH&&cutH)rows=Math.floor(sheetH/cutH);cols=Math.max(1,cols||1);rows=Math.max(1,rows||1);return{sheetW,sheetH,cutW,cutH,cols,rows};}
+function drawCutSvg(option,plan){const data=getLayoutData(option,plan);const{sheetW,sheetH,cutW,cutH,cols,rows}=data;if(!sheetW||!sheetH||!cutW||!cutH)return'<div style="color:#111827;padding:20px;font-weight:700">تعذر رسم التخطيط لأن بيانات المقاس غير مكتملة.</div>';const pad=40,maxW=760,maxH=420,scale=Math.min(maxW/sheetW,maxH/sheetH),width=sheetW*scale,height=sheetH*scale,svgW=width+pad*2+70,svgH=height+pad*2+50;let cells='';for(let r=0;r<rows;r++){for(let c=0;c<cols;c++){const x=pad+c*cutW*scale,y=pad+r*cutH*scale;if(x+cutW*scale<=pad+width+0.1&&y+cutH*scale<=pad+height+0.1){cells+=`<rect x="${x}" y="${y}" width="${cutW*scale}" height="${cutH*scale}" fill="#cbd5e1" stroke="#111827" stroke-width="1.2"/>`;cells+=`<text x="${x+10}" y="${y+18}" font-size="14" fill="#111827">${cutW}</text>`;cells+=`<text x="${x+14}" y="${y+(cutH*scale/2)}" font-size="14" fill="#111827" transform="rotate(-90 ${x+14} ${y+(cutH*scale/2)})">${cutH}</text>`;}}}return`<svg width="${svgW}" height="${svgH}" viewBox="0 0 ${svgW} ${svgH}" xmlns="http://www.w3.org/2000/svg"><rect x="0" y="0" width="${svgW}" height="${svgH}" fill="#ffffff"/><text x="${pad}" y="22" font-size="22" fill="#111827" font-weight="700">${option.paperColor||''} | ${option.paperLabel} | ${optionGram(option)||'-'} جم | ${option.layoutLabel}</text><rect x="${pad}" y="${pad}" width="${width}" height="${height}" fill="#f8fafc" stroke="#111827" stroke-width="2"/>${cells}<line x1="${pad}" y1="${pad+height+12}" x2="${pad+width}" y2="${pad+height+12}" stroke="#ef4444"/><text x="${pad+width/2}" y="${pad+height+30}" text-anchor="middle" font-size="18" fill="#ef4444">${sheetW}</text><line x1="${pad+width+12}" y1="${pad}" x2="${pad+width+12}" y2="${pad+height}" stroke="#ef4444"/><text x="${pad+width+32}" y="${pad+height/2}" text-anchor="middle" font-size="18" fill="#ef4444" transform="rotate(90 ${pad+width+32} ${pad+height/2})">${sheetH}</text></svg>`;}
+
+function getReadyBagCutDrawItems(){
+  const mode=String(document.getElementById('cut_layout_ready')?.value||'pieceByPiece').trim()==='singlePiece'?'singlePiece':'pieceByPiece';
+  return getReadyBagCutItems().map((item,idx)=>{
+    const cutW=mode==='pieceByPiece'
+      ? toNum(item.w)+toNum(item.g)+2
+      : (toNum(item.w)*2)+(toNum(item.g)*2)+2;
+    const cutH=toNum(item.l)+(toNum(item.g)/2)+2;
+    return {...item,index:idx+1,cutW,cutH};
+  });
+}
+function getReadyPreviewOrientations(piece,sheetW,sheetH){
+  const base=[
+    {w:Math.max(0.1,toNum(piece.rawW||piece.w)),h:Math.max(0.1,toNum(piece.rawH||piece.h)),rotated:false},
+    {w:Math.max(0.1,toNum(piece.rawH||piece.h)),h:Math.max(0.1,toNum(piece.rawW||piece.w)),rotated:true}
+  ];
+  const unique=[];
+  base.forEach(ori=>{
+    if(!(ori.w<=sheetW+0.01&&ori.h<=sheetH+0.01))return;
+    if(unique.some(x=>Math.abs(x.w-ori.w)<0.01&&Math.abs(x.h-ori.h)<0.01))return;
+    unique.push(ori);
+  });
+  return unique;
+}
+function pruneReadyPreviewFreeRects(rects){
+  const cleaned=(rects||[])
+    .filter(rect=>rect&&rect.w>0.01&&rect.h>0.01)
+    .map(rect=>({x:toNum(rect.x),y:toNum(rect.y),w:toNum(rect.w),h:toNum(rect.h)}));
+  return cleaned.filter((rect,idx)=>!cleaned.some((other,jdx)=>jdx!==idx&&rect.x>=other.x-0.01&&rect.y>=other.y-0.01&&(rect.x+rect.w)<=other.x+other.w+0.01&&(rect.y+rect.h)<=other.y+other.h+0.01));
+}
+function splitReadyPreviewRect(rect,piece,mode){
+  const remW=Math.max(0,rect.w-piece.w),remH=Math.max(0,rect.h-piece.h);
+  if(String(mode)==='bottom-first'){
+    return [
+      remW>0?{x:rect.x+piece.w,y:rect.y,w:remW,h:rect.h}:null,
+      remH>0?{x:rect.x,y:rect.y+piece.h,w:piece.w,h:remH}:null
+    ].filter(Boolean);
+  }
+  return [
+    remW>0?{x:rect.x+piece.w,y:rect.y,w:remW,h:piece.h}:null,
+    remH>0?{x:rect.x,y:rect.y+piece.h,w:rect.w,h:remH}:null
+  ].filter(Boolean);
+}
+function buildReadyPreviewPieces(items,sheetW,sheetH){
+  const sheetArea=Math.max(1,sheetW*sheetH);
+  const pieces=[];
+  items.forEach((item,idx)=>{
+    const rawW=Math.max(0.1,toNum(item.cutW)),rawH=Math.max(0.1,toNum(item.cutH));
+    const area=Math.max(0.1,rawW*rawH);
+    const requested=Math.max(1,Math.ceil(toNum(item.qty)||1));
+    const maxByArea=Math.max(1,Math.floor(sheetArea/area));
+    const previewCopies=Math.max(1,Math.min(requested,Math.max(1,Math.min(4,maxByArea||1))));
+    for(let copyIndex=0;copyIndex<previewCopies;copyIndex++){
+      pieces.push({
+        pieceId:`${item.index||idx+1}-${copyIndex+1}`,
+        itemIndex:item.index||idx+1,
+        copyIndex:copyIndex+1,
+        rawW,rawH,area,
+        qtyWanted:requested,
+        color:item.color||'',
+        label:`${Number(rawW).toFixed(1)} × ${Number(rawH).toFixed(1)}`
+      });
+    }
+  });
+  return pieces.sort((a,b)=>b.area-a.area||a.itemIndex-b.itemIndex||a.copyIndex-b.copyIndex);
+}
+function scoreReadyPreviewResult(result,sheetArea){
+  const counts=result?.countsByItem||{};
+  const distinctCount=Object.keys(counts).filter(key=>toNum(counts[key])>0).length;
+  const usedArea=toNum(result?.usedArea);
+  const placedCount=(result?.placements||[]).length;
+  return usedArea+(distinctCount*sheetArea*0.15)+(placedCount*25);
+}
+function packReadyBagPreview(items,sheetW,sheetH){
+  const sheetArea=Math.max(1,sheetW*sheetH);
+  const pieces=buildReadyPreviewPieces(items,sheetW,sheetH);
+  const impossibleByItem={};
+  items.forEach(item=>{
+    impossibleByItem[item.index]=!getReadyPreviewOrientations({rawW:item.cutW,rawH:item.cutH},sheetW,sheetH).length;
+  });
+  let best={placements:[],usedArea:0,countsByItem:{},score:-1,visited:0};
+  const visitLimit=1800,branchLimit=10;
+  function commitBest(placements,usedArea,countsByItem){
+    const candidate={placements,usedArea,countsByItem};
+    const score=scoreReadyPreviewResult(candidate,sheetArea);
+    const bestArea=toNum(best.usedArea);
+    if(score>best.score+0.01||(Math.abs(score-best.score)<=0.01&&usedArea>bestArea)){
+      best={placements:placements.slice(),usedArea,countsByItem:{...countsByItem},score,visited:best.visited};
+    }
+  }
+  function recurse(freeRects,remainingPieces,placements,usedArea,countsByItem){
+    best.visited+=1;
+    commitBest(placements,usedArea,countsByItem);
+    if(!remainingPieces.length||best.visited>visitLimit)return;
+    const rects=(freeRects||[]).slice().sort((a,b)=>a.y-b.y||a.x-b.x||(a.w*a.h)-(b.w*b.h));
+    const candidates=[];
+    const seen=new Set();
+    for(let pieceIndex=0;pieceIndex<remainingPieces.length;pieceIndex++){
+      const piece=remainingPieces[pieceIndex];
+      const oris=getReadyPreviewOrientations(piece,sheetW,sheetH);
+      if(!oris.length)continue;
+      for(let rectIndex=0;rectIndex<rects.length;rectIndex++){
+        const rect=rects[rectIndex];
+        for(const ori of oris){
+          if(ori.w<=rect.w+0.01&&ori.h<=rect.h+0.01){
+            const key=`${piece.pieceId}|${rectIndex}|${Number(ori.w).toFixed(2)}|${Number(ori.h).toFixed(2)}`;
+            if(seen.has(key))continue;
+            seen.add(key);
+            const newDistinct=!toNum(countsByItem[piece.itemIndex]);
+            const fillRatio=(ori.w*ori.h)/Math.max(1,rect.w*rect.h);
+            candidates.push({pieceIndex,rectIndex,piece,rect,ori,newDistinct,fillRatio});
+          }
+        }
+      }
+    }
+    candidates.sort((a,b)=>(Number(b.newDistinct)-Number(a.newDistinct))||(b.piece.area-a.piece.area)||(b.fillRatio-a.fillRatio)||(a.rect.y-b.rect.y)||(a.rect.x-b.rect.x));
+    for(const cand of candidates.slice(0,branchLimit)){
+      const remaining=remainingPieces.slice(0,cand.pieceIndex).concat(remainingPieces.slice(cand.pieceIndex+1));
+      const placement={
+        itemIndex:cand.piece.itemIndex,
+        copyIndex:cand.piece.copyIndex,
+        x:cand.rect.x,
+        y:cand.rect.y,
+        w:cand.ori.w,
+        h:cand.ori.h,
+        rotated:!!cand.ori.rotated,
+        area:cand.piece.area,
+        color:cand.piece.color||''
+      };
+      for(const splitMode of ['right-first','bottom-first']){
+        const nextRects=rects.slice(0,cand.rectIndex).concat(rects.slice(cand.rectIndex+1)).concat(splitReadyPreviewRect(cand.rect,placement,splitMode));
+        const nextCounts={...countsByItem,[cand.piece.itemIndex]:(toNum(countsByItem[cand.piece.itemIndex])+1)};
+        recurse(pruneReadyPreviewFreeRects(nextRects),remaining,placements.concat(placement),usedArea+cand.piece.area,nextCounts);
+        if(best.visited>visitLimit)return;
+      }
+    }
+  }
+  recurse([{x:0,y:0,w:sheetW,h:sheetH}],pieces,[],0,{});
+  return {
+    placements:(best.placements||[]).slice().sort((a,b)=>a.y-b.y||a.x-b.x||a.itemIndex-b.itemIndex),
+    usedArea:toNum(best.usedArea),
+    countsByItem:{...(best.countsByItem||{})},
+    impossibleByItem
+  };
+}
+function drawReadyBagCutSvg(items,paper){
+  if(!items.length||!paper)return'';
+  const sheetW=toNum(paper.length),sheetH=toNum(paper.width);
+  if(!sheetW||!sheetH)return'';
+  const plan=packReadyBagPreview(items,sheetW,sheetH);
+  const pad=40,maxW=820,maxH=360;
+  const scale=Math.min(maxW/sheetW,maxH/sheetH);
+  const width=sheetW*scale,height=sheetH*scale;
+  const svgW=width+190,svgH=height+220;
+  const palette=['#cbd5e1','#bfdbfe','#fde68a','#fecaca','#bbf7d0','#ddd6fe'];
+  const sheetArea=Math.max(1,sheetW*sheetH);
+  const usedPercent=((plan.usedArea/sheetArea)*100).toFixed(1);
+  const wastePercent=(100-Number(usedPercent)).toFixed(1);
+  let cells='';
+  plan.placements.forEach(place=>{
+    const x=pad+(place.x*scale),y=pad+(place.y*scale),pieceW=Math.max(8,place.w*scale),pieceH=Math.max(8,place.h*scale);
+    const color=palette[(Math.max(1,toNum(place.itemIndex))-1)%palette.length];
+    cells+=`<rect x="${x}" y="${y}" width="${pieceW}" height="${pieceH}" fill="${color}" stroke="#111827" stroke-width="1.2" rx="4"/>`;
+    if(pieceW>34&&pieceH>24){
+      cells+=`<text x="${x+(pieceW/2)}" y="${y+(pieceH/2)}" text-anchor="middle" dominant-baseline="middle" font-size="13" fill="#334155" font-weight="700">${place.itemIndex}</text>`;
+    }
+    if(pieceW>72&&pieceH>30){
+      cells+=`<text x="${x+(pieceW/2)}" y="${y+(pieceH/2)+16}" text-anchor="middle" dominant-baseline="middle" font-size="11" fill="#475569">${Number(place.w).toFixed(1)}×${Number(place.h).toFixed(1)}</text>`;
+    }
+  });
+  const legend=items.map((item,idx)=>{
+    const shown=toNum(plan.countsByItem[item.index]);
+    const impossible=!!plan.impossibleByItem[item.index];
+    const note=impossible
+      ? 'لا يدخل هذا الصنف في هذا الفرخ'
+      : shown>0
+        ? `ظاهر ${shown} قطعة بالمعاينة`
+        : 'لم يجد النظام له مكانًا مع باقي الأصناف في أفضل توزيع';
+    const rotateHint=shown>0&&plan.placements.some(place=>place.itemIndex===item.index&&place.rotated)?' | مع تدوير':' '; 
+    return `<tspan x="${pad}" dy="${idx===0?0:20}" fill="#111827">الصنف ${item.index}: ${Number(item.cutW||0).toFixed(1)} × ${Number(item.cutH||0).toFixed(1)} | مطلوب ${item.qty} | ${esc(item.color||'')}${rotateHint}| ${note}</tspan>`;
+  }).join('');
+  const footerY=pad+height+56;
+  const warn=!plan.placements.length
+    ? `<text x="${pad}" y="${footerY+64}" font-size="16" fill="#b91c1c" font-weight="700">لا يوجد أي توزيع صالح داخل هذا الفرخ بالمقاسات الحالية.</text>`
+    : '';
+  return `<svg width="${svgW}" height="${svgH}" viewBox="0 0 ${svgW} ${svgH}" xmlns="http://www.w3.org/2000/svg">
+    <rect x="0" y="0" width="${svgW}" height="${svgH}" fill="#ffffff"/>
+    <text x="${pad}" y="22" font-size="22" fill="#111827" font-weight="700">أفضل توزيع معاينة للقص</text>
+    <text x="${pad}" y="${pad-10}" font-size="15" fill="#334155">استغلال الفرخ ${usedPercent}% | هدر ${wastePercent}%</text>
+    <rect x="${pad}" y="${pad}" width="${width}" height="${height}" fill="#f8fafc" stroke="#111827" stroke-width="2"/>
+    ${cells}
+    <line x1="${pad}" y1="${pad+height+12}" x2="${pad+width}" y2="${pad+height+12}" stroke="#ef4444"/>
+    <text x="${pad+width/2}" y="${pad+height+32}" text-anchor="middle" font-size="18" fill="#ef4444">${sheetW}</text>
+    <line x1="${pad+width+12}" y1="${pad}" x2="${pad+width+12}" y2="${pad+height}" stroke="#ef4444"/>
+    <text x="${pad+width+32}" y="${pad+height/2}" text-anchor="middle" font-size="18" fill="#ef4444" transform="rotate(90 ${pad+width+32} ${pad+height/2})">${sheetH}</text>
+    <text x="${pad}" y="${footerY}" font-size="16" fill="#111827" font-weight="700">تفاصيل المعاينة</text>
+    <text x="${pad}" y="${footerY+22}" font-size="14">${legend}</text>
+    ${warn}
+  </svg>`;
+}
+function renderReadyBagCutSummary(){
+  const modeEl=document.getElementById('cut_mode');
+  if(String(modeEl?.value||'')!=='ready_bags')return;
+  const items=getReadyBagCutDrawItems();
+  const box=document.getElementById('readyCutSummary');
+  if(!box)return;
+  box.innerHTML=items.length
+    ? items.map(item=>`صنف ${item.index}: ${item.l}×${item.w}${toNum(item.g)>0?`×${item.g}`:''} | مقاس القص ${Number(item.cutW||0).toFixed(1)}×${Number(item.cutH||0).toFixed(1)} | كمية ${item.qty} | ${item.color||''}`).join('<br>')
+    : 'اختر صنف واحد على الأقل';
+}
+function hideReadyBagCutPreview(){readyPreviewRequested=false;const draw=getCutDrawingTarget('ready_bags');const btn=document.getElementById('showReadyCutBtn');if(draw){draw.innerHTML='';draw.style.display='none';}if(btn)btn.textContent='إظهار القص';renderReadyBagCutSummary();}function renderReadyBagCutPreview(){renderReadyBagCutSummary();const modeEl=document.getElementById('cut_mode');const draw=getCutDrawingTarget('ready_bags');const btn=document.getElementById('showReadyCutBtn');const paperIdEl=document.getElementById('cut_paper_id');if(String(modeEl?.value||'')!=='ready_bags'){if(draw){draw.innerHTML='';draw.style.display='none';}if(btn)btn.textContent='إظهار القص';return;}const paper=paperData.find(x=>x.id===Number(paperIdEl?.value||0));const items=getReadyBagCutDrawItems();if(!readyPreviewRequested){if(draw){draw.innerHTML='';draw.style.display='none';}if(btn)btn.textContent='إظهار القص';return;}if(items.length&&paper){if(draw){draw.innerHTML=drawReadyBagCutSvg(items,paper);draw.style.display='block';}if(btn)btn.textContent='إخفاء القص';}else{if(draw){draw.innerHTML='<div style="color:#111827;font-weight:700">اختر صنف واحد على الأقل وحدد المقاسات والكمية أولًا.</div>';draw.style.display='block';}if(btn)btn.textContent='إظهار القص';}}function onReadyBagInput(){if(readyPreviewRequested)renderReadyBagCutPreview();else renderReadyBagCutSummary();}function showReadyBagCutPreview(){readyPreviewRequested=!readyPreviewRequested;if(!readyPreviewRequested){hideReadyBagCutPreview();return;}renderReadyBagCutPreview();}function addReadyBagItem(){if(readyVisibleItems>=3){alert('تم الوصول لأقصى عدد أصناف في القص الواحدة');return;}readyVisibleItems+=1;updateReadyBagItemVisibility();onReadyBagInput();}function clearReadyBagItem(index){['stock_item','l','w','g','qty'].forEach(key=>{const el=document.getElementById(`rb${index}_${key}`);if(el)el.value='';});const handle=document.getElementById(`rb${index}_handle`);if(handle)handle.value='';const color=document.getElementById(`rb${index}_color`);if(color)color.value='بني';}function removeReadyBagItem(index){if(index<=1)return;clearReadyBagItem(index);while(readyVisibleItems>1){const hasValues=[`rb${readyVisibleItems}_l`,`rb${readyVisibleItems}_w`,`rb${readyVisibleItems}_qty`].some(id=>toNum(document.getElementById(id)?.value)>0);if(hasValues)break;readyVisibleItems-=1;}updateReadyBagItemVisibility();onReadyBagInput();}function getCutFilteredOptions(){const pool=currentCutPlan?.poolOptions||[];return selectedCutGram==null?pool:pool.filter(o=>Number(optionGram(o))===Number(selectedCutGram));}
+async function loadCuttableOrders(){try{cuttableOrders=await authFetch('/cuttable-orders');cut_order_id.innerHTML='<option value="">اختر الأوردر</option>'+cuttableOrders.map(o=>`<option value="${o.id}">#${o.id} - ${o.custName||'عميل بدون اسم'} - ${o.status}</option>`).join('');}catch(e){cut_order_id.innerHTML='<option value="">تعذر تحميل الأوردرات</option>';}}
+function renderCutPlan(){if(!currentCutPlan)return;const grams=[...new Set((currentCutPlan.poolOptions||[]).map(optionGram).filter(g=>g>0))].sort((a,b)=>a-b);const options=getCutFilteredOptions();if(selectedCutOption){const gram=optionGram(selectedCutOption);cut_layout.value=selectedCutOption.layoutKey;cut_sheets.value=selectedCutOption.neededSheets;syncCut('s');cutSuggestion.innerHTML=`<b>الأوردر:</b> #${currentCutPlan.order.id} - ${currentCutPlan.order.custName||''}<br><b>الاختيار الحالي:</b> ${selectedCutOption.paperColor||''} | ${selectedCutOption.paperLabel} | ${gram||'-'} جم | ${selectedCutOption.layoutLabel} | تحتاج ${selectedCutOption.neededSheets} فرخ | الهدر ${selectedCutOption.wastePercent}%`;cutDrawing.innerHTML=drawCutSvg(selectedCutOption,currentCutPlan.plan);cutDrawing.style.display='block';}else{cutSuggestion.innerHTML='لا يوجد فرخ مناسب بهذا الجرام لهذا الصنف';cutDrawing.innerHTML='';cutDrawing.style.display='none';}cutGramWrap.innerHTML=`<span class="small" style="display:flex;align-items:center">الجرامات:</span><button style="background:${selectedCutGram==null?'#4ade80':'#22d3ee'}" onclick="pickCutGram('all')">كل الجرامات</button>`+grams.map(g=>`<button style="background:${Number(selectedCutGram)===Number(g)?'#4ade80':'#22d3ee'}" onclick="pickCutGram(${g})">${g} جم</button>`).join('');cutChoices.innerHTML=options.map(opt=>`<button data-opt="${encodeURIComponent(JSON.stringify(opt))}" onclick="pickCutOption(this.dataset.opt)">${opt.paperColor||''} | ${opt.paperLabel} | ${optionGram(opt)||'-'} جم | ${opt.layoutLabel} (${opt.neededSheets} فرخ)</button>`).join('');}
+function pickCutGram(value){selectedCutGram=value==='all'?null:Number(value||0);const options=getCutFilteredOptions();const sig=selectedCutOption?`${selectedCutOption.paperId}|${selectedCutOption.layoutKey}|${selectedCutOption.sheetWidth}|${selectedCutOption.sheetHeight}`:'';if(!options.find(o=>`${o.paperId}|${o.layoutKey}|${o.sheetWidth}|${o.sheetHeight}`===sig))selectedCutOption=chooseBestOption(options);renderCutPlan();}
+async function load(){paperData=await authFetch('/get-paper');syncPaperFilterOptions();renderPaperRows();if(!historyWrap.classList.contains('hidden'))loadHistory();}function rowCalc(id,l,w,g,m){const k=document.getElementById('k'+id),s=document.getElementById('s'+id); if(m==='k') s.value=k.value?kgToSheets(toNum(k.value),l,w,g):''; else k.value=s.value?sheetsToKg(toNum(s.value),l,w,g):''}async function quickMovePaper(id,dir){const p=paperData.find(x=>x.id===id);if(!p)return;let kg=toNum(document.getElementById('k'+id)?.value||0),sheets=toNum(document.getElementById('s'+id)?.value||0);if(kg<=0&&sheets<=0)return alert('اكتب كجم أو فرخ');if(kg<=0&&sheets>0)kg=toNum(sheetsToKg(sheets,p.length,p.width,p.grammage));if(sheets<=0&&kg>0)sheets=toNum(kgToSheets(kg,p.length,p.width,p.grammage));if(dir<0&&(kg>toNum(p.total_kg)||sheets>toNum(p.total_sheets)))return alert('الكمية أكبر من الرصيد');try{await authFetch('/add-paper',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({length:p.length,width:p.width,grammage:p.grammage,color:p.color,paper_name:p.paper_name||'',kg:(dir*kg),sheets:(dir*sheets),min_kg:p.min_kg,min_sheets:p.min_sheets,buy_price_kg:p.buy_price_kg})});await load();const kEl=document.getElementById('k'+id),sEl=document.getElementById('s'+id);if(kEl)kEl.value='';if(sEl)sEl.value='';}catch(e){alert(e.message)}}async function savePaper(){try{await authFetch('/add-paper',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({edit_id:edit_id.value||undefined,length:nl.value,width:nw.value,grammage:ng.value,color:nc.value,paper_name:paper_name.value||'',kg:nk.value||0,sheets:ns.value||0,min_kg:globalMinKg.value||0,min_sheets:globalMinSheets.value||0,buy_price_kg:buy_price_kg.value||0,total_price_input:total_price_input.value||0})});['edit_id','nl','nw','ng','paper_name','nk','ns','globalMinKg','globalMinSheets','buy_price_kg','total_price_input','price_sheet'].forEach(id=>window[id].value='');nc.value='أبيض';load();}catch(e){alert(e.message)}}function editPaper(id){const p=paperData.find(x=>x.id===id);if(!p)return;edit_id.value=p.id;nl.value=p.length;nw.value=p.width;ng.value=p.grammage;nc.value=p.color;paper_name.value=p.paper_name||'';nk.value=p.total_kg;ns.value=Math.round(p.total_sheets);globalMinKg.value=p.min_kg;globalMinSheets.value=Math.round(p.min_sheets);buy_price_kg.value=p.buy_price_kg||0;price_sheet.value=Number(p.buy_price_sheet||0).toFixed(2);window.scrollTo({top:0,behavior:'smooth'});}async function del(id){if(confirm('حذف الصنف؟')){try{await authFetch('/delete-paper/'+id,{method:'DELETE'});load()}catch(e){alert(e.message)}}}function resetReadyBagCutFields(){['rb1_l','rb1_w','rb1_g','rb1_qty','rb2_l','rb2_w','rb2_g','rb2_qty','rb3_l','rb3_w','rb3_g','rb3_qty','cut_ready_note','cut_kg_ready','cut_sheets_ready'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});['rb1_handle','rb1_stock_item','rb2_handle','rb2_stock_item','rb3_handle','rb3_stock_item'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});['rb1_color','rb2_color','rb3_color'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='بني';});if(document.getElementById('cut_layout_ready'))document.getElementById('cut_layout_ready').value='pieceByPiece';readyVisibleItems=1;readyPreviewRequested=false;updateReadyBagItemVisibility();hideReadyBagCutPreview();}function getReadyBagCutItems(){return [1,2,3].filter(index=>index<=readyVisibleItems).map(index=>({l:document.getElementById(`rb${index}_l`)?.value||'',w:document.getElementById(`rb${index}_w`)?.value||'',g:document.getElementById(`rb${index}_g`)?.value||'',qty:document.getElementById(`rb${index}_qty`)?.value||'',color:document.getElementById(`rb${index}_color`)?.value||'',handle:document.getElementById(`rb${index}_handle`)?.value||''})).filter(item=>toNum(item.l)>0&&toNum(item.w)>0&&toNum(item.qty)>0);}function openCut(id){selectedCutOption=null;selectedCutGram=null;currentCutPlan=null;cut_paper_id.value=id;cut_mode.value='current_order';cut_order_id.value='';cut_kg.value='';cut_sheets.value='';cut_layout.value='pieceByPiece';cutSuggestion.innerHTML='';cutChoices.innerHTML='';cutGramWrap.innerHTML='';const currentDraw=getCutDrawingTarget('current_order');if(currentDraw){currentDraw.innerHTML='';currentDraw.style.display='none';}const readyDraw=getCutDrawingTarget('ready_bags');if(readyDraw){readyDraw.innerHTML='';readyDraw.style.display='none';}resetReadyBagCutFields();loadCuttableOrders();loadReadyBagStockChoices();setCutMode('current_order');cutModal.style.display='block';}function syncCut(mode){const p=paperData.find(x=>x.id===Number(cut_paper_id.value));if(!p)return;if(mode==='k') cut_sheets.value=cut_kg.value?kgToSheets(toNum(cut_kg.value),p.length,p.width,p.grammage):''; else cut_kg.value=cut_sheets.value?sheetsToKg(toNum(cut_sheets.value),p.length,p.width,p.grammage):'';}function syncCutReady(mode){const p=paperData.find(x=>x.id===Number(cut_paper_id.value));if(!p)return;if(mode==='k') cut_sheets_ready.value=cut_kg_ready.value?kgToSheets(toNum(cut_kg_ready.value),p.length,p.width,p.grammage):''; else cut_kg_ready.value=cut_sheets_ready.value?sheetsToKg(toNum(cut_sheets_ready.value),p.length,p.width,p.grammage):'';onReadyBagInput();}function setCutMode(mode){cut_mode.value=mode==='ready_bags'?'ready_bags':'current_order';toggleCutMode();}function toggleCutMode(){const mode=String(cut_mode.value||'current_order');const isOrder=mode==='current_order';currentOrderWrap.classList.toggle('hidden',!isOrder);readyBagsWrap.classList.toggle('hidden',isOrder);const orderBtn=document.getElementById('cutModeOrderBtn'),readyBtn=document.getElementById('cutModeReadyBtn');if(orderBtn)orderBtn.classList.toggle('active',isOrder);if(readyBtn)readyBtn.classList.toggle('active',!isOrder);if(!isOrder){selectedCutOption=null;selectedCutGram=null;currentCutPlan=null;cutSuggestion.innerHTML='';cutChoices.innerHTML='';cutGramWrap.innerHTML='';const currentDraw=getCutDrawingTarget('current_order');if(currentDraw){currentDraw.innerHTML='';currentDraw.style.display='none';}readyPreviewRequested=false;updateReadyBagItemVisibility();hideReadyBagCutPreview();}else{const draw=getCutDrawingTarget('current_order');if(draw){draw.innerHTML='';draw.style.display='none';}const readyDraw=getCutDrawingTarget('ready_bags');if(readyDraw){readyDraw.innerHTML='';readyDraw.style.display='none';}}}async function loadCutSuggestion(){try{const orderId=Number(cut_order_id.value||0);const paperId=Number(cut_paper_id.value||0);if(!orderId)return alert('اختر الأوردر');const plan=await authFetch('/order-paper-plan/'+orderId);const options=(plan.options||[]).filter(o=>Number(o.paperId)===paperId);if(!options.length){currentCutPlan=null;cutSuggestion.innerHTML='هذا الفرخ لا يصلح لقص هذا الأوردر';cutChoices.innerHTML='';cutGramWrap.innerHTML='';cutDrawing.innerHTML='';cutDrawing.style.display='none';return;}const matching=options.filter(o=>Number(o.colorMatch||0)===1||String(o.paperColor||'').trim()===String(plan.order?.color||'').trim());const pool=matching.length?matching:options;currentCutPlan={plan,order:plan.order,poolOptions:pool};selectedCutOption=chooseBestOption(pool);selectedCutGram=null;renderCutPlan();}catch(e){alert(e.message)}}function pickCutOption(opt){if(typeof opt==='string')opt=JSON.parse(decodeURIComponent(opt));selectedCutOption=opt;selectedCutGram=optionGram(opt)||null;renderCutPlan();}async function saveCut(){try{const mode=String(cut_mode.value||'current_order');const payload={paper_id:cut_paper_id.value,cut_mode:mode,kg:cut_kg.value||0,sheets:cut_sheets.value||0,layoutKey:cut_layout.value};if(mode==='ready_bags'){const items=getReadyBagCutItems();if(!items.length)return alert('اختر مقاس أمر التشغيل وحدد الكمية');payload.ready_bag_items=items;payload.ready_bag_note=cut_ready_note.value||'';payload.layoutKey=cut_layout_ready.value||'pieceByPiece';payload.kg=cut_kg_ready.value||0;payload.sheets=cut_sheets_ready.value||0;}else{payload.order_id=cut_order_id.value;if(selectedCutOption){payload.paper_id=selectedCutOption.paperId;payload.layoutKey=selectedCutOption.layoutKey;payload.sheets=selectedCutOption.neededSheets;payload.kg=0;}}const res=await authFetch('/cut-paper',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});cutModal.style.display='none';load();alert(mode==='ready_bags'?`تم حفظ قص أمر التشغيل وفتح ${res.production_jobs_count||getReadyBagCutItems().length} أمر تشغيل في صفحة الصنايعية`:'تم القص وربط التكلفة بالأوردر وتحديث حالته إلى في القص')}catch(e){alert(e.message)}}async function loadHistory(){const data=await authFetch('/get-paper-history');historyBody.innerHTML=data.length?data.map(h=>`<tr><td>${new Date(h.date).toLocaleString('ar-EG')}</td><td>${h.color||''} ${h.length||''}×${h.width||''} - ${h.grammage||''} جم${String(h.paper_name||'').trim()?` - ${h.paper_name}`:''}</td><td>${h.type==='add'?'إضافة':h.type==='sub'?'خصم':h.type==='edit'?'تعديل':h.type==='delete'?'حذف':'-'}</td><td>${Math.abs(h.kg||0).toFixed(2)}</td><td>${Math.round(Math.abs(h.sheets||0))}</td><td>${h.note||'-'}</td></tr>`).join(''):'<tr><td colspan="6">لا يوجد سجل</td></tr>';}function toggleHistory(){historyWrap.classList.toggle('hidden');if(!historyWrap.classList.contains('hidden'))loadHistory();}load();

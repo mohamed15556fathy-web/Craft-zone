@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>الصنايعية والتنفيذ الخارجي</title>
+<style>
+:root{--bg:#0f172a;--panel:#1e293b;--panel2:#111827;--text:#f8fafc;--muted:#94a3b8;--cyan:#22d3ee;--border:#334155;--green:#4ade80;--red:#f87171;--amber:#fbbf24}
+*{box-sizing:border-box}
+body{font-family:'Segoe UI',sans-serif;background:var(--bg);color:var(--text);margin:0;padding:22px}
+.header,.panel,.card,.modal-content{background:var(--panel);border:1px solid var(--border);border-radius:18px}
+.header{padding:18px 22px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+button,a.btn{background:transparent;border:1px solid var(--cyan);color:var(--cyan);padding:10px 14px;border-radius:10px;text-decoration:none;cursor:pointer;font-weight:700}
+button.danger{border-color:var(--red);color:var(--red)}button.success{border-color:var(--green);color:var(--green)}button.warn{border-color:var(--amber);color:var(--amber)}
+input,select,textarea{width:100%;box-sizing:border-box;background:#0b1220;border:1px solid var(--border);color:#fff;padding:10px 12px;border-radius:12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}.stat{padding:18px}.stat small{color:var(--muted)}.stat b{display:block;font-size:26px;margin-top:6px}
+.section{margin-bottom:18px;padding:16px}.section h3{margin:0}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}.card{padding:16px}
+.muted{color:var(--muted)}.badge{display:inline-block;padding:5px 10px;border-radius:999px;border:1px solid var(--border);font-size:12px}.badge.done{background:#0f5132;border-color:#198754}.badge.pending{background:#3b2f0b;border-color:#d97706}
+.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;margin-top:10px}th,td{padding:9px;border-bottom:1px solid var(--border);text-align:center;vertical-align:top}th{background:#0b1220;color:var(--cyan)}
+.flex{display:flex;gap:10px;flex-wrap:wrap}.hidden{display:none!important}.details{margin-top:12px;padding-top:12px;border-top:1px dashed var(--border)}
+.kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-top:10px}.kv div{background:#0b1220;border:1px solid var(--border);border-radius:12px;padding:10px}
+.modal{position:fixed;inset:0;background:rgba(2,6,23,.72);display:none;align-items:center;justify-content:center;padding:18px;z-index:1000}.modal.show{display:flex}.modal-content{width:min(820px,100%);max-height:90vh;overflow:auto;padding:18px}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}.order-card{padding:14px;border:1px solid var(--border);border-radius:16px;background:#111827}.order-top{display:flex;justify-content:space-between;gap:10px;align-items:start;flex-wrap:wrap}
+small.help{display:block;color:var(--muted);margin-top:6px}.group-block{margin-top:14px}.group-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding-bottom:10px;border-bottom:1px dashed var(--border)}.empty{padding:18px;text-align:center;color:var(--muted);background:#0b1220;border:1px dashed var(--border);border-radius:14px}.ops-note{margin-top:10px;padding:10px 12px;border-radius:12px;background:rgba(34,211,238,.08);border:1px solid rgba(34,211,238,.28);color:#cffafe}.step-card{padding:12px;border:1px solid var(--border);border-radius:14px;background:#0b1220}.step-card h4{margin:0 0 10px}.paid-inline{display:flex;align-items:center;gap:8px;margin-top:8px;color:var(--muted);font-size:13px}.paid-inline input{width:auto}.paid-extra{display:none;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:10px}.paid-extra.show{display:grid}
+</style>
+</head>
+<body>
+<div class="header">
+  <div>
+    <h1 style="margin:0">🧑‍🏭 الصنايعية والتنفيذ الخارجي</h1>
+    <div class="muted" id="welcome"></div>
+  </div>
+  <div class="flex">
+    <button onclick="reloadAll()">🔄 تحديث</button>
+    <button onclick="togglePartnersSection()" id="partnersToggleBtn">🙈 إخفاء الجهات</button>
+    <a class="btn" href="orders_list.html">📋 الأوردرات</a>
+    <a class="btn" href="accounts.html">💰 الحسابات</a>
+    <a class="btn" href="index.html">🏠 الرئيسية</a>
+  </div>
+</div>
+
+<div class="grid" style="margin-bottom:18px">
+  <div class="panel stat"><small>أوردرات مفتوحة</small><b id="sOrders">0</b></div>
+  <div class="panel stat"><small>عمليات لم تُغلق</small><b id="sPending">0</b></div>
+  <div class="panel stat"><small>جهات/صنايعية نشطة</small><b id="sPartners">0</b></div>
+  <div class="panel stat"><small>إجمالي المسند</small><b id="sAssigned">0 ج</b></div>
+  <div class="panel stat"><small>المدفوع</small><b id="sPaid">0 ج</b></div>
+  <div class="panel stat"><small>المتبقي</small><b id="sRemain">0 ج</b></div>
+</div>
+
+<div class="panel section">
+  <div class="flex" style="justify-content:space-between;align-items:center">
+    <h3>إضافة جهة تنفيذ</h3>
+    <small class="help">سجّل المطابع والصنايعية وتركيب اليد بشكل منفصل. أي تكلفة تتربط بأوردر هتظهر فورًا في صفحة الأوردرات والحسابات.</small>
+  </div>
+  <div class="form-grid">
+    <div><label>الاسم</label><input id="p_name"></div>
+    <div><label>النوع</label><select id="p_type"><option>صنايعي</option><option>مطبعة</option><option>تركيب يد</option><option>أخرى</option></select></div>
+    <div><label>التليفون</label><input id="p_phone"></div>
+    <div><label>العنوان</label><input id="p_address"></div>
+    <div style="grid-column:1/-1"><label>ملاحظات</label><textarea id="p_notes" rows="2"></textarea></div>
+    <div class="flex" style="grid-column:1/-1"><button class="success" onclick="savePartner()" id="partnerSaveBtn">حفظ الجهة</button><button class="hidden" onclick="cancelPartnerEdit()" id="partnerCancelBtn">إلغاء التعديل</button></div>
+  </div>
+</div>
+
+<div class="panel section">
+  <div class="flex" style="justify-content:space-between;align-items:center">
+    <h3>الأوردرات المفتوحة</h3>
+    <small class="help">من هنا تقدر تعمل توجيه سريع للأوردر: طباعة أو تصنيع أو تركيب يد. الطباعة والتصنيع لا يتم تسجيلهما إلا بعد القص.</small>
+  </div>
+  <div class="cards" id="ordersWrap"></div>
+</div>
+
+<div class="panel section">
+  <div class="flex" style="justify-content:space-between;align-items:center">
+    <h3>أوامر التشغيل المفتوحة للعمال / الصنايعية</h3>
+    <small class="help">أي أمر تشغيل يطلع من القص أو من صفحة الشنط الجاهزة هيظهر هنا لحد ما تضغط تم، وبعدها يدخل مخزن الشنط الجاهزة تلقائيًا ويتسجل في السجل.</small>
+  </div>
+  <div class="cards" id="productionJobsWrap"></div>
+</div>
+
+<div class="panel section" id="partnersSection">
+  <div class="flex" style="justify-content:space-between;align-items:center">
+    <h3>المطابع والصنايعية</h3>
+    <small class="help">تم تقسيمهم حسب النوع لتقليل الزحمة: مطابع لوحدها، صنايعية لوحدهم، وتركيب اليد لوحده.</small>
+  </div>
+  <div id="partnersWrap"></div>
+</div>
+
+<div class="modal" id="operationModal"><div class="modal-content">
+  <div class="flex" style="justify-content:space-between;align-items:center"><h3 style="margin:0">توجيه / إسناد شغل خارجي</h3><button onclick="closeModal('operationModal')">✖</button></div>
+  <div class="muted" id="operationOrderHint" style="margin-top:6px"></div>
+  <div class="ops-note" id="operationHintBox">اختر المرحلة والجهة والتكلفة. المبلغ المقترح هيظهر تلقائيًا وتقدر تعدله قبل الحفظ.</div>
+  <div class="form-grid" style="margin-top:14px">
+    <input type="hidden" id="op_id"><input type="hidden" id="op_order_id">
+    <div><label>نوع الشغل</label><select id="op_step" onchange="syncOperationForm()"><option value="print">طباعة</option><option value="make">تصنيع</option><option value="handle">تركيب يد</option></select></div>
+    <div><label>الجهة</label><select id="op_partner"></select></div>
+    <div><label>الحالة</label><select id="op_status"><option value="pending">لسه شغال</option><option value="done">تم التنفيذ</option></select></div>
+    <div><label>الكمية</label><input id="op_qty" type="number" min="0"></div>
+    <div><label>تكلفة الشغل</label><input id="op_amount" type="number" min="0" step="0.01"></div>
+    <div><label>رقم مرجعي</label><input id="op_ref"></div>
+    <div style="grid-column:1/-1"><label class="paid-inline"><input id="op_paid_now" type="checkbox" onchange="toggleOperationPaid()"> تم دفع المبلغ الآن</label><div id="op_paid_wrap" class="paid-extra"><input id="op_payment_date" type="date"><input id="op_payment_note" placeholder="ملاحظة الدفع (اختياري)"></div></div>
+    <div style="grid-column:1/-1"><label>ملاحظات</label><textarea id="op_note" rows="3"></textarea></div>
+    <div class="flex" style="grid-column:1/-1"><button class="success" onclick="saveOperation()">حفظ</button><button onclick="closeModal('operationModal')">إلغاء</button></div>
+  </div>
+</div></div>
+
+<div class="modal" id="paymentModal"><div class="modal-content">
+  <div class="flex" style="justify-content:space-between;align-items:center"><h3 style="margin:0">تسجيل دفعة لجهة تنفيذ</h3><button onclick="closeModal('paymentModal')">✖</button></div>
+  <div class="muted" id="paymentPartnerHint" style="margin-top:6px"></div>
+  <div class="form-grid" style="margin-top:14px">
+    <input type="hidden" id="pay_partner_id">
+    <div><label>المبلغ</label><input id="pay_amount" type="number" min="0" step="0.01"></div>
+    <div><label>تاريخ الدفع</label><input id="pay_date" type="date"></div>
+    <div style="grid-column:1/-1"><label>ملاحظة</label><textarea id="pay_note" rows="3"></textarea></div>
+    <div class="flex" style="grid-column:1/-1"><button class="success" onclick="savePartnerPayment()">حفظ الدفعة</button><button onclick="closeModal('paymentModal')">إلغاء</button></div>
+  </div>
+</div></div>
+
+<script>
+const token=localStorage.getItem('token');
+const user=JSON.parse(localStorage.getItem('user')||'null');
+if(!token||!user) location.href='login.html';
+if(user.role!=='admin' && !Number(user.perm_view_orders||0)) location.href='index.html';
+function authFetch(url,opts={}){opts.headers=Object.assign({},opts.headers||{},{Authorization:'Bearer '+token});return fetch(url,opts).then(async r=>{const data=await r.json().catch(()=>({})); if(r.status===401){localStorage.clear();location.href='login.html';throw new Error('unauthorized')} if(!r.ok) throw new Error(data.error||'error'); return data;});}
+const money=v=>Number(v||0).toLocaleString('en-US',{maximumFractionDigits:2})+' ج';
+const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+let partners=[], partnersSummary=[], openOrders=[], productionJobs=[];
+let editingPartnerId=0, partnersHidden=false, operationPartnerTypeFilter='';
+welcome.textContent=`${user.full_name||user.username} | متابعة المطابع والصنايعية`;
+function closeModal(id){document.getElementById(id).classList.remove('show'); if(id==='operationModal') operationPartnerTypeFilter=''; }
+function openModal(id){document.getElementById(id).classList.add('show')}
+function roleColor(status){ return String(status||'').trim()==='done'?'done':'pending'; }
+function stepLabel(step){ return ({print:'طباعة',make:'تصنيع',handle:'تركيب يد'})[String(step||'').trim()] || step || '-'; }
+function normalizeType(type){ const t=String(type||'').trim(); if(t==='مطبعة') return 'مطبعة'; if(t==='صنايعي') return 'صنايعي'; if(t==='تركيب يد') return 'تركيب يد'; return 'أخرى'; }
+function orderById(id){ return openOrders.find(o=>String(o.id)===String(id)); }
+function estimateOperationAmount(order, step){
+  const qty=Number(order?.qty)||0;
+  const manual=(field, fallback=0)=>{ const raw=order?.['cost_'+field]; return raw!==undefined && raw!==null && raw!=='' ? Number(raw) : fallback; };
+  const printType=String(order?.printType||'').trim();
+  if(String(step)==='make') return manual('make', Number(order?.useReadyStock||0)===1 ? ((Number(order?.ready_stock_purchase_total)||0) || ((Number(order?.bag_buy_price)||0)*qty)) : qty*1);
+  if(String(step)==='handle') return manual('hand_fix', (String(order?.handle||'').trim()==='بيد' ? +((qty/1000)*100).toFixed(2) : 0));
+  if(String(step)!=='print') return 0;
+  if(printType==='سلك سكرين') return manual('print', qty*2);
+  if(printType==='أوفست'){
+    const mode=String(order?.last_cut_layout||'pieceByPiece');
+    const cutWidth = +(mode==='pieceByPiece' ? ((Number(order?.w)||0) + (Number(order?.g)||0) + 2) : (((Number(order?.w)||0)*2) + ((Number(order?.g)||0)*2) + 2)).toFixed(2);
+    const cutLength = +((Number(order?.l)||0) + ((Number(order?.g)||0)/2) + 2).toFixed(2);
+    const mxW=Math.max(cutWidth,cutLength), mxH=Math.min(cutWidth,cutLength);
+    let base=0;
+    if(mxW<=50 && mxH<=35) base=150; else if(mxW<=70 && mxH<=50) base=200; else if(mxW<=100 && mxH<=70) base=300;
+    const txt=String(order?.colorSpecs||'');
+    const m=txt.match(/(\d+)/);
+    const colors=Math.max(1, Number(m?.[1]||0) || (txt.split('+').filter(Boolean).length||1));
+    const piecesPerBag=mode==='pieceByPiece'?2:1;
+    const printUnits=Math.ceil((qty*piecesPerBag)/1000);
+    return manual('print', base*colors*printUnits);
+  }
+  return manual('print', 0);
+}
+function toggleOperationPaid(forceValue=null){
+  const checked = forceValue===null ? !!op_paid_now.checked : !!forceValue;
+  op_paid_now.checked = checked;
+  op_paid_wrap.classList.toggle('show', checked);
+  if(checked && !op_payment_date.value) op_payment_date.value = new Date().toISOString().slice(0,10);
+}
+async function reloadAll(){ await Promise.all([loadDashboard(),loadPartners(),loadOpenOrders(),loadProductionJobs()]); }
+async function loadDashboard(){ const d=await authFetch('/operations-dashboard'); sOrders.textContent=d.active_orders||0; sPending.textContent=d.pending_operations||0; sPartners.textContent=d.active_partners||0; sAssigned.textContent=money(d.total_assigned); sPaid.textContent=money(d.total_paid); sRemain.textContent=money(d.remaining); }
+async function loadPartners(){ partners = await authFetch('/execution-partners'); partnersSummary = await authFetch('/operations-partners-summary'); renderPartners(); syncOperationForm(); }
+async function loadOpenOrders(){ openOrders = await authFetch('/operations-orders'); renderOrders(); }
+async function loadProductionJobs(){ productionJobs = await authFetch('/production-jobs-summary').catch(()=>[]); renderProductionJobs(); }
+function stepPartnerType(step){ return ({print:'مطبعة',make:'صنايعي',handle:'تركيب يد'})[String(step||'').trim()] || ''; }
+function partnerCanDoStep(partnerType, step){
+  const normalized = normalizeType(partnerType);
+  if(String(step||'').trim()==='handle') return normalized==='تركيب يد' || normalized==='صنايعي';
+  if(String(step||'').trim()==='make') return normalized==='صنايعي';
+  if(String(step||'').trim()==='print') return normalized==='مطبعة';
+  return false;
+}
+function requiredOrderSteps(order){
+  const cutDone = Number(order?.paper_cut_done||0)===1 || Number(order?.useReadyStock||0)===1;
+  if(!cutDone) return [];
+  const printType = String(order?.printType||'').trim();
+  const isPrinted = printType && printType!=='سادة';
+  const steps=[];
+  if(isPrinted) steps.push('print');
+  if(!Number(order?.useReadyStock||0)) steps.push('make');
+  if(String(order?.handle||'').trim()==='بيد' && !Number(order?.useReadyStock||0)) steps.push('handle');
+  return steps;
+}
+function availableOrderSteps(order, partnerType=''){
+  const assigned = new Set((order?.operation_steps||[]).map(s=>String(s.step_type||'').trim()).filter(Boolean));
+  const normalizedPartner = partnerType ? normalizeType(partnerType) : '';
+  return requiredOrderSteps(order).filter(step=>!assigned.has(step)).filter(step=>!normalizedPartner || partnerCanDoStep(normalizedPartner, step));
+}
+function preferredPartnerStep(partnerType, steps=[]){
+  const normalized = normalizeType(partnerType);
+  if(normalized==='مطبعة') return steps.includes('print') ? 'print' : (steps[0]||'');
+  if(normalized==='صنايعي') return steps.includes('make') ? 'make' : (steps.includes('handle') ? 'handle' : (steps[0]||''));
+  if(normalized==='تركيب يد') return steps.includes('handle') ? 'handle' : (steps[0]||'');
+  return steps[0]||'';
+}
+function filteredPartnersByStep(step){ return partners.filter(p=>Number(p.is_active||1)===1 && partnerCanDoStep(p.partner_type, step)); }
+function fillPartnerSelect(selected=''){ const step=op_step.value; const rows=filteredPartnersByStep(step); op_partner.innerHTML='<option value="">اختر الجهة</option>' + rows.map(p=>`<option value="${p.id}" ${String(selected)===String(p.id)?'selected':''}>${esc(p.name)} - ${esc(p.partner_type||'')}</option>`).join(''); if(selected && !rows.some(p=>String(p.id)===String(selected))) op_partner.value=''; }
+function syncStepSelectForOrder(order, preferredStep=''){
+  const options = availableOrderSteps(order, operationPartnerTypeFilter);
+  if(!options.length){
+    op_step.innerHTML='<option value="">لا توجد مراحل متاحة</option>';
+    op_partner.innerHTML='<option value="">لا توجد جهات</option>';
+    return [];
+  }
+  const selected = options.includes(preferredStep) ? preferredStep : preferredPartnerStep(operationPartnerTypeFilter, options);
+  op_step.innerHTML = options.map(step=>`<option value="${step}" ${step===selected?'selected':''}>${stepLabel(step)}</option>`).join('');
+  return options;
+}
+function partnerSummary(id){ return partnersSummary.find(p=>String(p.id)===String(id)); }
+function operationById(id){ for(const partner of partnersSummary){ const row=(partner.jobs||[]).find(j=>String(j.id)===String(id)); if(row) return row; } return null; }
+function totalOrderExternal(steps=[]){ return steps.reduce((s,r)=>s+(Number(r.amount)||0),0); }
+function togglePartnersSection(){ partnersHidden=!partnersHidden; partnersSection.classList.toggle('hidden', partnersHidden); partnersToggleBtn.textContent = partnersHidden ? '👁️ إظهار الجهات' : '🙈 إخفاء الجهات'; }
+function renderOrders(){ if(!openOrders.length){ ordersWrap.innerHTML='<div class="muted">لا توجد أوردرات مفتوحة حاليًا</div>'; return; } ordersWrap.innerHTML=openOrders.map(o=>{ const ext=totalOrderExternal(o.operation_steps||[]); const available=availableOrderSteps(o); const availableText = available.length ? available.map(stepLabel).join(' / ') : 'كل المراحل المطلوبة متسجلة'; return `<div class="order-card"><div class="order-top"><div><b>أوردر #${o.id}</b> <span class="badge ${o.priority==='مستعجل'?'pending':''}">${esc(o.status||'')}</span><div class="muted" style="margin-top:6px">${esc(o.custName||'-')} | ${Number(o.qty||0)} شنطة | ${esc(o.color||'-')}</div></div><div class="flex"><button class="success" onclick="openOperationForOrder(${o.id})" ${available.length?'':'disabled'}>توجيه / إسناد</button><a class="btn" href="orders_list.html">فتح الأوردرات</a></div></div><div class="ops-note" style="margin-bottom:10px">المراحل المتاحة الآن: ${esc(availableText)}</div><div class="kv"><div><small>تكلفة التنفيذ الخارجي</small><b>${money(ext)}</b></div><div><small>تكلفة التصنيع</small><b>${money(o.cost_make)}</b></div><div><small>تكلفة الطباعة</small><b>${money(o.cost_print)}</b></div><div><small>تركيب اليد</small><b>${money(o.cost_hand_fix)}</b></div></div>${(o.operation_steps||[]).length?`<div class="details"><table><thead><tr><th>المرحلة</th><th>الجهة</th><th>القيمة</th><th>الحالة</th><th>تحكم</th></tr></thead><tbody>${o.operation_steps.map(s=>`<tr><td>${esc(stepLabel(s.step_type))}</td><td>${esc(s.partner_name||'-')}</td><td>${money(s.amount)}</td><td><span class="badge ${roleColor(s.status)}">${String(s.status||'').trim()==='done'?'تم':'مفتوح'}</span></td><td>${String(s.status||'').trim()==='done'?'':`<button class="success" onclick="markOperationDone(${s.id})">تم</button> `}<button class="danger" onclick="deleteOperation(${s.id})">حذف</button></td></tr>`).join('')}</tbody></table></div>`:'<div class="details muted">لا يوجد توجيه خارجي مسجل حتى الآن</div>'}</div>`; }).join(''); }
+function renderProductionJobs(){ const wrap=document.getElementById('productionJobsWrap'); if(!wrap) return; if(!productionJobs.length){ wrap.innerHTML='<div class="empty">لا توجد أوامر تشغيل مفتوحة حاليًا</div>'; return; } wrap.innerHTML=productionJobs.map(job=>`<div class="order-card"><div class="order-top"><div><b>أمر تشغيل #${job.id}</b> <span class="badge pending">مفتوح</span><div class="muted" style="margin-top:6px">${Number(job.qty||0)} شنطة | ${esc(job.color||'-')} | ${esc(job.handle||'-')}</div></div><div class="flex"><button class="success" onclick="completeProductionJobUi(${job.id})">تم</button></div></div><div class="ops-note" style="margin-bottom:10px">${esc(job.source_type==='paper_cut'?'جاى من قص الورق':'جاى من صفحة الشنط الجاهزة')}</div><div class="kv"><div><small>المقاس</small><b>${Number(job.length||0)} × ${Number(job.width||0)} × ${Number(job.gusset||0)}</b></div><div><small>القصة</small><b>${esc(job.layout_label||'-')}</b></div><div><small>الورق</small><b>${esc(job.paper_label||'-')}</b></div><div><small>تكلفة الوحدة</small><b>${money(job.unit_cost||0)}</b></div></div><div class="details muted">${esc(job.note||'-')}</div></div>`).join(''); }
+function renderPartnerCard(p){ const canAssign = openOrders.some(o=>availableOrderSteps(o, p.partner_type).length); return `<div class="card"><div class="flex" style="justify-content:space-between;align-items:start"><div><h3 style="margin:0">${esc(p.name||'')}</h3><div class="muted">${esc(p.partner_type||'أخرى')}</div></div><div class="flex"><button onclick="togglePartnerDetails(${p.id})">التفاصيل</button><button class="success" onclick="openPartnerPayment(${p.id})">دفعة</button><button class="warn" onclick="editPartner(${p.id})">تعديل</button><button class="danger" onclick="deletePartner(${p.id})">حذف</button></div></div><div class="kv"><div><small>عدد الشغل</small><b>${Number(p.jobs_count||0)}</b></div><div><small>إجمالي المسند</small><b>${money(p.total_assigned)}</b></div><div><small>المدفوع</small><b>${money(p.total_paid)}</b></div><div><small>المتبقي</small><b>${money(p.remaining)}</b></div></div><div class="details hidden" id="partnerDetails_${p.id}"><div class="flex" style="justify-content:space-between;align-items:center;margin-bottom:8px"><b>أوردرات وشغل الجهة</b><button class="success" onclick="openOperationForPartner(${p.id})" ${canAssign?'':'disabled'}>إضافة شغل</button></div><div class="table-wrap"><table><thead><tr><th>الأوردر</th><th>العميل</th><th>المرحلة</th><th>الكمية</th><th>القيمة</th><th>الحالة</th><th>تحكم</th></tr></thead><tbody>${(p.jobs||[]).length?(p.jobs||[]).map(j=>`<tr><td>#${j.order_id||''}</td><td>${esc(j.custName||'-')}</td><td>${esc(stepLabel(j.step_type||j.step_label||'-'))}</td><td>${Number(j.qty||0)}</td><td>${money(j.amount)}</td><td><span class="badge ${roleColor(j.status)}">${String(j.status||'').trim()==='done'?'تم':'مفتوح'}</span></td><td>${String(j.status||'').trim()==='done'?'':`<button class="success" onclick="markOperationDone(${j.id})">تم</button> `}<button class="danger" onclick="deleteOperation(${j.id})">حذف</button></td></tr>`).join(''):'<tr><td colspan="7">لا يوجد شغل مسجل</td></tr>'}</tbody></table></div><div id="partnerPayments_${p.id}" class="muted" style="margin-top:10px">جارٍ تحميل الدفعات...</div></div></div>`; }
+function renderGroup(title,key,list){ return `<div class="group-block"><div class="group-head"><h3>${title}</h3><span class="muted">${list.length} جهة</span></div>${list.length?`<div class="cards" style="margin-top:12px">${list.map(renderPartnerCard).join('')}</div>`:'<div class="empty" style="margin-top:12px">لا توجد جهات في هذا القسم</div>'}</div>`; }
+function renderPartners(){ if(!partnersSummary.length){ partnersWrap.innerHTML='<div class="muted">لا توجد جهات تنفيذ مسجلة</div>'; return; } const groups={ printers:[], artisans:[], handles:[], others:[] }; partnersSummary.forEach(p=>{ const t=normalizeType(p.partner_type); if(t==='مطبعة') groups.printers.push(p); else if(t==='صنايعي') groups.artisans.push(p); else if(t==='تركيب يد') groups.handles.push(p); else groups.others.push(p); }); partnersWrap.innerHTML = [ renderGroup('🖨️ المطابع','printers',groups.printers), renderGroup('🧑‍🏭 الصنايعية','artisans',groups.artisans), renderGroup('👜 تركيب اليد','handles',groups.handles), renderGroup('📦 جهات أخرى','others',groups.others) ].join(''); }
+async function togglePartnerDetails(id){ const box=document.getElementById('partnerDetails_'+id); box.classList.toggle('hidden'); if(!box.classList.contains('hidden')) await loadPartnerPayments(id); }
+async function loadPartnerPayments(id){ const rows=await authFetch('/partner-payments/'+id); const target=document.getElementById('partnerPayments_'+id); if(!target) return; target.innerHTML = rows.length?`<table><thead><tr><th>التاريخ</th><th>المبلغ</th><th>ملاحظة</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.payment_date||'')}</td><td>${money(r.amount)}</td><td>${esc(r.note||'-')}</td></tr>`).join('')}</tbody></table>`:'لا توجد دفعات بعد'; }
+async function savePartner(){ const body={id:editingPartnerId,name:p_name.value.trim(),partner_type:p_type.value,phone:p_phone.value.trim(),address:p_address.value.trim(),notes:p_notes.value.trim(),is_active:1}; if(!body.name) return alert('اكتب اسم الجهة'); await authFetch('/save-execution-partner',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}); cancelPartnerEdit(); await reloadAll(); }
+function editPartner(id){ const row=partners.find(p=>String(p.id)===String(id)); if(!row) return; editingPartnerId=id; p_name.value=row.name||''; p_type.value=row.partner_type||'صنايعي'; p_phone.value=row.phone||''; p_address.value=row.address||''; p_notes.value=row.notes||''; partnerSaveBtn.textContent='حفظ التعديل'; partnerCancelBtn.classList.remove('hidden'); window.scrollTo({top:0,behavior:'smooth'}); }
+function cancelPartnerEdit(){ editingPartnerId=0; p_name.value=''; p_type.value='صنايعي'; p_phone.value=''; p_address.value=''; p_notes.value=''; partnerSaveBtn.textContent='حفظ الجهة'; partnerCancelBtn.classList.add('hidden'); }
+async function deletePartner(id){ if(!confirm('حذف الجهة؟')) return; await authFetch('/delete-execution-partner/'+id,{method:'DELETE'}); await reloadAll(); }
+function syncOperationForm(){
+  const order=orderById(Number(op_order_id.value||0));
+  const currentSelected=op_partner.value;
+  let note='';
+  if(order){
+    const available = syncStepSelectForOrder(order, op_step.value);
+    fillPartnerSelect(currentSelected);
+    const cutDone=Number(order.paper_cut_done||0)===1 || Number(order.useReadyStock||0)===1;
+    if(!cutDone) note='لازم تنفيذ القص الأول قبل تسجيل الطباعة أو التصنيع.';
+    else if(!available.length) note='كل مراحل التوجيه المطلوبة لهذا الأوردر متسجلة بالفعل. احذف التوجيه الحالي لو حابب ترجعه يظهر تاني.';
+    else {
+      const suggested = estimateOperationAmount(order, op_step.value);
+      if(suggested>0 && !Number(op_amount.value||0)) op_amount.value=suggested;
+      if(op_step.value==='print') note=`اختَر مطبعة مسجلة وحدد تكلفة الطباعة.${suggested>0 ? ` المبلغ المقترح: ${money(suggested)}` : ''}`;
+      else if(op_step.value==='make') note=`اختَر الصنايعي وحدد تكلفة التصنيع.${suggested>0 ? ` المبلغ المقترح: ${money(suggested)}` : ''}`;
+      else if(op_step.value==='handle') note=`اختَر جهة تركيب اليد أو نفس الصنايعي لو هو اللي هيركب اليد.${suggested>0 ? ` المبلغ المقترح: ${money(suggested)}` : ''}`;
+    }
+  } else {
+    op_step.innerHTML='<option value="">اختر المرحلة</option>';
+    op_partner.innerHTML='<option value="">اختر الجهة</option>';
+  }
+  operationHintBox.textContent = note || 'اختر المرحلة والجهة والتكلفة.';
+}
+function openOperationForOrder(orderId){
+  const order=orderById(orderId);
+  if(!order) return alert('الأوردر غير موجود');
+  operationPartnerTypeFilter='';
+  const available=availableOrderSteps(order);
+  if(!available.length) return alert('كل المراحل المطلوبة لهذا الأوردر متسجلة بالفعل. احذف التوجيه الحالي لو حابب تسجله من جديد.');
+  op_id.value=''; op_order_id.value=orderId; op_status.value='pending'; op_qty.value=order?.qty||0; op_amount.value=''; op_ref.value=''; op_note.value=''; toggleOperationPaid(false); op_payment_note.value=''; op_payment_date.value='';
+  operationOrderHint.textContent = `الأوردر #${order.id} | ${order.custName||'-'} | الكمية ${order.qty||0} | الحالة الحالية ${order.status||'-'}`;
+  syncStepSelectForOrder(order, available[0]);
+  fillPartnerSelect('');
+  openModal('operationModal');
+  syncOperationForm();
+}
+function openOperationForPartner(partnerId){
+  const partner = partners.find(p=>String(p.id)===String(partnerId));
+  const partnerType = normalizeType(partner?.partner_type);
+  const order = openOrders.find(o=>availableOrderSteps(o, partnerType).length);
+  if(!order) return alert('لا يوجد أوردر متاح لهذه الجهة الآن. إمّا كل المراحل متسجلة أو الأوردرات لم يتم قصها بعد.');
+  const available = availableOrderSteps(order, partnerType);
+  const preferred = preferredPartnerStep(partnerType, available);
+  operationPartnerTypeFilter=partnerType;
+  op_id.value=''; op_order_id.value=order.id; op_qty.value=order.qty||0; op_status.value='pending'; op_ref.value=''; op_note.value=''; op_amount.value=''; toggleOperationPaid(false); op_payment_note.value=''; op_payment_date.value='';
+  operationOrderHint.textContent = `تم فتح التوجيه على الأوردر #${order.id} | المتاح لهذه الجهة: ${available.map(stepLabel).join(' / ')}`;
+  syncStepSelectForOrder(order, preferred);
+  fillPartnerSelect(String(partnerId));
+  openModal('operationModal');
+  syncOperationForm();
+}
+async function saveOperation(){ const orderId=Number(op_order_id.value||0); if(!orderId) return alert('افتح الإسناد من أوردر محدد'); if(!op_step.value) return alert('لا توجد مرحلة متاحة الآن لهذا الأوردر'); const paidNow = !!op_paid_now.checked; const body={id:Number(op_id.value||0),order_id:orderId,partner_id:Number(op_partner.value||0),step_type:op_step.value,status:op_status.value,qty:Number(op_qty.value||0),amount:Number(op_amount.value||0),reference_code:op_ref.value.trim(),note:op_note.value.trim(),record_payment: paidNow ? 1 : 0,payment_date: op_payment_date.value,payment_note: op_payment_note.value.trim()}; if(!body.partner_id) return alert('اختر الجهة'); if(paidNow && body.amount<=0) return alert('اكتب قيمة الشغل أولاً قبل تسجيل أنه تم الدفع'); await authFetch('/save-order-operation',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}); closeModal('operationModal'); await reloadAll(); alert('تم ربط الشغل بالأوردر وتحديث الحالة والتكلفة تلقائيًا.'); }
+async function markOperationDone(id){ const row=operationById(id); if(!row) return alert('لم أجد عملية الشغل'); const body={id:Number(row.id||0),order_id:Number(row.order_id||0),partner_id:Number(row.partner_id||0),step_type:String(row.step_type||''),status:'done',qty:Number(row.qty||0),amount:Number(row.amount||0),reference_code:String(row.reference_code||''),note:String(row.note||'')}; await authFetch('/save-order-operation',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}); await reloadAll(); }
+async function deleteOperation(id){ if(!confirm('حذف مرحلة الشغل؟')) return; await authFetch('/delete-order-operation/'+id,{method:'DELETE'}); await reloadAll(); }
+async function completeProductionJobUi(id){ if(!confirm('تأكيد إنهاء أمر التشغيل وإدخاله لمخزن الشنط الجاهزة؟')) return; await authFetch('/complete-production-job/'+id,{method:'POST'}); await reloadAll(); }
+function openPartnerPayment(id){ const row=partnerSummary(id) || partners.find(p=>String(p.id)===String(id)); if(!row) return; pay_partner_id.value=id; pay_amount.value=''; pay_date.value=new Date().toISOString().slice(0,10); pay_note.value=''; paymentPartnerHint.textContent=`${row.name||''} | المتبقي ${money(row.remaining||0)}`; openModal('paymentModal'); }
+async function savePartnerPayment(){ const body={partner_id:Number(pay_partner_id.value||0),amount:Number(pay_amount.value||0),payment_date:pay_date.value,note:pay_note.value.trim()}; if(!body.partner_id) return alert('اختر الجهة'); if(body.amount<=0) return alert('اكتب مبلغ صحيح'); await authFetch('/save-partner-payment',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}); closeModal('paymentModal'); await reloadAll(); }
+window.markOperationDone=markOperationDone;
+window.toggleOperationPaid=toggleOperationPaid;
+window.addEventListener('click',e=>{ if(e.target.classList.contains('modal')) closeModal(e.target.id); });
+reloadAll();
+</script>
+
+<script>
+(function(){
+  const groupVisibility={printers:true,artisans:true,handles:true,others:true};
+  function ensureGroupButtons(){
+    const sec=document.querySelector('#partnersSection .flex');
+    if(!sec || document.getElementById('groupToggleWrap')) return;
+    const wrap=document.createElement('div');
+    wrap.id='groupToggleWrap';
+    wrap.className='flex';
+    wrap.innerHTML=`
+      <button type="button" class="dark" onclick="togglePartnerGroup('printers')" id="togglePrintersBtn">المطابع</button>
+      <button type="button" class="dark" onclick="togglePartnerGroup('artisans')" id="toggleArtisansBtn">الصنايعية</button>
+      <button type="button" class="dark" onclick="togglePartnerGroup('handles')" id="toggleHandlesBtn">تركيب اليد</button>`;
+    sec.appendChild(wrap);
+  }
+  function updateGroupBtn(key){
+    const map={printers:'togglePrintersBtn',artisans:'toggleArtisansBtn',handles:'toggleHandlesBtn'};
+    const el=document.getElementById(map[key]);
+    if(!el) return;
+    const base=key==='printers'?'المطابع':(key==='artisans'?'الصنايعية':'تركيب اليد');
+    el.textContent=(groupVisibility[key]?'إخفاء ':'إظهار ')+base;
+  }
+  window.togglePartnerGroup=function(key){
+    if(!(key in groupVisibility)) return;
+    groupVisibility[key]=!groupVisibility[key];
+    updateGroupBtn(key);
+    if(typeof renderPartners==='function') renderPartners();
+  };
+  const oldRenderGroup=window.renderGroup;
+  window.renderGroup=function(title,key,list){
+    if(groupVisibility[key]===false) return `<div class="group-block"><div class="group-head"><h3>${title}</h3><span class="muted">مخفي الآن</span></div></div>`;
+    return oldRenderGroup(title,key,list);
+  };
+  const oldRenderPartners=window.renderPartners;
+  window.renderPartners=function(){
+    ensureGroupButtons();
+    ['printers','artisans','handles'].forEach(updateGroupBtn);
+    return oldRenderPartners();
+  };
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', ensureGroupButtons);
+  else ensureGroupButtons();
+})();
+</script>
+
+</body>
+</html>

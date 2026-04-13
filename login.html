@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>تسجيل الدخول</title>
+<style>
+body{font-family:'Segoe UI',sans-serif;background:#0f172a;color:#fff;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0}
+.card{width:380px;background:#1e293b;padding:30px;border-radius:18px;box-shadow:0 10px 30px rgba(0,0,0,.35);border:1px solid #334155}
+h1{text-align:center;margin:0 0 24px;color:#22d3ee}
+label{display:block;margin:12px 0 6px}input{width:100%;padding:12px;border-radius:10px;border:1px solid #334155;background:#0f172a;color:#fff;box-sizing:border-box}
+button{width:100%;padding:14px;background:#22d3ee;color:#000;border:none;border-radius:10px;font-weight:700;font-size:16px;cursor:pointer;margin-top:18px}
+#error{color:#fca5a5;margin-top:12px;text-align:center}
+</style>
+</head>
+<body>
+<div class="card">
+<h1>🔐 تسجيل الدخول</h1><div style='text-align:center;color:#94a3b8;margin:-10px 0 18px'>الدخول حسب الصلاحيات: مدير عام / مودريتور / أوبريشن</div>
+<label>اسم المستخدم</label>
+<input id="username" autocomplete="username">
+<label>كلمة المرور</label>
+<input id="password" type="password" autocomplete="current-password">
+<button onclick="login()">دخول</button>
+<div id="error"></div>
+</div>
+<script>
+async function login(){
+  const username=document.getElementById('username').value.trim();
+  const password=document.getElementById('password').value;
+  const res=await fetch('/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username,password})});
+  const data=await res.json().catch(()=>({}));
+  if(!res.ok){document.getElementById('error').innerText=data.error||'فشل الدخول';return}
+  localStorage.setItem('token',data.token);
+  localStorage.setItem('user',JSON.stringify(data.user));
+  location.href='index.html';
+}
+</script>
+</body>
+</html>

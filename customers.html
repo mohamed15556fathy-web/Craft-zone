@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>العملاء</title>
+<style>
+:root{--bg:#0f172a;--panel:#1e293b;--card:#111827;--border:#334155;--text:#f8fafc;--muted:#94a3b8;--cyan:#22d3ee;--green:#4ade80;--red:#f87171;--gold:#fbbf24}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Segoe UI',Tahoma,sans-serif;background:linear-gradient(180deg,#020617,#0f172a);color:var(--text);padding:18px}
+.wrap{max-width:1350px;margin:auto}
+.panel,.stat,.modal-content{background:rgba(15,23,42,.95);border:1px solid var(--border);border-radius:18px;box-shadow:0 14px 34px rgba(0,0,0,.22)}
+.panel{padding:16px;margin-bottom:16px}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.btn{border:none;border-radius:12px;padding:10px 14px;font-weight:800;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:8px}
+.cyan{background:var(--cyan);color:#06202a}.green{background:var(--green);color:#052012}.dark{background:#0b1220;color:var(--text);border:1px solid var(--border)}.red{background:var(--red);color:#fff}
+.gold{background:rgba(251,191,36,.16);color:#fde68a;border:1px solid rgba(251,191,36,.35)}
+.layout{display:grid;grid-template-columns:420px 1fr;gap:16px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.grid .full{grid-column:1/-1}
+label{display:block;margin-bottom:6px;color:#cbd5e1;font-size:13px}input,textarea,select{width:100%;padding:11px 12px;background:#020617;color:#fff;border:1px solid var(--border);border-radius:12px;outline:none}
+textarea{min-height:90px;resize:vertical}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}.stat{padding:14px}.stat small{color:var(--muted);display:block}.stat b{display:block;font-size:26px;margin-top:6px}
+table{width:100%;border-collapse:collapse}.table-wrap{overflow:auto}.list-table th,.list-table td{padding:12px;border-bottom:1px solid var(--border);text-align:center;vertical-align:top}.list-table th{background:#020617;color:var(--cyan);position:sticky;top:0}
+.muted{color:var(--muted)}.actions{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}.modal{display:none;position:fixed;inset:0;background:rgba(2,6,23,.78);padding:18px;overflow:auto;z-index:1000}.modal-content{max-width:1000px;margin:30px auto;padding:20px}.history{max-height:360px;overflow:auto;background:#020617;border:1px solid var(--border);border-radius:14px;padding:12px;line-height:1.8}.chips{display:flex;gap:8px;flex-wrap:wrap}.chip{background:#0b1220;border:1px solid var(--border);padding:8px 10px;border-radius:999px;font-size:13px}.search{min-width:280px}.vip-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;background:rgba(251,191,36,.12);color:#fde68a;border:1px solid rgba(251,191,36,.3);font-size:12px;font-weight:800;margin-bottom:6px}.vip-check{display:flex;align-items:center;gap:10px;background:#0b1220;border:1px solid var(--border);padding:10px 12px;border-radius:12px}.vip-check input{width:auto}
+@media(max-width:980px){.layout{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:640px){.stats{grid-template-columns:1fr}.grid{grid-template-columns:1fr}.search{min-width:0;width:100%}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="panel top">
+    <div>
+      <h2 style="margin:0">👤 قاعدة بيانات العملاء</h2>
+      <div class="muted" style="margin-top:6px">عميل مستقل + كشف حساب + أوردرات + دفعات</div>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+      <input id="q" class="search" placeholder="بحث بالاسم أو التليفون" oninput="render()">
+      <button id="vipFilterBtn" class="btn gold" onclick="toggleVipFilter()">⭐ Vip</button>
+      <a href="index.html" class="btn dark">🏠 الرئيسية</a>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><small>إجمالي العملاء</small><b id="sCustomers">0</b></div>
+    <div class="stat"><small>عملاء Vip</small><b id="sVipCustomers">0</b></div>
+    <div class="stat"><small>إجمالي البيع</small><b id="sSales">0 ج</b></div>
+    <div class="stat"><small>المتبقي</small><b id="sRemaining">0 ج</b></div>
+  </div>
+
+  <div class="layout">
+    <div class="panel">
+      <h3 style="margin-top:0">بيانات العميل</h3>
+      <input id="c_id" type="hidden">
+      <div class="grid">
+        <div class="full"><label>اسم العميل</label><input id="c_name"></div>
+        <div><label>التليفون</label><input id="c_phone"></div>
+        <div><label>الإيميل</label><input id="c_email"></div>
+        <div class="full"><label>العنوان</label><input id="c_address"></div>
+        <div><label>المحافظة</label><input id="c_governorate"></div>
+        <div><label>المنطقة</label><input id="c_zone"></div>
+        <div class="full">
+          <label>النوع</label>
+          <label class="vip-check"><input id="c_is_vip" type="checkbox"> <span>عميل مميز ⭐</span></label>
+        </div>
+        <div class="full"><label>ملاحظات</label><textarea id="c_notes"></textarea></div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap">
+        <button class="btn green" onclick="saveCustomer()">💾 حفظ</button>
+        <button class="btn cyan" onclick="resetForm()">عميل جديد</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="top" style="padding:0">
+        <div>
+          <h3 style="margin:0">العملاء</h3>
+          <div class="muted" style="margin-top:6px">زرار Vip بيعرض العملاء اللي عليهم نجمة فقط.</div>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table class="list-table">
+          <thead>
+            <tr><th>العميل</th><th>التليفون</th><th>الأوردرات</th><th>إجمالي البيع</th><th>المتبقي</th><th>التحكم</th></tr>
+          </thead>
+          <tbody id="body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="statementModal" class="modal">
+  <div class="modal-content">
+    <div class="top">
+      <div>
+        <h3 style="margin:0">📒 كشف حساب العميل</h3>
+        <div id="statementTitle" class="muted" style="margin-top:6px"></div>
+      </div>
+      <button class="btn red" onclick="closeStatement()">إغلاق</button>
+    </div>
+    <div class="chips" id="statementChips" style="margin:14px 0"></div>
+    <div class="grid">
+      <div class="panel" style="margin:0"><h4 style="margin-top:0">الأوردرات</h4><div id="ordersBox" class="history"></div></div>
+      <div class="panel" style="margin:0"><h4 style="margin-top:0">دفعات الأوردرات</h4><div id="paymentsBox" class="history"></div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const token = localStorage.getItem('token');
+const user = JSON.parse(localStorage.getItem('user') || 'null');
+if(!token || !user) location.href = 'login.html';
+if(user.role !== 'admin' && !Number(user.perm_customers || 0)) location.href = 'index.html';
+
+let data = [];
+let vipOnly = false;
+
+function authFetch(url, opts = {}) {
+  opts.headers = Object.assign({}, opts.headers || {}, { Authorization: 'Bearer ' + token });
+  return fetch(url, opts).then(async r => {
+    const d = await r.json().catch(() => ({}));
+    if (r.status === 401) {
+      localStorage.clear();
+      location.href = 'login.html';
+      throw new Error('unauthorized');
+    }
+    if (!r.ok) throw new Error(d.error || 'error');
+    return d;
+  });
+}
+function money(v){ return Number(v || 0).toLocaleString('en-US', { maximumFractionDigits: 2 }) + ' ج'; }
+function esc(s){ return String(s || '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+
+function stats(){
+  sCustomers.innerText = data.length;
+  sVipCustomers.innerText = data.filter(r => Number(r.is_vip || 0) === 1).length;
+  sSales.innerText = money(data.reduce((s, r) => s + Number(r.totalSales || 0), 0));
+  sRemaining.innerText = money(data.reduce((s, r) => s + Number(r.totalRemaining || 0), 0));
+}
+
+function resetForm(){
+  c_id.value = '';
+  c_name.value = '';
+  c_phone.value = '';
+  c_email.value = '';
+  c_address.value = '';
+  c_governorate.value = '';
+  c_zone.value = '';
+  c_notes.value = '';
+  c_is_vip.checked = false;
+}
+
+function fillForm(row){
+  c_id.value = row.id || '';
+  c_name.value = row.name || row.custName || '';
+  c_phone.value = row.phone || row.custPhone || '';
+  c_email.value = row.email || '';
+  c_address.value = row.address || row.custAddress || '';
+  c_governorate.value = row.governorate || '';
+  c_zone.value = row.zone || '';
+  c_notes.value = row.notes || '';
+  c_is_vip.checked = Number(row.is_vip || 0) === 1;
+}
+
+async function saveCustomer(){
+  const body = {
+    id: c_id.value,
+    name: c_name.value,
+    phone: c_phone.value,
+    email: c_email.value,
+    address: c_address.value,
+    governorate: c_governorate.value,
+    zone: c_zone.value,
+    notes: c_notes.value,
+    is_vip: c_is_vip.checked ? 1 : 0
+  };
+  await authFetch('/save-customer', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
+  resetForm();
+  await loadCustomers();
+}
+
+async function toggleVip(id){
+  const row = data.find(x => Number(x.id) === Number(id));
+  if (!row) return;
+  const body = {
+    id: row.id,
+    name: row.name || row.custName || '',
+    phone: row.phone || row.custPhone || '',
+    email: row.email || '',
+    address: row.address || row.custAddress || '',
+    governorate: row.governorate || '',
+    zone: row.zone || '',
+    notes: row.notes || '',
+    is_vip: Number(row.is_vip || 0) === 1 ? 0 : 1
+  };
+  await authFetch('/save-customer', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
+  await loadCustomers();
+}
+
+function toggleVipFilter(){
+  vipOnly = !vipOnly;
+  vipFilterBtn.innerText = vipOnly ? '⭐ Vip فقط' : '⭐ Vip';
+  vipFilterBtn.classList.toggle('dark', !vipOnly);
+  vipFilterBtn.classList.toggle('gold', true);
+  render();
+}
+
+function render(){
+  const s = (q.value || '').trim().toLowerCase();
+  const rows = data.filter(c => {
+    const matchSearch = String(c.custName || c.name || '').toLowerCase().includes(s) || String(c.custPhone || c.phone || '').toLowerCase().includes(s);
+    const matchVip = !vipOnly || Number(c.is_vip || 0) === 1;
+    return matchSearch && matchVip;
+  });
+  body.innerHTML = rows.length ? rows.map(c => `
+    <tr>
+      <td>
+        ${Number(c.is_vip || 0) === 1 ? '<div class="vip-badge">⭐ Vip</div>' : ''}
+        <b>${esc(c.custName || c.name || '')}</b><br>
+        <small class="muted">${esc(c.custAddress || c.address || '')}</small>
+      </td>
+      <td>${esc(c.custPhone || c.phone || '')}</td>
+      <td>${c.ordersCount || 0}<br><small class="muted">آخر أوردر: ${esc(c.lastOrderDate || '-')}</small></td>
+      <td>${money(c.totalSales)}</td>
+      <td>${money(c.totalRemaining)}</td>
+      <td>
+        <div class="actions">
+          <button class="btn gold" onclick="toggleVip(${c.id})">${Number(c.is_vip || 0) === 1 ? '⭐ إزالة النجمة' : '☆ نجمة'}</button>
+          <button class="btn dark" onclick="selectCustomer(${c.id})">تعديل</button>
+          <button class="btn green" onclick="openStatement(${c.id})">كشف حساب</button>
+        </div>
+      </td>
+    </tr>
+  `).join('') : '<tr><td colspan="6">لا يوجد عملاء</td></tr>';
+  stats();
+}
+
+function selectCustomer(id){ const row = data.find(x => Number(x.id) === Number(id)); if(row) fillForm(row); }
+
+async function openStatement(id){
+  const d = await authFetch('/customer-statement/' + id);
+  statementTitle.innerText = `${d.customer.name || ''} | ${d.customer.phone || ''}`;
+  statementChips.innerHTML = `
+    <div class="chip">إجمالي البيع: ${money(d.summary.totalSales)}</div>
+    <div class="chip">المدفوع: ${money(d.summary.totalPaid)}</div>
+    <div class="chip">المتبقي: ${money(d.summary.totalRemaining)}</div>
+    <div class="chip">عدد الأوردرات: ${d.orders.length}</div>
+    ${Number(d.customer.is_vip || 0) === 1 ? '<div class="chip">⭐ عميل Vip</div>' : ''}
+  `;
+  ordersBox.innerHTML = d.orders.length ? d.orders.map(o => `<div style="padding:10px;border-bottom:1px solid #334155"><b>أوردر #${o.id}</b> - ${esc(o.status || '')}<br><small>${esc(o.orderDate || '')} | ${o.l}×${o.w}×${o.g} | كمية ${o.qty || 0}</small><br><small>البيع ${money(o.total_price)} | المدفوع ${money(o.paid_amount)} | المتبقي ${money(o.remaining_amount)}</small></div>`).join('') : 'لا توجد أوردرات';
+  paymentsBox.innerHTML = d.payments.length ? d.payments.map(p => `<div style="padding:10px;border-bottom:1px solid #334155"><b>${money(p.amount)}</b> - ${esc(p.method || 'نقدي')}<br><small>${esc(p.payment_date || '')} | أوردر #${p.order_id || ''}</small><br><small>${esc(p.note || '-')}</small></div>`).join('') : 'لا توجد دفعات';
+  statementModal.style.display = 'block';
+}
+
+function closeStatement(){ statementModal.style.display = 'none'; }
+async function loadCustomers(){ data = await authFetch('/customers'); render(); }
+
+window.selectCustomer = selectCustomer;
+window.openStatement = openStatement;
+window.closeStatement = closeStatement;
+window.toggleVip = toggleVip;
+
+loadCustomers();
+</script>
+</body>
+</html>

@@ -1,0 +1,1372 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>مخزن الشنط الجاهزة</title>
+  <style>
+    :root{
+      --bg:#07111f;
+      --panel:#0f1b2d;
+      --panel-2:#12233b;
+      --line:#233754;
+      --text:#eef4ff;
+      --muted:#9db0cd;
+      --accent:#f59e0b;
+      --accent-soft:rgba(245,158,11,.14);
+      --success:#22c55e;
+      --danger:#ef4444;
+      --danger-soft:rgba(239,68,68,.14);
+      --shadow:0 22px 50px rgba(0,0,0,.22);
+      --radius:22px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:"Segoe UI",Tahoma,sans-serif;
+      background:linear-gradient(180deg,#05101e 0%, #0b1728 100%);
+      color:var(--text);
+      padding:20px;
+    }
+    .container{max-width:1500px;margin:auto}
+    .hero,.card,.item-card,.stat-card,.summary-card,.mini-card,.filter-chip,.size-chip,.choice-chip,.move-box,table{
+      border:1px solid var(--line);
+      box-shadow:var(--shadow);
+    }
+    .hero,.card,.item-card,.summary-card,.mini-card,.stat-card{background:linear-gradient(180deg,var(--panel) 0%, #0b1628 100%);border-radius:var(--radius)}
+    .hero{padding:22px;display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:18px}
+    .hero h1{margin:0;font-size:30px}
+    .hero p{margin:8px 0 0;color:var(--muted);max-width:760px;line-height:1.7}
+    .hero-actions,.form-actions,.section-actions,.item-actions,.move-actions,.choice-row,.filter-row{display:flex;gap:10px;flex-wrap:wrap}
+    button,a.btn{
+      border:none;
+      cursor:pointer;
+      border-radius:14px;
+      padding:11px 16px;
+      font-weight:800;
+      text-decoration:none;
+      transition:.18s transform,.18s opacity,.18s background;
+      background:var(--accent);
+      color:#111827;
+    }
+    button:hover,a.btn:hover{transform:translateY(-1px);opacity:.97}
+    .btn-ghost{background:#0b1526;color:var(--text);border:1px solid var(--line)}
+    .btn-soft{background:var(--accent-soft);color:#ffd68a;border:1px solid rgba(245,158,11,.28)}
+    .btn-danger{background:var(--danger);color:#fff}
+    .btn-success{background:rgba(34,197,94,.16);color:#98f0b3;border:1px solid rgba(34,197,94,.24)}
+    .card{padding:18px;margin-bottom:18px}
+    .section-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+    .section-head h2,.section-head h3{margin:0}
+    .section-head p{margin:6px 0 0;color:var(--muted)}
+    .stats-grid,.top-stats,.summary-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+    .top-stats{margin-bottom:18px}
+    .stat-card,.summary-card,.mini-card{padding:16px}
+    .stat-card small,.summary-card small,.mini-card small{display:block;color:var(--muted);margin-bottom:8px;font-weight:700}
+    .stat-card b,.summary-card b,.mini-card b{font-size:26px}
+    .layout{display:grid;grid-template-columns:380px minmax(0,1fr);gap:18px;align-items:start}
+    .sticky{position:sticky;top:14px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px}
+    .input,select,input{
+      width:100%;
+      background:#081322;
+      color:var(--text);
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:12px 14px;
+      outline:none;
+    }
+    .input:focus,select:focus,input:focus{border-color:rgba(245,158,11,.45);box-shadow:0 0 0 3px rgba(245,158,11,.08)}
+    label{display:block;font-weight:800;margin-bottom:10px}
+    .block{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.05);border-radius:18px;padding:14px;margin-top:12px}
+    .block-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+    .block-head label{margin-bottom:0}
+    .mini-toggle{padding:8px 12px;border-radius:12px;font-size:13px}
+    .choice-row,.preset-grid{margin-top:8px}
+    .preset-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(98px,1fr));gap:8px;max-height:260px;overflow:auto;padding-left:2px}
+    .size-chip,.choice-chip,.filter-chip{
+      background:#081322;
+      color:var(--text);
+      border-radius:14px;
+      padding:10px 12px;
+      font-weight:700;
+      cursor:pointer;
+      text-align:center;
+      border:1px solid var(--line);
+      user-select:none;
+    }
+    .size-chip.active,.choice-chip.active,.filter-chip.active{background:var(--accent-soft);color:#ffd68a;border-color:rgba(245,158,11,.32)}
+    .hint{color:var(--muted);font-size:13px;line-height:1.6;margin-top:10px}
+    .items-tools{display:grid;grid-template-columns:1.35fr .9fr;gap:12px;margin-bottom:14px}
+    .search-wrap{position:relative}
+    .search-wrap input{padding-right:44px}
+    .search-wrap span{position:absolute;right:14px;top:12px;color:var(--muted)}
+    .items-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+    .item-card{padding:16px;border-radius:22px;background:linear-gradient(180deg,var(--panel-2) 0%, #0c1626 100%)}
+    .item-top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:14px}
+    .item-title{font-size:21px;font-weight:900;line-height:1.3}
+    .item-sub{color:var(--muted);margin-top:6px;font-size:14px}
+    .qty-pill{min-width:82px;text-align:center;padding:10px 14px;border-radius:18px;font-weight:900;background:rgba(34,197,94,.14);color:#98f0b3;border:1px solid rgba(34,197,94,.24)}
+    .qty-pill.low{background:var(--danger-soft);color:#fecaca;border-color:rgba(239,68,68,.24)}
+    .mini-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:14px}
+    .item-actions{margin-top:12px}
+    .move-box{background:#081322;border-radius:18px;padding:12px}
+    .move-box input{margin-bottom:10px}
+    .pill{display:inline-flex;min-width:56px;justify-content:center;align-items:center;padding:7px 12px;border-radius:999px;font-weight:900;border:1px solid transparent}
+    .pill.zero{background:rgba(148,163,184,.12);color:#94a3b8;border-color:rgba(148,163,184,.18)}
+    .pill.has{background:rgba(34,197,94,.12);color:#98f0b3;border-color:rgba(34,197,94,.18)}
+    .summary-wrap,.table-wrap{overflow:auto}
+    table{width:100%;border-collapse:collapse;background:var(--panel);border-radius:20px;overflow:hidden}
+    th,td{padding:12px;border-bottom:1px solid var(--line);text-align:center;white-space:nowrap}
+    th{background:#081322;color:#bdd0eb}
+    tr:hover td{background:rgba(255,255,255,.02)}
+    .low-text{color:#fecaca;font-weight:800}
+    .status-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;font-size:12px;font-weight:800}
+    .status-badge.low{background:var(--danger-soft);color:#fecaca}
+    .status-badge.ok{background:rgba(34,197,94,.14);color:#98f0b3}
+    .empty-state{padding:26px;text-align:center;color:var(--muted);border:1px dashed rgba(255,255,255,.1);border-radius:18px;background:rgba(255,255,255,.02)}
+    .hidden{display:none!important}
+    .modal-wrap{position:fixed;inset:0;z-index:60;background:rgba(2,6,23,.78);backdrop-filter:blur(4px);padding:22px;overflow:auto}
+    .modal-box{width:min(1100px,100%);margin:auto;background:linear-gradient(180deg,#0b1628 0%, #08111f 100%);border:1px solid var(--line);border-radius:26px;box-shadow:var(--shadow);padding:20px}
+    .modal-title{margin:0;font-size:28px}
+    .plan-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-top:14px}
+    .plan-card{background:#081322;border:1px solid var(--line);border-radius:18px;padding:14px;cursor:pointer;transition:.18s transform,.18s border-color,.18s background}
+    .plan-card:hover{transform:translateY(-1px)}
+    .plan-card.active{border-color:rgba(245,158,11,.45);background:rgba(245,158,11,.08)}
+    .plan-card.disabled{opacity:.6;cursor:not-allowed}
+    .plan-card h4{margin:0 0 10px;font-size:18px}
+    .plan-meta{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:10px}
+    .plan-meta div{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05);border-radius:14px;padding:10px}
+    .plan-meta small{display:block;color:var(--muted);margin-bottom:6px;font-weight:700}
+    .plan-meta b{font-size:16px}
+    .prod-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-top:14px}
+    .prod-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+    .prod-note{margin-top:10px;color:var(--muted);line-height:1.7}
+    .muted{color:var(--muted)}
+    .table-actions{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
+    .inline-note{font-size:12px;color:var(--muted)}
+    #tableSection th,#tableSection td{white-space:normal;vertical-align:middle;word-break:break-word}
+    #tableSection select,#tableSection input{min-width:0;padding:9px 10px;font-size:13px}
+    #tableSection .table-actions button{padding:9px 10px;font-size:13px;white-space:nowrap}
+    #tableSection .status-badge{white-space:nowrap}
+    @media (max-width:1100px){
+      .layout{grid-template-columns:1fr}
+      .sticky{position:static}
+      .items-tools{grid-template-columns:1fr}
+      #tableSection th,#tableSection td{padding:10px 8px;font-size:13px}
+      #tableSection .table-actions{gap:6px}
+      #tableSection .table-actions button{padding:8px 9px;font-size:12px}
+      #tableSection .status-badge{font-size:11px;padding:5px 8px}
+    }
+    @media (max-width:700px){
+      body{padding:12px}
+      .hero h1{font-size:24px}
+      .mini-grid{grid-template-columns:1fr}
+      .grid{grid-template-columns:1fr}
+      .summary-wrap table,.table-wrap table{min-width:100%}
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="hero">
+    <div>
+      <h1>👜 مخزن الشنط الجاهزة</h1>
+      <p>صفحة أسهل للتعديل والإضافة والحذف، مع الحفاظ على نفس الأصناف والبيانات الحالية. تقدر تضيف صنف جديد بزرار واحد، وتعدّل أو تحذف أي صنف بسرعة.</p>
+    </div>
+    <div class="hero-actions">
+      <button onclick="openNewBagForm()">➕ صنف جديد</button>
+      <button class="btn-success" onclick="openProductionModal()">⚙️ أمر تشغيل</button>
+      <button class="btn-ghost" onclick="toggleSummary()" id="summaryToggleBtn">📊 جدول المخزون</button>
+      <button class="btn-ghost" onclick="toggleHistory()" id="historyToggleBtn">📜 السجل</button>
+      <button class="btn-ghost" onclick="toggleTable()" id="tableToggleBtn">📋 الجدول</button>
+      <a class="btn btn-ghost" href="handles.html">🧵 مخزن اليد</a>
+      <a class="btn btn-ghost" href="index.html">🏠 الرئيسية</a>
+    </div>
+  </div>
+
+  <div class="top-stats" id="topStats"></div>
+
+  <div class="card" style="margin-bottom:18px">
+    <div class="section-head">
+      <div>
+        <h2 style="margin:0">الحد الأدنى لكل الأصناف</h2>
+        <p style="margin:6px 0 0;color:var(--muted)">حدد رقم واحد يتركب على كل أصناف الشنط الحالية بدل التعديل صنف صنف.</p>
+      </div>
+      <div class="section-actions">
+        <input id="bulkMinQty" type="number" placeholder="الحد الأدنى العام" style="max-width:180px">
+        <button class="btn-success" type="button" onclick="applyMinToAllBags()">تطبيق على كل الأصناف</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="layout">
+    <div class="sticky">
+      <div class="card" id="bagFormCard">
+        <div class="section-head">
+          <div>
+            <h2 id="formTitle">➕ إضافة صنف جديد</h2>
+            <p id="formSubtitle">اختار مقاس جاهز أو اكتب مقاس جديد يدويًا، ثم احفظ.</p>
+          </div>
+          <div class="section-actions">
+            <button class="btn-ghost" type="button" onclick="resetBagForm()">🧹 مسح</button>
+          </div>
+        </div>
+
+        <input id="edit_id" type="hidden">
+
+        <div class="block">
+          <div class="block-head">
+            <label>المقاسات الجاهزة الحالية</label>
+            <button type="button" class="btn-ghost mini-toggle" onclick="togglePresetSizes()" id="presetToggleBtn">🙈 إخفاء الأصناف الحالية</button>
+          </div>
+          <div id="sizePresetGrid" class="preset-grid"></div>
+          <div id="selectedSizeHint" class="hint">اختار مقاس جاهز من الموجود أو اكتب المقاس يدويًا تحت.</div>
+        </div>
+
+        <div class="block">
+          <label>المقاس</label>
+          <div class="grid">
+            <input id="l" type="number" placeholder="الطول">
+            <input id="w" type="number" placeholder="العرض">
+            <input id="g" type="number" placeholder="الجنب">
+          </div>
+        </div>
+
+        <div class="block">
+          <label>اللون</label>
+          <div id="colorChoices" class="choice-row"></div>
+          <select id="bagColor" class="hidden"></select>
+        </div>
+
+        <div class="block">
+          <label>نوع اليد</label>
+          <div id="handleChoices" class="choice-row"></div>
+          <select id="handle" class="hidden"></select>
+        </div>
+
+        <div class="block">
+          <label>بيانات الصنف</label>
+          <div class="grid">
+            <input id="qty" type="number" placeholder="الكمية الحالية">
+            <input id="buy_price" type="number" placeholder="سعر الشراء">
+            <input id="sell_price" type="number" placeholder="سعر البيع">
+            <input id="globalMinQty" type="number" placeholder="الحد الأدنى">
+          </div>
+          <div class="form-actions" style="margin-top:14px">
+            <button type="button" onclick="saveBag()" id="saveBagBtn">💾 حفظ الصنف</button>
+            <button class="btn-soft" type="button" onclick="openNewBagForm()">➕ صنف جديد</button>
+            <span id="formModeBadge" class="status-badge ok">وضع إضافة</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="card">
+        <div class="section-head">
+          <div>
+            <h2>الأصناف الحالية</h2>
+            <p>ابحث أو فلتر، ثم عدّل أو حرّك الكمية أو احذف الصنف من نفس المكان.</p>
+          </div>
+          <div class="section-actions">
+            <button type="button" class="btn-ghost mini-toggle" onclick="toggleItemsSection()" id="itemsToggleBtn">🙈 إخفاء الأصناف الحالية</button>
+          </div>
+        </div>
+
+        <div id="itemsSectionBody">
+          <div class="items-tools">
+            <div class="search-wrap">
+              <span>🔎</span>
+              <input id="searchInput" type="text" placeholder="ابحث بالمقاس أو اللون أو نوع اليد" oninput="renderAll()">
+            </div>
+            <div class="filter-row" id="filterChips"></div>
+          </div>
+
+          <div id="itemsGrid" class="items-grid"></div>
+        </div>
+      </div>
+
+      <div id="summarySection" class="card hidden">
+        <div class="section-head">
+          <div>
+            <h3>جدول مخزون الشنط الجاهزة</h3>
+            <p>ملخص سريع للمقاسات الأساسية حسب اللون ونوع اليد.</p>
+          </div>
+        </div>
+        <div class="summary-stats" id="summaryStats"></div>
+        <div class="summary-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th rowspan="2">المقاس</th>
+                <th colspan="2">بني</th>
+                <th colspan="2">أبيض</th>
+                <th rowspan="2">الإجمالي</th>
+              </tr>
+              <tr>
+                <th>بيد</th>
+                <th>بدون يد</th>
+                <th>بيد</th>
+                <th>بدون يد</th>
+              </tr>
+            </thead>
+            <tbody id="readySummaryBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="tableSection" class="card hidden">
+        <div class="section-head">
+          <div>
+            <h3>الجدول الكامل</h3>
+            <p>عرض جدولي لكل الأصناف الموجودة حاليًا.</p>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>الصنف</th>
+                <th>الرصيد</th>
+                <th>الحد الأدنى</th>
+                <th>شراء</th>
+                <th>إجمالي المشتريات</th>
+                <th>بيع</th>
+                <th>إجمالي المبيعات</th>
+                <th>الحالة</th>
+                <th>إجراءات</th>
+              </tr>
+            </thead>
+            <tbody id="bagsBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="historySection" class="card hidden">
+        <div class="section-head">
+          <div>
+            <h3>سجل الشنط</h3>
+            <p>آخر الحركات على الأصناف.</p>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>التاريخ</th>
+                <th>الصنف</th>
+                <th>النوع</th>
+                <th>الكمية</th>
+                <th>التفاصيل</th>
+              </tr>
+            </thead>
+            <tbody id="historyBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div id="productionModal" class="modal-wrap hidden">
+  <div class="modal-box">
+    <div class="section-head">
+      <div>
+        <h2 class="modal-title">⚙️ أمر تشغيل</h2>
+        <p>اسحب ورق من مخزن الورق مباشرة إلى مخزن الشنط، واختر نوع القَصّة ليتم حساب تكلفة التشغيل تلقائيًا.</p>
+      </div>
+      <div class="section-actions">
+        <button class="btn-ghost" type="button" onclick="closeProductionModal()">✖️ إغلاق</button>
+      </div>
+    </div>
+
+    <div class="grid">
+      <select id="prod_stock_item">
+        <option value="">اختار مقاس من المخزن</option>
+      </select>
+      <input id="prod_l" type="number" placeholder="الطول">
+      <input id="prod_w" type="number" placeholder="العرض">
+      <input id="prod_g" type="number" placeholder="الجنب">
+      <input id="prod_qty" type="number" min="1" placeholder="الكمية">
+      <select id="prod_color"></select>
+      <select id="prod_handle"></select>
+    </div>
+
+    <div class="prod-actions" style="margin-top:14px">
+      <button type="button" class="btn-ghost" onclick="fillProductionInputs()">📥 سحب البيانات</button>
+    </div>
+
+    <div class="prod-actions">
+      <button id="toggleProductionPlansBtn" type="button" onclick="loadProductionPlans()">🔎 عرض اقتراحات التشغيل</button>
+    </div>
+
+    <div id="productionPlansWrap" class="hidden">
+      <div class="section-head" style="margin-top:18px">
+        <div>
+          <h3>اختار الورق والقَصّة</h3>
+          <p>سيتم عرض أفرخ نفس اللون المختار فقط، ثم يخصم المخزون ويُضاف الناتج مباشرة إلى مخزن الشنط.</p>
+        </div>
+      </div>
+      <div id="productionPlans" class="plan-grid"></div>
+    </div>
+
+    <div id="productionCutDrawing" class="block hidden" style="margin-top:14px;background:#fff;border-radius:18px;padding:14px;overflow:auto"></div><div id="productionSummary" class="prod-summary"></div>
+
+    <div id="productionPricingBlock" class="block hidden" style="margin-top:14px">
+      <label>تسعير الصنف بعد أمر التشغيل</label>
+      <div class="grid">
+        <select id="prod_pricing_mode">
+          <option value="auto_from_margin">تحديد تلقائي من تكلفة التشغيل + نسبة الربح</option>
+          <option value="keep_existing">استخدام أسعار الصنف الحالية كما هي</option>
+        </select>
+        <input id="prod_profit_margin" type="number" min="0" step="0.01" placeholder="نسبة الربح %">
+      </div>
+      <div class="prod-actions" style="margin-top:10px">
+        <button type="button" id="useCurrentPricesBtn" class="btn-ghost hidden" onclick="useCurrentBagPrices()">💰 استخدام أسعار الصنف الحالية</button>
+      </div>
+      <div class="hint" id="productionPricingHint">اختار طريقة التسعير، ولو اخترت التلقائي اكتب نسبة الربح ليتم تحديد سعر البيع تلقائيًا.</div>
+    </div>
+
+    <div id="productionNote" class="prod-note">بعد اختيار الخطة المناسبة، سيتم تسجيل العملية كـ <b>أمر تشغيل مفتوح</b> في صفحة الصنايعية ولن تدخل الشنط المخزن إلا بعد الضغط على تم.</div>
+
+    <div class="prod-actions">
+      <button id="saveProductionBtn" type="button" class="btn-success" onclick="submitProductionOrder()">✅ تنفيذ أمر التشغيل</button>
+      <button type="button" class="btn-ghost" onclick="closeProductionModal()">إلغاء</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const token = localStorage.getItem('token');
+const user = JSON.parse(localStorage.getItem('user') || 'null');
+if (!token || !user) location.href = 'login.html';
+if (user.username !== 'admin' && !Number(user.perm_view_bags || 0)) location.href = 'index.html';
+
+const DEFAULT_FIXED_SIZES = ['10 × 10 × 6','15 × 10 × 6','15 × 15 × 6','20 × 15 × 6','20 × 20 × 7','25 × 20 × 8','30 × 25 × 8','30 × 30 × 10','35 × 30 × 10','35 × 35 × 10','40 × 30 × 12','40 × 35 × 12','40 × 40 × 12','45 × 40 × 12','45 × 45 × 12','40 × 50 × 12','40 × 60 × 12'];
+const READY_COLORS = ['بني','أبيض'];
+const READY_HANDLES = ['بيد','بدون يد'];
+const DEFAULT_COLORS = ['بني','أبيض','أسود'];
+const DEFAULT_HANDLES = ['بدون يد','بيد'];
+
+let bagsData = [];
+let historyData = [];
+let summaryRows = [];
+let summaryVisible = false;
+let historyVisible = false;
+let tableVisible = false;
+let presetVisible = true;
+let itemsSectionVisible = true;
+let inlineEditId = null;
+let activeFilter = 'all';
+
+const sizePresetGrid = document.getElementById('sizePresetGrid');
+const selectedSizeHint = document.getElementById('selectedSizeHint');
+const colorChoices = document.getElementById('colorChoices');
+const handleChoices = document.getElementById('handleChoices');
+const bagColor = document.getElementById('bagColor');
+const handle = document.getElementById('handle');
+const itemsGrid = document.getElementById('itemsGrid');
+const bagsBody = document.getElementById('bagsBody');
+const historyBody = document.getElementById('historyBody');
+const summaryStats = document.getElementById('summaryStats');
+const readySummaryBody = document.getElementById('readySummaryBody');
+const filterChips = document.getElementById('filterChips');
+const topStats = document.getElementById('topStats');
+const formTitle = document.getElementById('formTitle');
+const formSubtitle = document.getElementById('formSubtitle');
+const formModeBadge = document.getElementById('formModeBadge');
+const saveBagBtn = document.getElementById('saveBagBtn');
+const edit_id = document.getElementById('edit_id');
+const l = document.getElementById('l');
+const w = document.getElementById('w');
+const g = document.getElementById('g');
+const qty = document.getElementById('qty');
+const buy_price = document.getElementById('buy_price');
+const sell_price = document.getElementById('sell_price');
+const globalMinQty = document.getElementById('globalMinQty');
+const searchInput = document.getElementById('searchInput');
+const presetToggleBtn = document.getElementById('presetToggleBtn');
+const itemsSectionBody = document.getElementById('itemsSectionBody');
+const itemsToggleBtn = document.getElementById('itemsToggleBtn');
+const productionModal = document.getElementById('productionModal');
+const prod_stock_item = document.getElementById('prod_stock_item');
+const prod_l = document.getElementById('prod_l');
+const prod_w = document.getElementById('prod_w');
+const prod_g = document.getElementById('prod_g');
+const prod_qty = document.getElementById('prod_qty');
+const prod_color = document.getElementById('prod_color');
+const prod_handle = document.getElementById('prod_handle');
+const productionPlansWrap = document.getElementById('productionPlansWrap');
+const productionPlansEl = document.getElementById('productionPlans');
+const productionCutDrawing = document.getElementById('productionCutDrawing');
+const productionSummary = document.getElementById('productionSummary');
+const toggleProductionPlansBtn = document.getElementById('toggleProductionPlansBtn');
+const productionNote = document.getElementById('productionNote');
+const saveProductionBtn = document.getElementById('saveProductionBtn');
+const productionPricingBlock = document.getElementById('productionPricingBlock');
+const prod_pricing_mode = document.getElementById('prod_pricing_mode');
+const prod_profit_margin = document.getElementById('prod_profit_margin');
+const productionPricingHint = document.getElementById('productionPricingHint');
+const useCurrentPricesBtn = document.getElementById('useCurrentPricesBtn');
+
+let productionPlans = [];
+let selectedProductionPlan = null;
+
+function authFetch(url, opts = {}) {
+  opts.headers = Object.assign({}, opts.headers || {}, { Authorization: 'Bearer ' + token });
+  return fetch(url, opts).then(async (r) => {
+    const data = await r.json().catch(() => ({}));
+    if (r.status === 401) {
+      localStorage.clear();
+      location.href = 'login.html';
+      throw new Error('unauthorized');
+    }
+    if (!r.ok) throw new Error(data.error || 'error');
+    return data;
+  });
+}
+
+function money(v){ return Number(v || 0).toLocaleString('en-US', { maximumFractionDigits: 2 }) + ' ج'; }
+function formatNote(n){ return n || '-'; }
+function escapeHtml(v){ return String(v ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+function parseSize(label){ const parts = String(label).split('×').map(v => Number(String(v).trim())); return { length: parts[0] || 0, width: parts[1] || 0, gusset: parts[2] || 0 }; }
+function sizeLabel(b){ return `${Number(b.length || 0)} × ${Number(b.width || 0)} × ${Number(b.gusset || 0)}`; }
+function bagName(b){ return `${b.color || '-'} - ${b.handle || '-'} / ${sizeLabel(b)}`; }
+function getBagKey(b){ return [Number(b.length||0),Number(b.width||0),Number(b.gusset||0),String(b.color||'').trim(),String(b.handle||'').trim()].join('|'); }
+function isLow(b){ return Number(b.min_qty || 0) > 0 && Number(b.total_qty || 0) <= Number(b.min_qty || 0); }
+
+function getPresetSizes(){
+  const fromData = [...new Set(bagsData.map(sizeLabel))];
+  return [...new Set([...DEFAULT_FIXED_SIZES, ...fromData])].sort((a,b) => {
+    const aa = parseSize(a), bb = parseSize(b);
+    return aa.length - bb.length || aa.width - bb.width || aa.gusset - bb.gusset;
+  });
+}
+function getColorOptions(){ return [...new Set([...DEFAULT_COLORS, ...bagsData.map(b => String(b.color || '').trim()).filter(Boolean)])]; }
+function getHandleOptions(){ return [...new Set([...DEFAULT_HANDLES, ...bagsData.map(b => String(b.handle || '').trim()).filter(Boolean)])]; }
+
+function renderChoiceButtons(container, values, selectedValue, onPick){
+  container.innerHTML = values.map(value => `<button type="button" class="choice-chip ${String(value) === String(selectedValue) ? 'active' : ''}" onclick="${onPick}('${escapeHtml(value)}')">${escapeHtml(value)}</button>`).join('');
+}
+
+function renderPresetButtons(){
+  const selected = sizeLabel({ length:l.value, width:w.value, gusset:g.value });
+  sizePresetGrid.innerHTML = getPresetSizes().map(label => `<button type="button" class="size-chip ${label === selected ? 'active' : ''}" onclick="selectPresetSize('${label}')">${label}</button>`).join('');
+  sizePresetGrid.classList.toggle('hidden', !presetVisible);
+  presetToggleBtn.textContent = presetVisible ? '🙈 إخفاء الأصناف الحالية' : '👁️ إظهار الأصناف الحالية';
+}
+
+function syncFormState(){
+  renderPresetButtons();
+  bagColor.innerHTML = getColorOptions().map(c => `<option ${c === bagColor.value ? 'selected' : ''}>${escapeHtml(c)}</option>`).join('');
+  handle.innerHTML = getHandleOptions().map(h => `<option ${h === handle.value ? 'selected' : ''}>${escapeHtml(h)}</option>`).join('');
+  renderChoiceButtons(colorChoices, getColorOptions(), bagColor.value, 'setBagColor');
+  renderChoiceButtons(handleChoices, getHandleOptions(), handle.value, 'setHandleType');
+  const hasSize = l.value && w.value && g.value;
+  selectedSizeHint.textContent = hasSize ? `المقاس الحالي: ${sizeLabel({length:l.value,width:w.value,gusset:g.value})}` : 'اختار مقاس جاهز من الموجود أو اكتب المقاس يدويًا تحت.';
+  const editing = !!edit_id.value;
+  formTitle.textContent = editing ? '✏️ تعديل الصنف' : '➕ إضافة صنف جديد';
+  formSubtitle.textContent = editing ? 'التعديل هيحفظ على نفس الصنف الحالي.' : 'اختار مقاس جاهز أو اكتب مقاس جديد يدويًا، ثم احفظ.';
+  formModeBadge.textContent = editing ? 'وضع تعديل' : 'وضع إضافة';
+  formModeBadge.className = 'status-badge ' + (editing ? 'low' : 'ok');
+  saveBagBtn.textContent = editing ? '💾 حفظ التعديل' : '💾 حفظ الصنف';
+}
+
+function selectPresetSize(label){
+  const dims = parseSize(label);
+  l.value = dims.length;
+  w.value = dims.width;
+  g.value = dims.gusset;
+  syncFormState();
+}
+function setBagColor(value){ bagColor.value = value; syncFormState(); }
+function setHandleType(value){ handle.value = value; syncFormState(); }
+
+function resetBagForm(keepBasics = false){
+  edit_id.value = '';
+  qty.value = '';
+  if (!keepBasics) {
+    l.value = '';
+    w.value = '';
+    g.value = '';
+    buy_price.value = '';
+    sell_price.value = '';
+    globalMinQty.value = '';
+    bagColor.value = getColorOptions()[0] || 'بني';
+    handle.value = getHandleOptions()[0] || 'بدون يد';
+  }
+  syncFormState();
+}
+function openNewBagForm(){
+  resetBagForm();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function editBag(id){
+  const b = bagsData.find(x => String(x.id) === String(id));
+  if (!b) return;
+  edit_id.value = b.id;
+  l.value = b.length;
+  w.value = b.width;
+  g.value = b.gusset;
+  qty.value = b.total_qty;
+  buy_price.value = b.buy_price;
+  sell_price.value = b.sell_price;
+  globalMinQty.value = b.min_qty || 0;
+  bagColor.value = b.color;
+  handle.value = b.handle;
+  syncFormState();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function getFilteredBags(){
+  const q = String(searchInput.value || '').trim().toLowerCase();
+  return bagsData.filter(b => {
+    const low = isLow(b);
+    if (activeFilter === 'low' && !low) return false;
+    if (activeFilter === 'inStock' && Number(b.total_qty || 0) <= 0) return false;
+    if (activeFilter === 'out' && Number(b.total_qty || 0) > 0) return false;
+    if (!q) return true;
+    return [b.color, b.handle, sizeLabel(b), bagName(b)].join(' ').toLowerCase().includes(q);
+  });
+}
+
+function renderFilterChips(){
+  const counts = {
+    all: bagsData.length,
+    low: bagsData.filter(isLow).length,
+    inStock: bagsData.filter(b => Number(b.total_qty || 0) > 0).length,
+    out: bagsData.filter(b => Number(b.total_qty || 0) <= 0).length,
+  };
+  const defs = [
+    ['all', `الكل (${counts.all})`],
+    ['low', `ناقص (${counts.low})`],
+    ['inStock', `متوفر (${counts.inStock})`],
+    ['out', `نفد (${counts.out})`],
+  ];
+  filterChips.innerHTML = defs.map(([key,label]) => `<button type="button" class="filter-chip ${activeFilter === key ? 'active' : ''}" onclick="setFilter('${key}')">${label}</button>`).join('');
+}
+function setFilter(key){ activeFilter = key; renderAll(); }
+
+function renderTopStats(){
+  const totalQty = bagsData.reduce((sum, b) => sum + Number(b.total_qty || 0), 0);
+  const totalBuy = bagsData.reduce((sum, b) => sum + Number(b.total_qty || 0) * Number(b.buy_price || 0), 0);
+  const totalSell = bagsData.reduce((sum, b) => sum + Number(b.total_qty || 0) * Number(b.sell_price || 0), 0);
+  const lowCount = bagsData.filter(isLow).length;
+  topStats.innerHTML = `
+    <div class="stat-card"><small>عدد الأصناف</small><b>${bagsData.length}</b></div>
+    <div class="stat-card"><small>إجمالي الكمية</small><b>${totalQty}</b></div>
+    <div class="stat-card"><small>قيمة الشراء</small><b>${money(totalBuy)}</b></div>
+    <div class="stat-card"><small>قيمة البيع</small><b>${money(totalSell)}</b></div>
+    <div class="stat-card"><small>أصناف تحت الحد الأدنى</small><b>${lowCount}</b></div>
+  `;
+}
+
+function togglePresetSizes(){
+  presetVisible = !presetVisible;
+  renderPresetButtons();
+}
+
+function toggleItemsSection(){
+  itemsSectionVisible = !itemsSectionVisible;
+  itemsSectionBody.classList.toggle('hidden', !itemsSectionVisible);
+  itemsToggleBtn.textContent = itemsSectionVisible ? '🙈 إخفاء الأصناف الحالية' : '👁️ إظهار الأصناف الحالية';
+}
+
+function startInlineEdit(id){
+  inlineEditId = String(id);
+  renderTable();
+}
+
+function cancelInlineEdit(){
+  inlineEditId = null;
+  renderTable();
+}
+
+function inlineNumber(id, field, value, placeholder){
+  return `<input id="inline_${field}_${id}" type="number" value="${escapeHtml(value ?? '')}" placeholder="${placeholder || ''}" style="min-width:90px">`;
+}
+
+function inlineText(id, field, value, placeholder){
+  return `<input id="inline_${field}_${id}" type="text" value="${escapeHtml(value ?? '')}" placeholder="${placeholder || ''}" style="min-width:100px">`;
+}
+
+function inlineSelect(id, field, values, selected){
+  return `<select id="inline_${field}_${id}" style="min-width:110px">${values.map(v => `<option value="${escapeHtml(v)}" ${String(v)===String(selected)?'selected':''}>${escapeHtml(v)}</option>`).join('')}</select>`;
+}
+
+async function saveInlineEdit(id){
+  const row = bagsData.find(x => String(x.id) === String(id));
+  if (!row) return;
+  const getVal = field => document.getElementById(`inline_${field}_${id}`)?.value ?? '';
+  const payload = {
+    edit_id: id,
+    l: getVal('length'),
+    w: getVal('width'),
+    g: getVal('gusset'),
+    color: getVal('color'),
+    handle: getVal('handle'),
+    qty: getVal('qty'),
+    min_qty: getVal('min_qty'),
+    buy_price: getVal('buy_price'),
+    sell_price: getVal('sell_price'),
+  };
+  if (!payload.l || !payload.w || !payload.g) return alert('حدد المقاس بالكامل');
+  if (!payload.color || !payload.handle) return alert('حدد اللون ونوع اليد');
+  try {
+    await authFetch('/add-bag', {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json' },
+      body: JSON.stringify(payload)
+    });
+    inlineEditId = null;
+    await loadAll();
+    alert('تم حفظ التعديل');
+  } catch (e) {
+    alert(e.message);
+  }
+}
+
+function renderItemsGrid(){
+  const list = getFilteredBags();
+  if (!list.length) {
+    itemsGrid.innerHTML = '<div class="empty-state">لا يوجد أصناف مطابقة للبحث أو الفلتر.</div>';
+    return;
+  }
+  itemsGrid.innerHTML = list.map((b, idx) => {
+    const qtyNum = Number(b.total_qty || 0);
+    const buyTotal = qtyNum * Number(b.buy_price || 0);
+    const sellTotal = qtyNum * Number(b.sell_price || 0);
+    return `
+      <div class="item-card">
+        <div class="item-top">
+          <div>
+            <div class="item-title">${sizeLabel(b)}</div>
+            <div class="item-sub">${escapeHtml(b.color)} • ${escapeHtml(b.handle)}</div>
+          </div>
+          <div class="qty-pill ${isLow(b) ? 'low' : ''}">${qtyNum}</div>
+        </div>
+
+        <div class="mini-grid">
+          <div class="mini-card"><small>الحد الأدنى</small><b>${Number(b.min_qty || 0)}</b></div>
+          <div class="mini-card"><small>الحالة</small><b style="font-size:18px">${isLow(b) ? 'ناقص' : 'مستقر'}</b></div>
+          <div class="mini-card"><small>سعر الشراء</small><b>${money(b.buy_price || 0)}</b></div>
+          <div class="mini-card"><small>سعر البيع</small><b>${money(b.sell_price || 0)}</b></div>
+          <div class="mini-card"><small>إجمالي المشتريات</small><b>${money(buyTotal)}</b></div>
+          <div class="mini-card"><small>إجمالي المبيعات</small><b>${money(sellTotal)}</b></div>
+        </div>
+
+        <div class="move-box">
+          <input id="move_${b.id}" type="number" min="1" placeholder="اكتب كمية الحركة">
+          <div class="move-actions">
+            <button class="btn-success" onclick="quickMoveBag(${b.id},1)">＋ إضافة كمية</button>
+            <button class="btn-soft" onclick="quickMoveBag(${b.id},-1)">－ خصم كمية</button>
+          </div>
+        </div>
+
+        <div class="item-actions">
+          <button class="btn-success" onclick="openProductionModal(${b.id})">⚙️ أمر تشغيل</button>
+          <button onclick="editBag(${b.id})">✏️ تعديل</button>
+          <button class="btn-danger" onclick="deleteBag(${b.id})">🗑️ حذف</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderTable(){
+  const list = getFilteredBags();
+  if (!list.length) {
+    bagsBody.innerHTML = '<tr><td colspan="9">لا يوجد أصناف مطابقة.</td></tr>';
+    return;
+  }
+  bagsBody.innerHTML = list.map(b => {
+    const qtyNum = Number(b.total_qty || 0);
+    const buyTotal = qtyNum * Number(b.buy_price || 0);
+    const sellTotal = qtyNum * Number(b.sell_price || 0);
+    const editing = String(inlineEditId) === String(b.id);
+    if (editing) {
+      return `
+        <tr>
+          <td>
+            <div style="display:grid;gap:8px">
+              ${inlineSelect(b.id,'color',getColorOptions(),b.color)}
+              ${inlineSelect(b.id,'handle',getHandleOptions(),b.handle)}
+              <div style="display:grid;grid-template-columns:repeat(3,minmax(70px,1fr));gap:6px">
+                ${inlineNumber(b.id,'length',b.length,'طول')}
+                ${inlineNumber(b.id,'width',b.width,'عرض')}
+                ${inlineNumber(b.id,'gusset',b.gusset,'جنب')}
+              </div>
+            </div>
+          </td>
+          <td>${inlineNumber(b.id,'qty',qtyNum,'الرصيد')}</td>
+          <td>${inlineNumber(b.id,'min_qty',Number(b.min_qty || 0),'الحد الأدنى')}</td>
+          <td>${inlineNumber(b.id,'buy_price',Number(b.buy_price || 0),'شراء')}</td>
+          <td>${money(buyTotal)}<br><small class="inline-note">يتحدث بعد الحفظ</small></td>
+          <td>${inlineNumber(b.id,'sell_price',Number(b.sell_price || 0),'بيع')}</td>
+          <td>${money(sellTotal)}<br><small class="inline-note">يتحدث بعد الحفظ</small></td>
+          <td><span class="status-badge ${isLow(b) ? 'low' : 'ok'}">جاري التعديل</span></td>
+          <td>
+            <div class="table-actions">
+              <button class="btn-success" onclick="saveInlineEdit(${b.id})">حفظ</button>
+              <button class="btn-ghost" onclick="cancelInlineEdit()">إلغاء</button>
+              <button class="btn-danger" onclick="deleteBag(${b.id})">حذف</button>
+            </div>
+          </td>
+        </tr>
+      `;
+    }
+    return `
+      <tr>
+        <td>${escapeHtml(b.color)} - ${escapeHtml(b.handle)}<br><small class="inline-note">${sizeLabel(b)}</small></td>
+        <td class="${isLow(b) ? 'low-text' : ''}">${qtyNum}</td>
+        <td>${Number(b.min_qty || 0)}</td>
+        <td>${money(b.buy_price || 0)}</td>
+        <td>${money(buyTotal)}</td>
+        <td>${money(b.sell_price || 0)}</td>
+        <td>${money(sellTotal)}</td>
+        <td><span class="status-badge ${isLow(b) ? 'low' : 'ok'}">${isLow(b) ? 'ناقص' : 'مستقر'}</span></td>
+        <td>
+          <div class="table-actions">
+            <button class="btn-success" onclick="openProductionModal(${b.id})">أمر تشغيل</button>
+            <button onclick="startInlineEdit(${b.id})">تعديل</button>
+            <button class="btn-danger" onclick="deleteBag(${b.id})">حذف</button>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function pill(v){ const n = Number(v || 0); return `<span class="pill ${n > 0 ? 'has' : 'zero'}">${n}</span>`; }
+function renderReadySummary(rows){
+  const fallback = DEFAULT_FIXED_SIZES.map(label => ({ label, cells: { 'بني_بيد':0,'بني_بدون يد':0,'أبيض_بيد':0,'أبيض_بدون يد':0 } }));
+  const data = rows && rows.length ? rows : fallback;
+  const totals = { 'بني_بيد':0,'بني_بدون يد':0,'أبيض_بيد':0,'أبيض_بدون يد':0 };
+  readySummaryBody.innerHTML = data.map(r => {
+    const brownHand = Number(r.cells?.['بني_بيد'] || 0);
+    const brownNo = Number(r.cells?.['بني_بدون يد'] || 0);
+    const whiteHand = Number(r.cells?.['أبيض_بيد'] || 0);
+    const whiteNo = Number(r.cells?.['أبيض_بدون يد'] || 0);
+    totals['بني_بيد'] += brownHand;
+    totals['بني_بدون يد'] += brownNo;
+    totals['أبيض_بيد'] += whiteHand;
+    totals['أبيض_بدون يد'] += whiteNo;
+    const rowTotal = brownHand + brownNo + whiteHand + whiteNo;
+    return `<tr><td>${r.label}</td><td>${pill(brownHand)}</td><td>${pill(brownNo)}</td><td>${pill(whiteHand)}</td><td>${pill(whiteNo)}</td><td>${pill(rowTotal)}</td></tr>`;
+  }).join('');
+  const grandTotal = Object.values(totals).reduce((a,b) => a + b, 0);
+  summaryStats.innerHTML = `
+    <div class="summary-card"><small>بني بيد</small><b>${totals['بني_بيد']}</b></div>
+    <div class="summary-card"><small>بني بدون يد</small><b>${totals['بني_بدون يد']}</b></div>
+    <div class="summary-card"><small>أبيض بيد</small><b>${totals['أبيض_بيد']}</b></div>
+    <div class="summary-card"><small>أبيض بدون يد</small><b>${totals['أبيض_بدون يد']}</b></div>
+    <div class="summary-card"><small>الإجمالي</small><b>${grandTotal}</b></div>
+  `;
+}
+
+function renderHistory(){
+  historyBody.innerHTML = historyData.length ? historyData.map(h => `
+    <tr>
+      <td>${new Date(h.date).toLocaleString('ar-EG')}</td>
+      <td>${escapeHtml(h.color || '')} - ${escapeHtml(h.handle || '')} (${Number(h.length || 0)}×${Number(h.width || 0)}×${Number(h.gusset || 0)})</td>
+      <td>${h.type === 'add' ? 'إضافة' : h.type === 'sub' ? 'خصم' : h.type === 'edit' ? 'تعديل' : h.type === 'delete' ? 'حذف' : '-'}</td>
+      <td>${Number(h.qty || 0)}</td>
+      <td>${escapeHtml(formatNote(h.note))}</td>
+    </tr>
+  `).join('') : '<tr><td colspan="5">لا يوجد سجل</td></tr>';
+}
+
+function renderAll(){
+  renderTopStats();
+  renderFilterChips();
+  renderItemsGrid();
+  renderTable();
+  renderReadySummary(summaryRows);
+  renderHistory();
+  syncFormState();
+}
+
+function toggleSummary(){
+  summaryVisible = !summaryVisible;
+  document.getElementById('summarySection').classList.toggle('hidden', !summaryVisible);
+  document.getElementById('summaryToggleBtn').textContent = summaryVisible ? '📊 إخفاء جدول المخزون' : '📊 جدول المخزون';
+}
+function toggleHistory(){
+  historyVisible = !historyVisible;
+  document.getElementById('historySection').classList.toggle('hidden', !historyVisible);
+  document.getElementById('historyToggleBtn').textContent = historyVisible ? '📜 إخفاء السجل' : '📜 السجل';
+}
+function toggleTable(){
+  tableVisible = !tableVisible;
+  document.getElementById('tableSection').classList.toggle('hidden', !tableVisible);
+  document.getElementById('tableToggleBtn').textContent = tableVisible ? '📋 إخفاء الجدول' : '📋 الجدول';
+}
+
+async function loadAll(){
+  const [summary, bags, history] = await Promise.all([
+    authFetch('/ready-bags-summary'),
+    authFetch('/get-bags'),
+    authFetch('/get-bags-history')
+  ]);
+  summaryRows = summary || [];
+  bagsData = (bags || []).sort((a,b) => Number(a.length) - Number(b.length) || Number(a.width) - Number(b.width) || Number(a.gusset) - Number(b.gusset) || String(a.color).localeCompare(String(b.color),'ar') || String(a.handle).localeCompare(String(b.handle),'ar'));
+  historyData = history || [];
+  renderAll();
+}
+async function applyMinToAllBags(){
+  const minQty = Number(document.getElementById('bulkMinQty')?.value || 0);
+  if(minQty < 0) return alert('اكتب حد أدنى صحيح');
+  if(!confirm(`تأكيد تطبيق حد أدنى ${minQty} على كل أصناف الشنط؟`)) return;
+  try{
+    await authFetch('/set-bags-min-all',{
+      method:'POST',
+      headers:{ 'Content-Type':'application/json' },
+      body: JSON.stringify({ min_qty:minQty })
+    });
+    await loadAll();
+    alert('تم تحديث الحد الأدنى لكل الأصناف');
+  }catch(e){
+    alert(e.message);
+  }
+}
+
+async function saveBag(){
+  try {
+    if (!l.value || !w.value || !g.value) return alert('حدد المقاس بالكامل أولاً');
+    if (!bagColor.value || !handle.value) return alert('حدد اللون ونوع اليد');
+    if (!edit_id.value && Number(qty.value || 0) === 0) return alert('اكتب كمية قبل الحفظ');
+    await authFetch('/add-bag', {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json' },
+      body: JSON.stringify({
+        edit_id: edit_id.value || undefined,
+        l: l.value,
+        w: w.value,
+        g: g.value,
+        color: bagColor.value,
+        handle: handle.value,
+        qty: qty.value || 0,
+        min_qty: globalMinQty.value || 0,
+        buy_price: buy_price.value || 0,
+        sell_price: sell_price.value || 0,
+      })
+    });
+    const wasEdit = !!edit_id.value;
+    resetBagForm();
+    await loadAll();
+    alert(wasEdit ? 'تم حفظ التعديل' : 'تمت إضافة الصنف بنجاح');
+  } catch (e) {
+    alert(e.message);
+  }
+}
+
+async function quickMoveBag(id, dir){
+  const row = bagsData.find(x => String(x.id) === String(id));
+  if (!row) return;
+  const input = document.getElementById('move_' + id);
+  const qtyVal = Number(input?.value || 0);
+  if (qtyVal <= 0) return alert('اكتب كمية صحيحة');
+  if (dir < 0 && qtyVal > Number(row.total_qty || 0)) return alert('الكمية أكبر من الرصيد');
+  try {
+    await authFetch('/add-bag', {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json' },
+      body: JSON.stringify({
+        l: row.length,
+        w: row.width,
+        g: row.gusset,
+        color: row.color,
+        handle: row.handle,
+        qty: dir * qtyVal,
+        min_qty: row.min_qty,
+        buy_price: row.buy_price,
+        sell_price: row.sell_price,
+      })
+    });
+    if (input) input.value = '';
+    await loadAll();
+  } catch (e) {
+    alert(e.message);
+  }
+}
+
+async function deleteBag(id){
+  if (!confirm('هل تريد حذف هذا الصنف؟')) return;
+  try {
+    await authFetch('/delete-bag/' + id, { method:'DELETE' });
+    if (String(edit_id.value) === String(id)) resetBagForm();
+    await loadAll();
+  } catch (e) {
+    alert(e.message);
+  }
+}
+
+function getProductionSizeKey(length, width, gusset){
+  return `size|${Number(length || 0)}|${Number(width || 0)}|${Number(gusset || 0)}`;
+}
+function getStockBagChoices(){
+  const byKey = new Map();
+  const dynamicSizes = [...new Set([...DEFAULT_FIXED_SIZES, ...bagsData.map(sizeLabel)])];
+
+  dynamicSizes.forEach(label => {
+    const dims = parseSize(label);
+    const key = getProductionSizeKey(dims.length, dims.width, dims.gusset);
+    const similar = bagsData.filter(b => Number(b.length||0) === Number(dims.length||0) && Number(b.width||0) === Number(dims.width||0) && Number(b.gusset||0) === Number(dims.gusset||0));
+    const totalQty = similar.reduce((sum, row) => sum + Number(row.total_qty || 0), 0);
+    byKey.set(key, {
+      kind: 'size',
+      key,
+      length: dims.length,
+      width: dims.width,
+      gusset: dims.gusset,
+      total_qty: totalQty,
+      label: `${dims.length} × ${dims.width} × ${dims.gusset}`
+    });
+  });
+
+  return [...byKey.values()].sort((a,b) => Number(a.length||0) - Number(b.length||0) || Number(a.width||0) - Number(b.width||0) || Number(a.gusset||0) - Number(b.gusset||0));
+}
+function renderProductionStockChoices(selectedKey=''){
+  const currentSelected = String(selectedKey || prod_stock_item.value || '').trim();
+  const options = getStockBagChoices();
+  prod_stock_item.innerHTML = [`<option value="">اختار مقاس من المخزن</option>`].concat(options.map(item => {
+    const selected = item.key === currentSelected ? 'selected' : '';
+    return `<option value="${escapeHtml(item.key)}" ${selected}>${escapeHtml(item.label)}</option>`;
+  })).join('');
+}
+function fillProductionInputs(){
+  const key = String(prod_stock_item.value || '').trim();
+  if (key) {
+    const item = getStockBagChoices().find(x => x.key === key);
+    if (!item) return alert('المقاس المختار غير موجود حالياً');
+    prod_l.value = item.length || '';
+    prod_w.value = item.width || '';
+    prod_g.value = item.gusset || '';
+    syncProductionSelects();
+    resetProductionSelection();
+    return;
+  }
+  if (l.value) prod_l.value = l.value;
+  if (w.value) prod_w.value = w.value;
+  if (g.value) prod_g.value = g.value;
+  if (bagColor.value) prod_color.value = bagColor.value;
+  if (handle.value) prod_handle.value = handle.value;
+  if (qty.value) prod_qty.value = qty.value;
+  syncProductionSelects();
+}
+
+function syncProductionSelects(){
+  const colors = ['بني','أبيض'];
+  const handles = getHandleOptions();
+  const currentColor = String(prod_color.value || '').trim();
+  prod_color.innerHTML = colors.map(c => `<option value="${escapeHtml(c)}" ${c === currentColor ? 'selected' : ''}>${escapeHtml(c)}</option>`).join('');
+  prod_handle.innerHTML = handles.map(h => `<option value="${escapeHtml(h)}" ${h === prod_handle.value ? 'selected' : ''}>${escapeHtml(h)}</option>`).join('');
+  if (!prod_color.value && colors.length) prod_color.value = colors[0];
+  if (!prod_handle.value && handles.length) prod_handle.value = handles[0];
+  const currentKey = (prod_l.value && prod_w.value && prod_g.value)
+    ? getProductionSizeKey(prod_l.value, prod_w.value, prod_g.value)
+    : '';
+  renderProductionStockChoices(currentKey);
+}
+
+function getExistingBagForProduction(){
+  return bagsData.find(x => getBagKey(x) === getBagKey({ length: prod_l.value, width: prod_w.value, gusset: prod_g.value, color: prod_color.value, handle: prod_handle.value })) || null;
+}
+function updateProductionPricingUi(plan = selectedProductionPlan){
+  const existingBag = getExistingBagForProduction();
+  const mode = String(prod_pricing_mode.value || 'auto_from_margin').trim();
+  const canKeepExisting = !!existingBag;
+  const margin = Math.max(0, Number(prod_profit_margin.value || 0));
+  const unitCost = Number(plan?.unit_cost || 0);
+  const autoSell = unitCost > 0 ? unitCost * (1 + (margin / 100)) : 0;
+  if (!canKeepExisting && mode === 'keep_existing') {
+    prod_pricing_mode.value = 'auto_from_margin';
+  }
+  const keepExistingOption = prod_pricing_mode.querySelector('option[value="keep_existing"]');
+  if (keepExistingOption) keepExistingOption.disabled = !canKeepExisting;
+  prod_profit_margin.disabled = prod_pricing_mode.value === 'keep_existing';
+  if (useCurrentPricesBtn) useCurrentPricesBtn.classList.toggle('hidden', !canKeepExisting || !plan);
+  if (prod_pricing_mode.value === 'keep_existing' && canKeepExisting) {
+    productionPricingHint.innerHTML = `سيتم استخدام نفس أسعار الصنف الحالية: شراء <b>${money(existingBag.buy_price || 0)}</b> وبيع <b>${money(existingBag.sell_price || 0)}</b>.`;
+    return { buyPrice: Number(existingBag.buy_price || 0), sellPrice: Number(existingBag.sell_price || 0), mode: 'keep_existing', existingBag };
+  }
+  productionPricingHint.innerHTML = `التسعير التلقائي: تكلفة الشراء <b>${money(unitCost)}</b> — نسبة الربح <b>${margin}%</b> — سعر البيع المتوقع <b>${money(autoSell)}</b>.${canKeepExisting ? ' يمكنك بدلًا من ذلك اختيار استخدام أسعار الصنف الحالية.' : ''}`;
+  return { buyPrice: unitCost, sellPrice: autoSell, mode: 'auto_from_margin', existingBag };
+}
+function setProductionPlansButtonLabel(){
+  if (!toggleProductionPlansBtn) return;
+  const isExpanded = !productionPlansWrap.classList.contains('hidden') && productionPlans.length > 0;
+  toggleProductionPlansBtn.textContent = isExpanded ? '🔼 إخفاء اقتراحات التشغيل' : '🔎 عرض اقتراحات التشغيل';
+}
+function collapseProductionSuggestions(){
+  productionPlansWrap.classList.add('hidden');
+  productionSummary.classList.add('hidden');
+  productionSummary.innerHTML = '';
+  if (productionCutDrawing){ productionCutDrawing.classList.add('hidden'); productionCutDrawing.innerHTML=''; }
+  productionPricingBlock.classList.add('hidden');
+  updateProductionPricingUi(null);
+  setProductionPlansButtonLabel();
+}
+function resetProductionSelection(){
+  productionPlans = [];
+  selectedProductionPlan = null;
+  productionPlansWrap.classList.add('hidden');
+  productionPlansEl.innerHTML = '';
+  productionSummary.classList.add('hidden');
+  productionSummary.innerHTML = '';
+  productionNote.innerHTML = 'بعد اختيار الخطة المناسبة، سيتم تسجيل العملية كـ <b>أمر تشغيل مفتوح</b> في صفحة الصنايعية ولن تدخل الشنط المخزن إلا بعد الضغط على تم.';
+  prod_pricing_mode.value = 'auto_from_margin';
+  prod_profit_margin.value = prod_profit_margin.value || '0';
+  productionPricingBlock.classList.add('hidden');
+  productionPricingHint.innerHTML = 'اختار طريقة التسعير، ولو اخترت التلقائي اكتب نسبة الربح ليتم تحديد سعر البيع تلقائيًا.';
+  if (useCurrentPricesBtn) useCurrentPricesBtn.classList.add('hidden');
+  saveProductionBtn.disabled = false;
+  saveProductionBtn.textContent = '✅ إنشاء أمر تشغيل';
+  setProductionPlansButtonLabel();
+}
+function getSuggestedProductionQty(bag){
+  const shortage = Math.max(0, Number(bag?.min_qty || 0) - Number(bag?.total_qty || 0));
+  return shortage > 0 ? shortage : Math.max(1, Number(bag?.min_qty || 0) || 1);
+}
+function drawProductionSheetSvg(plan){
+  if(!plan) return '';
+  const sheetW = Number(plan.sheetWidth || 0), sheetH = Number(plan.sheetHeight || 0), cutW = Number(plan.cutWidth || 0), cutH = Number(plan.cutLength || 0);
+  if(!sheetW || !sheetH || !cutW || !cutH) return '';
+  const pad=40, maxW=820, maxH=360;
+  const scale=Math.min(maxW/sheetW, maxH/sheetH);
+  const width=sheetW*scale, height=sheetH*scale;
+  const fitCols=Math.max(1, Math.floor(sheetW/cutW));
+  const fitRows=Math.max(1, Math.floor(sheetH/cutH));
+  const cols=Math.max(1, Math.min(Number(plan.cols||fitCols), fitCols));
+  const rows=Math.max(1, Math.min(Number(plan.rows||fitRows), fitRows));
+  const totalPieces=Math.max(1, Number(plan.piecesPerSheet||0) || cols*rows);
+  let cells='', drawn=0;
+  for(let r=0;r<rows && drawn<totalPieces;r++){
+    for(let c=0;c<cols && drawn<totalPieces;c++){
+      const x=pad+c*cutW*scale, y=pad+r*cutH*scale;
+      if(x+cutW*scale<=pad+width+0.1 && y+cutH*scale<=pad+height+0.1){
+        drawn++;
+        const cx=x+(cutW*scale/2), cy=y+(cutH*scale/2);
+        cells += `<rect x="${x}" y="${y}" width="${cutW*scale}" height="${cutH*scale}" fill="#cbd5e1" stroke="#111827" stroke-width="1.2"/>`;
+        cells += `<text x="${cx}" y="${cy}" font-size="14" text-anchor="middle" fill="#334155" font-weight="700">قطعة</text>`;
+      }
+    }
+  }
+  return `<svg width="${width+140}" height="${height+100}" viewBox="0 0 ${width+140} ${height+100}" xmlns="http://www.w3.org/2000/svg">
+    <rect x="0" y="0" width="${width+140}" height="${height+100}" fill="#ffffff"/>
+    <text x="${pad}" y="22" font-size="22" fill="#111827" font-weight="700">${escapeHtml(plan.paperLabelFull || plan.paperLabel || '')} - ${escapeHtml(plan.layoutLabel || '')}</text>
+    <rect x="${pad}" y="${pad}" width="${width}" height="${height}" fill="#f8fafc" stroke="#111827" stroke-width="2"/>
+    ${cells}
+    <line x1="${pad}" y1="${pad+height+12}" x2="${pad+width}" y2="${pad+height+12}" stroke="#ef4444"/>
+    <text x="${pad+width/2}" y="${pad+height+30}" text-anchor="middle" font-size="18" fill="#ef4444">${sheetW}</text>
+    <line x1="${pad+width+12}" y1="${pad}" x2="${pad+width+12}" y2="${pad+height}" stroke="#ef4444"/>
+    <text x="${pad+width+32}" y="${pad+height/2}" text-anchor="middle" font-size="18" fill="#ef4444" transform="rotate(90 ${pad+width+32} ${pad+height/2})">${sheetH}</text>
+  </svg>`;
+}
+function openProductionModal(id = null){
+  syncProductionSelects();
+  resetProductionSelection();
+  const bag = id ? bagsData.find(x => String(x.id) === String(id)) : null;
+  if (bag) {
+    prod_l.value = bag.length;
+    prod_w.value = bag.width;
+    prod_g.value = bag.gusset;
+    prod_color.value = bag.color || '';
+    prod_handle.value = bag.handle || '';
+    prod_qty.value = getSuggestedProductionQty(bag);
+    prod_stock_item.value = getProductionSizeKey(bag.length, bag.width, bag.gusset);
+  } else {
+    fillProductionInputs();
+    if (!prod_qty.value) prod_qty.value = '1';
+  }
+  syncProductionSelects();
+  productionModal.classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+}
+function closeProductionModal(){
+  productionModal.classList.add('hidden');
+  document.body.style.overflow = '';
+  setProductionPlansButtonLabel();
+}
+function renderProductionSummary(plan){
+  if (!plan) {
+    productionSummary.classList.add('hidden');
+    productionSummary.innerHTML = '';
+    if (productionCutDrawing){ productionCutDrawing.classList.add('hidden'); productionCutDrawing.innerHTML=''; }
+    productionPricingBlock.classList.add('hidden');
+    updateProductionPricingUi(null);
+    return;
+  }
+  productionSummary.classList.remove('hidden');
+  if (productionCutDrawing){ productionCutDrawing.classList.remove('hidden'); productionCutDrawing.innerHTML = drawProductionSheetSvg(plan); }
+  productionPricingBlock.classList.remove('hidden');
+  const pricing = updateProductionPricingUi(plan);
+  productionSummary.innerHTML = `
+    <div class="summary-card"><small>الورق المطلوب</small><b>${Number(plan.neededSheets || 0)} فرخ</b></div>
+    <div class="summary-card"><small>الوزن المطلوب</small><b>${Number(plan.neededKg || 0).toFixed(2)} كجم</b></div>
+    <div class="summary-card"><small>تكلفة الورق</small><b>${money(plan.cost_paper || 0)}</b></div>
+    <div class="summary-card"><small>تكلفة القص</small><b>${money(plan.cost_cut || 0)}</b></div>
+    <div class="summary-card"><small>تكلفة التصنيع</small><b>${money(plan.cost_make || 0)}</b></div>
+    <div class="summary-card"><small>تكلفة اليد</small><b>${money(plan.cost_hand || 0)}</b></div>
+    <div class="summary-card"><small>تركيب اليد</small><b>${money(plan.cost_hand_fix || 0)}</b></div>
+    <div class="summary-card"><small>إجمالي التكلفة</small><b>${money(plan.total_cost || 0)}</b></div>
+    <div class="summary-card"><small>سعر تكلفة الوحدة</small><b>${money(plan.unit_cost || 0)}</b></div>
+    <div class="summary-card"><small>شراء بعد التشغيل</small><b>${money(pricing.buyPrice || 0)}</b></div>
+    <div class="summary-card"><small>بيع بعد التشغيل</small><b>${money(pricing.sellPrice || 0)}</b></div>
+  `;
+  productionNote.innerHTML = `الخطة المختارة: <b>${escapeHtml(plan.layoutLabel || '-')}</b> باستخدام <b>${escapeHtml(plan.paperLabelFull || plan.paperLabel || '-')}</b> — الهدر ${Number(plan.wastePercent || 0).toFixed(2)}%${String(plan.handle || prod_handle.value || '').trim() === 'بيد' ? ` — رصيد اليد المتاح ${Number(plan.handleQtyAvailable || 0)}` : ''}.`;
+}
+function selectProductionPlan(index){
+  const plan = productionPlans[index];
+  if (!plan || !plan.enoughStock) return;
+  selectedProductionPlan = plan;
+  renderProductionPlans();
+  renderProductionSummary(plan);
+}
+function renderProductionPlans(){
+  productionPlansWrap.classList.toggle('hidden', !productionPlans.length);
+  if (!productionPlans.length) {
+    productionPlansEl.innerHTML = '<div class="empty-state">لا توجد خطط تشغيل مناسبة حالياً.</div>';
+    renderProductionSummary(null);
+    setProductionPlansButtonLabel();
+    return;
+  }
+  productionPlansEl.innerHTML = productionPlans.map((plan, index) => `
+    <div class="plan-card ${selectedProductionPlan && selectedProductionPlan.paperId === plan.paperId && selectedProductionPlan.layoutKey === plan.layoutKey ? 'active' : ''} ${plan.enoughStock ? '' : 'disabled'}" onclick="selectProductionPlan(${index})">
+      <h4>${escapeHtml(plan.layoutLabel || '-')}</h4>
+      <div class="muted">${escapeHtml(plan.paperLabelFull || plan.paperLabel || '-')}</div>
+      <div class="plan-meta">
+        <div><small>الاحتياج</small><b>${Number(plan.neededSheets || 0)} فرخ</b></div>
+        <div><small>المتاح</small><b>${Number(plan.availableSheets || 0)} فرخ</b></div>
+        <div><small>الوزن</small><b>${Number(plan.neededKg || 0).toFixed(2)} كجم</b></div>
+        <div><small>الهدر</small><b>${Number(plan.wastePercent || 0).toFixed(2)}%</b></div>
+        <div><small>تكلفة الوحدة</small><b>${money(plan.unit_cost || 0)}</b></div>
+        <div><small>تكلفة اليد</small><b>${money(plan.cost_hand || 0)}</b></div>
+        <div><small>الحالة</small><b>${plan.enoughStock ? 'جاهز' : (!plan.enoughPaperStock ? 'الورق غير كاف' : 'اليد غير كافية')}</b></div>
+      </div>
+    </div>
+  `).join('');
+  setProductionPlansButtonLabel();
+}
+async function loadProductionPlans(){
+  try {
+    if (!prod_l.value || !prod_w.value || !prod_g.value) return alert('حدد المقاس بالكامل أولاً');
+    if (!prod_qty.value || Number(prod_qty.value) <= 0) return alert('اكتب كمية صحيحة');
+    syncProductionSelects();
+    if (productionPlans.length && !productionPlansWrap.classList.contains('hidden')) {
+      collapseProductionSuggestions();
+      return;
+    }
+    if (productionPlans.length && productionPlansWrap.classList.contains('hidden')) {
+      productionPlansWrap.classList.remove('hidden');
+      renderProductionPlans();
+      renderProductionSummary(selectedProductionPlan);
+      setProductionPlansButtonLabel();
+      return;
+    }
+    productionPlansEl.innerHTML = '<div class="empty-state">جاري تجهيز اقتراحات التشغيل...</div>';;
+    productionPlansWrap.classList.remove('hidden');
+    setProductionPlansButtonLabel();
+    const data = await authFetch('/production-plan', {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json' },
+      body: JSON.stringify({
+        l: prod_l.value,
+        w: prod_w.value,
+        g: prod_g.value,
+        qty: prod_qty.value,
+        color: prod_color.value,
+        handle: prod_handle.value
+      })
+    });
+    const selectedColor = String(prod_color.value || '').trim();
+    productionPlans = (data.options || []).filter(plan => String(plan.paperColor || '').trim() === selectedColor);
+    selectedProductionPlan = productionPlans.find(x => x.enoughStock) || productionPlans[0] || null;
+    renderProductionPlans();
+    renderProductionSummary(selectedProductionPlan);
+  } catch (e) {
+    productionPlans = [];
+    selectedProductionPlan = null;
+    renderProductionPlans();
+    setProductionPlansButtonLabel();
+    alert(e.message);
+  }
+}
+async function submitProductionOrder(){
+  try {
+    if (!selectedProductionPlan) return alert('اختر خطة تشغيل أولاً');
+    if (!selectedProductionPlan.enoughStock) return alert('الخطة المختارة لا تكفيها كمية الورق الحالية');
+    saveProductionBtn.disabled = true;
+    saveProductionBtn.textContent = '⏳ جاري إنشاء أمر التشغيل...';
+    const data = await authFetch('/create-production-order', {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json' },
+      body: JSON.stringify({
+        l: prod_l.value,
+        w: prod_w.value,
+        g: prod_g.value,
+        qty: prod_qty.value,
+        color: prod_color.value,
+        handle: prod_handle.value,
+        paper_id: selectedProductionPlan.paperId,
+        layoutKey: selectedProductionPlan.layoutKey,
+        pricing_mode: prod_pricing_mode.value,
+        profit_margin: prod_profit_margin.value || 0
+      })
+    });
+    await loadAll();
+    closeProductionModal();
+    alert(`تم إنشاء أمر تشغيل مفتوح بنجاح\nالكمية: ${data.qty} شنطة\nنوع القصة: ${data.plan?.layoutLabel || '-'}\nتكلفة الوحدة: ${money(data.plan?.unit_cost || 0)}\nسعر الشراء: ${money(data.bag_buy_price || 0)}\nسعر البيع: ${money(data.bag_sell_price || 0)}\nهتلاقيه دلوقتي في صفحة الصنايعية لحد ما تضغط تم.`);
+  } catch (e) {
+    alert(e.message);
+  } finally {
+    saveProductionBtn.disabled = false;
+    saveProductionBtn.textContent = '✅ إنشاء أمر تشغيل';
+  }
+}
+productionModal.addEventListener('click', (e) => { if (e.target === productionModal) closeProductionModal(); });
+
+[l,w,g].forEach(inp => inp.addEventListener('input', syncFormState));
+window.selectPresetSize = selectPresetSize;
+window.setBagColor = setBagColor;
+window.setHandleType = setHandleType;
+window.openNewBagForm = openNewBagForm;
+window.editBag = editBag;
+window.quickMoveBag = quickMoveBag;
+window.deleteBag = deleteBag;
+window.applyMinToAllBags = applyMinToAllBags;
+window.saveBag = saveBag;
+window.toggleSummary = toggleSummary;
+window.toggleHistory = toggleHistory;
+window.toggleTable = toggleTable;
+window.togglePresetSizes = togglePresetSizes;
+window.toggleItemsSection = toggleItemsSection;
+window.startInlineEdit = startInlineEdit;
+window.saveInlineEdit = saveInlineEdit;
+window.cancelInlineEdit = cancelInlineEdit;
+window.setFilter = setFilter;
+window.resetBagForm = resetBagForm;
+window.openProductionModal = openProductionModal;
+window.closeProductionModal = closeProductionModal;
+window.loadProductionPlans = loadProductionPlans;
+prod_pricing_mode.addEventListener('change', () => renderProductionSummary(selectedProductionPlan));
+prod_profit_margin.addEventListener('input', () => renderProductionSummary(selectedProductionPlan));
+[prod_l,prod_w,prod_g,prod_color,prod_handle,prod_stock_item].forEach(el => el.addEventListener('change', () => { syncProductionSelects(); if (selectedProductionPlan) resetProductionSelection(); }));
+prod_qty.addEventListener('input', () => { if (selectedProductionPlan) resetProductionSelection(); });
+window.selectProductionPlan = selectProductionPlan;
+window.submitProductionOrder = submitProductionOrder;
+window.fillProductionInputs = fillProductionInputs;
+window.useCurrentBagPrices = function(){
+  if (useCurrentPricesBtn && useCurrentPricesBtn.classList.contains('hidden')) return;
+  prod_pricing_mode.value = 'keep_existing';
+  renderProductionSummary(selectedProductionPlan);
+};
+
+bagColor.value = DEFAULT_COLORS[0];
+handle.value = DEFAULT_HANDLES[0];
+syncFormState();
+loadAll().catch(e => alert(e.message));
+</script>
+</body>
+</html>
