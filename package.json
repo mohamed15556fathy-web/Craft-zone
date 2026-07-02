@@ -1,0 +1,21 @@
+{
+  "name": "bag-orders-system",
+  "version": "1.1.0",
+  "description": "Order and inventory management system prepared for GitHub and Railway deployment with persistent storage and backup import/export.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "check": "node -c server.js"
+  },
+  "engines": {
+    "node": "20.x"
+  },
+  "dependencies": {
+    "archiver": "^7.0.1",
+    "express": "^4.21.2",
+    "multer": "^1.4.5-lts.1",
+    "sqlite3": "^5.1.7",
+    "unzipper": "^0.12.3"
+  }
+}
