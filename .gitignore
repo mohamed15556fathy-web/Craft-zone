@@ -1,0 +1,32 @@
+# dependencies
+node_modules/
+npm-debug.log*
+
+# local/runtime data
+data/
+uploads/
+backups/
+*.db
+*.sqlite
+*.sqlite3
+*.db-wal
+*.db-shm
+
+# secrets
+.env
+.env.*
+!.env.example
+bosta_api_key.txt
+.secrets/
+
+# editor/os
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# temporary / generated
+*.bak
+*.prepatch
+*.jscheck.js
+coverage/

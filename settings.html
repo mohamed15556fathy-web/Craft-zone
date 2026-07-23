@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head><script id="auth-flicker-guard">(function(){try{var p=location.pathname.toLowerCase();if(p.endsWith('/login.html')||p==='/'||p===''){return;}if(!localStorage.getItem('token')||!localStorage.getItem('user')){location.replace('login.html');return;}document.documentElement.classList.add('auth-loading');}catch(e){location.replace('login.html');}})();</script><style id="auth-flicker-style">html.auth-loading body{visibility:hidden!important}html.auth-ready body{visibility:visible}</style>
+<meta charset="UTF-8"><title>إعدادات السيستم</title>
+<style>
+:root{--bg:#0f172a;--panel:#1e293b;--panel2:#172033;--text:#f8fafc;--muted:#94a3b8;--cyan:#22d3ee;--border:#334155;--green:#4ade80;--red:#fb7185;--warn:#fbbf24;--dark:#0b1220}*{box-sizing:border-box}body{font-family:'Segoe UI',Tahoma,sans-serif;background:var(--bg);color:var(--text);margin:0;padding:22px}.wrap{max-width:1680px;margin:auto}.header,.panel,.side{background:var(--panel);border:1px solid var(--border);border-radius:18px}.header{padding:18px 22px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}.muted{color:var(--muted);line-height:1.75}.hint{padding:10px 12px;background:var(--dark);border:1px solid var(--border);border-radius:12px;color:#cbd5e1}.layout{display:grid;grid-template-columns:280px minmax(0,1fr);gap:16px}.side{padding:14px;position:sticky;top:16px;align-self:start}.tab{width:100%;text-align:right;margin:0 0 8px;background:var(--dark);color:#fff;border:1px solid var(--border);border-radius:12px;padding:12px;cursor:pointer}.tab.active{background:var(--cyan);color:#05202a}.tab small{display:block;margin-top:5px;opacity:.8}.panel{padding:16px;margin-bottom:16px}.section-title{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:12px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;align-items:end}label{display:block;color:#cbd5e1;margin-bottom:6px;font-size:13px}input,select,textarea{width:100%;padding:11px;border-radius:10px;border:1px solid var(--border);background:var(--dark);color:#fff}textarea{resize:vertical}.actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}a.btn,button{background:var(--cyan);color:#05202a;text-decoration:none;border:0;border-radius:10px;padding:10px 14px;font-weight:800;cursor:pointer}button.dark,a.dark{background:var(--dark);color:#fff;border:1px solid var(--border)}button.red{background:var(--red);color:#111827}button.ghost{background:transparent;color:#cbd5e1;border:1px dashed var(--border)}table{width:100%;border-collapse:collapse;background:#111827;border-radius:14px;overflow:hidden}th,td{padding:10px;border-bottom:1px solid var(--border);text-align:center;vertical-align:top}th{background:var(--dark);color:#67e8f9}.table-wrap{overflow:auto;border:1px solid var(--border);border-radius:14px}.pill{display:inline-block;padding:5px 9px;border:1px solid var(--border);background:var(--dark);border-radius:999px;color:#cbd5e1;font-size:12px}.ok{color:var(--green)}.off{color:var(--red)}.warn{color:var(--warn)}.card{background:var(--panel2);border:1px solid var(--border);border-radius:16px;padding:14px}.catalog-card{margin-bottom:14px}.catalog-head{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:10px}.hidden{display:none!important}.stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:16px}.stat{background:var(--panel2);border:1px solid var(--border);border-radius:14px;padding:12px}.stat b{font-size:20px;color:#67e8f9}.mini-search{max-width:280px}.edit-box{border:1px solid #155e75;background:#082f49;border-radius:16px;padding:14px;margin-bottom:16px}.bosta-note{border:1px solid #854d0e;background:#422006;color:#fde68a;border-radius:14px;padding:12px;margin:8px 0 14px}@media(max-width:900px){.layout{grid-template-columns:1fr}.side{position:static}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header">
+    <div><h1 style="margin:0">⚙️ إعدادات السيستم وقاعدة البيانات</h1><div class="muted">كل جزء منفصل لوحده: الأمان، الخامات، الحسابات، وبوسطة. أي اسم بيتغير هنا يظهر في السيستم بدون تعديل كود.</div></div>
+    <div class="actions"><a class="btn dark" href="index.html">🏠 الرئيسية</a><button onclick="loadAll()">تحديث</button></div>
+  </div>
+
+  <div class="stat-row" id="summaryStats"></div>
+
+  <div class="layout">
+    <aside class="side">
+      <button class="tab active" data-section="security" onclick="setSection('security')">🔐 الدخول والأمان<small>تايم أوت وموقع الجهاز</small></button>
+      <button class="tab" data-section="health" onclick="setSection('health')">🧪 فحص وربط السيستم<small>الحسابات، المخازن، الأوردرات، النسخ الاحتياطي</small></button>
+      <button class="tab" data-section="orders" onclick="setSection('orders')">🛍️ الأوردر والخامات<small>ورق، يد، طباعة، حالات</small></button>
+      <button class="tab" data-section="accounts" onclick="setSection('accounts')">💰 الحسابات والشركاء<small>تصنيفات مصروفات وأنواع شركاء</small></button>
+      <button class="tab" data-section="bosta" onclick="setSection('bosta')">🚚 بوسطة<small>محافظات ومناطق عربي + أكواد</small></button>
+      <button class="tab" data-section="all" onclick="setSection('all')">📚 كل القوائم<small>عرض شامل لكل الإعدادات</small></button>
+    </aside>
+
+    <main>
+      <div id="editBox" class="edit-box hidden">
+        <div class="section-title"><div><h3 id="editTitle" style="margin:0">إضافة عنصر</h3><div class="muted" id="editSub"></div></div><button class="dark" onclick="hideItemForm()">إغلاق</button></div>
+        <input id="itemId" type="hidden"><input id="itemType" type="hidden">
+        <div class="form-grid">
+          <div><label>الاسم الظاهر في السيستم</label><input id="itemName" placeholder="مثال: مدينة نصر / كرافت / جاهز للشحن"></div>
+          <div><label>الكود/القيمة الخارجية</label><input id="itemCode" placeholder="اختياري — مهم في بوسطة لو عندك كود"></div>
+          <div><label>ترتيب الظهور</label><input id="itemSort" type="number" value="0"></div>
+          <div><label>الحالة</label><select id="itemActive"><option value="1">نشط</option><option value="0">موقوف</option></select></div>
+          <div style="grid-column:1/-1"><label>بيانات إضافية JSON</label><textarea id="itemExtra" rows="2" placeholder='اختياري مثال: {"note":"..."}'></textarea></div>
+          <div class="actions" style="grid-column:1/-1"><button onclick="saveItem()">حفظ</button><button class="dark" onclick="hideItemForm()">إلغاء</button></div>
+        </div>
+      </div>
+
+      <div id="content"></div>
+    </main>
+  </div>
+</div>
+<script>
+const token=localStorage.getItem('token');
+const user=JSON.parse(localStorage.getItem('user')||'null');
+if(!token||!user) location.href='login.html';
+function isSuper(){return user.username==='admin'||user.role==='super_admin';}
+function hasPerm(k){return isSuper()||Number(user[k]||0)===1;}
+if(!hasPerm('perm_system_config')) location.href='index.html';
+let data={settings:[],catalogs:[],active_users:[]};
+let activeSection='security';
+const catalogLabels={paper_types:'أنواع الورق',handle_types:'أنواع اليد',print_types:'أنواع الطباعة',lamination_types:'أنواع السلوفان/التغليف',order_statuses:'حالات الأوردر',expense_categories:'تصنيفات المصاريف',partner_account_types:'أنواع حساب الشريك',bosta_governorates:'محافظات بوسطة'};
+const sectionInfo={
+  security:{title:'الدخول والأمان',desc:'إعدادات القفل التلقائي وتسجيل اللوكيشن في سجل الأدمن.',types:[]},
+  health:{title:'فحص وربط السيستم',desc:'صفحة مراجعة سريعة للحسابات وخصومات المخازن والربط بين الأوردرات والصنايعية والخزنة والنسخ الاحتياطية.',types:[]},
+  orders:{title:'الأوردر والخامات',desc:'كل الاختيارات التي تظهر أثناء إنشاء الأوردر أو إدارة المخزون.',types:['paper_types','handle_types','print_types','lamination_types','order_statuses']},
+  accounts:{title:'الحسابات والشركاء',desc:'اختيارات المصاريف وأنواع حسابات الشركاء.',types:['expense_categories','partner_account_types']},
+  bosta:{title:'بوسطة',desc:'المحافظات والمناطق تظهر عربي في السيستم، والكود الخارجي يظل موجود للإرسال لبوسطة.',types:['bosta_governorates']},
+  all:{title:'كل القوائم',desc:'عرض شامل لكل عناصر قاعدة إعدادات السيستم.',types:null}
+};
+function $(id){return document.getElementById(id);}
+function authFetch(url,opts={}){opts.headers=Object.assign({},opts.headers||{},{Authorization:'Bearer '+token});return fetch(url,opts).then(async r=>{const d=await r.json().catch(()=>({}));if(r.status===401){localStorage.clear();location.href='login.html';throw new Error('unauthorized')}if(!r.ok)throw new Error(d.error||'error');return d;});}
+function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+function decodeType(t){return String(t||'').replace(/^bosta_zones:/,'');}
+function labelType(t){if(String(t).startsWith('bosta_zones:')) return 'مناطق بوسطة — '+decodeType(t); return catalogLabels[t]||t;}
+function activeCatalogs(){return data.catalogs||[];}
+function catalogsByType(type){return activeCatalogs().filter(i=>i.catalog_type===type).sort((a,b)=>Number(a.sort_order||0)-Number(b.sort_order||0)||String(a.name||'').localeCompare(String(b.name||''),'ar'));}
+function settingByKey(key){return (data.settings||[]).find(s=>String(s.setting_key)===String(key))||{};}
+function groupSettings(){const groups={};(data.settings||[]).forEach(s=>{const c=s.category||'عام';(groups[c]=groups[c]||[]).push(s);});return groups;}
+function renderStats(){
+  const allTypes=[...new Set(activeCatalogs().map(x=>x.catalog_type))];
+  const zones=activeCatalogs().filter(x=>String(x.catalog_type).startsWith('bosta_zones:')).length;
+  $('summaryStats').innerHTML=`<div class="stat"><span class="muted">إعدادات عامة</span><br><b>${(data.settings||[]).length}</b></div><div class="stat"><span class="muted">قوائم منفصلة</span><br><b>${allTypes.length}</b></div><div class="stat"><span class="muted">مناطق بوسطة</span><br><b>${zones}</b></div><div class="stat"><span class="muted">مستخدمين نشطين</span><br><b>${(data.active_users||[]).length}</b></div>`;
+}
+function setSection(section){activeSection=section;document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.section===section));hideItemForm();renderContent();}
+function renderSettingsPanel(){
+  const groups=groupSettings();
+  const cards=Object.entries(groups).map(([cat,rows])=>`<div class="card"><h3 style="margin-top:0">${esc(cat)}</h3>${rows.map(s=>settingControl(s)).join('')}</div>`).join('') || '<div class="muted">لا توجد إعدادات عامة.</div>';
+  return `<div class="panel"><div class="section-title"><div><h2 style="margin:0">إعدادات عامة</h2><div class="muted">القيم الحساسة منفصلة عن القوائم. أقل قفل خمول مسموح 60 ثانية.</div></div><span class="pill">صلاحية إعدادات السيستم</span></div><div class="grid">${cards}</div></div>`;
+}
+function settingControl(s){
+  const key=String(s.setting_key||'');
+  const val=String(s.setting_value??'');
+  if(key==='location_tracking_enabled'){
+    return `<div style="margin-top:12px"><label>${esc(s.label||key)}</label><select id="setting_${esc(key)}"><option value="1" ${val==='1'?'selected':''}>مفعل — اطلب اللوكيشن</option><option value="0" ${val==='0'?'selected':''}>موقوف</option></select><small class="muted">${esc(key)}</small><div class="actions" style="margin-top:8px"><button onclick="saveSetting('${esc(key)}')">حفظ</button></div></div>`;
+  }
+  return `<div style="margin-top:12px"><label>${esc(s.label||key)}</label><input id="setting_${esc(key)}" value="${esc(val)}"><small class="muted">${esc(key)}</small><div class="actions" style="margin-top:8px"><button onclick="saveSetting('${esc(key)}')">حفظ</button></div></div>`;
+}
+function zoneTypes(){return [...new Set(activeCatalogs().map(i=>i.catalog_type).filter(t=>String(t).startsWith('bosta_zones:')))].sort((a,b)=>labelType(a).localeCompare(labelType(b),'ar'));}
+function typesForCurrentSection(){
+  if(activeSection==='all') return [...new Set(activeCatalogs().map(i=>i.catalog_type))].sort((a,b)=>labelType(a).localeCompare(labelType(b),'ar'));
+  if(activeSection==='bosta') return ['bosta_governorates',...zoneTypes()];
+  return sectionInfo[activeSection]?.types || [];
+}
+function renderCatalogCard(type){
+  const rows=catalogsByType(type);
+  const codeHint=String(type).startsWith('bosta_')?'الكود/القيمة الخارجية تستخدم مع بوسطة. الاسم هو العربي الظاهر عندك.':'الكود اختياري لو الاختيار له قيمة داخلية.';
+  return `<div class="panel catalog-card" id="card_${esc(type).replace(/[^\w\u0600-\u06FF-]/g,'_')}"><div class="catalog-head"><div><h3 style="margin:0">${esc(labelType(type))}</h3><div class="muted">${esc(codeHint)}</div></div><div class="actions"><input class="mini-search" id="search_${safeId(type)}" placeholder="بحث داخل القائمة" oninput="renderContent()" value="${esc(searchValue(type))}"><button onclick="startNewItem('${esc(type)}')">+ إضافة</button></div></div>${catalogTable(type,rows)}</div>`;
+}
+function safeId(t){return String(t).replace(/[^a-zA-Z0-9_\-\u0600-\u06FF]/g,'_');}
+function searchValue(type){const el=$('search_'+safeId(type));return el?el.value:'';}
+function filteredRows(type,rows){const q=String(searchValue(type)||'').trim().toLowerCase();if(!q)return rows;return rows.filter(r=>String(r.name||'').toLowerCase().includes(q)||String(r.code||'').toLowerCase().includes(q)||String(r.extra_json||'').toLowerCase().includes(q));}
+function catalogTable(type,rows){
+  const filtered=filteredRows(type,rows);
+  return `<div class="table-wrap"><table><thead><tr><th>الاسم العربي</th><th>الكود/القيمة</th><th>ترتيب</th><th>حالة</th><th>بيانات إضافية</th><th>آخر تعديل</th><th>تحكم</th></tr></thead><tbody>${filtered.length?filtered.map(r=>`<tr><td><b>${esc(r.name)}</b><br><small class="muted">#${Number(r.id)}</small></td><td>${esc(r.code||'-')}</td><td>${Number(r.sort_order||0)}</td><td>${Number(r.is_active||0)?'<span class="ok">نشط</span>':'<span class="off">موقوف</span>'}</td><td><small class="muted">${esc(r.extra_json||'-')}</small></td><td><small class="muted">${esc(r.updated_by||'-')}</small></td><td><div class="actions"><button class="dark" onclick="editItem(${Number(r.id)})">تعديل</button><button class="red" onclick="deleteItem(${Number(r.id)})">إيقاف</button></div></td></tr>`).join(''):`<tr><td colspan="7">لا توجد عناصر في ${esc(labelType(type))}</td></tr>`}</tbody></table></div>`;
+}
+function renderBostaIntro(){
+  if(activeSection!=='bosta') return '';
+  const govs=catalogsByType('bosta_governorates');
+  return `<div class="bosta-note"><b>طريقة بوسطة الجديدة:</b> اختار المحافظة، بعدها السيستم يعرض مناطق المحافظة فقط. المنطقة تظهر عربي في السيستم، ويتبعت لبوسطة الكود/القيمة المحفوظة في خانة الكود. لو الكود فاضي، يستخدم الاسم كقيمة احتياطية.</div><div class="panel"><div class="section-title"><div><h3 style="margin:0">إضافة قائمة مناطق لمحافظة</h3><div class="muted">لو ضفت محافظة جديدة ومفيش لها كارت مناطق، اختارها واضغط إنشاء.</div></div></div><div class="form-grid"><div><label>المحافظة</label><select id="newZoneGov">${govs.map(g=>`<option value="${esc(g.name)}">${esc(g.name)}${g.code?` — ${esc(g.code)}`:''}</option>`).join('')||'<option value="">لا توجد محافظات</option>'}</select></div><div class="actions"><button class="dark" onclick="createZoneTypeForGov()">إنشاء/فتح مناطق المحافظة</button></div></div></div>`;
+}
+
+function severityLabel(s){return s==='error'?'<span class="off">خطأ</span>':(s==='warn'?'<span class="warn">تحذير</span>':'<span class="ok">معلومة</span>');}
+let lastHealth=null;
+async function runHealthCheck(){
+  const box=$('healthResult'); if(box) box.innerHTML='<div class="hint">جاري فحص كل تكاليف الأوردرات والحسابات وخصومات المخازن والربط...</div>';
+  try{ lastHealth=await authFetch('/system-health-check'); renderHealthResult(lastHealth); }
+  catch(e){ if(box) box.innerHTML='<div class="hint off">'+esc(e.message||'فشل الفحص')+'</div>'; }
+}
+function renderHealthResult(d){
+  const box=$('healthResult'); if(!box)return;
+  const issues=d.issues||[];
+  const top=`<div class="stat-row"><div class="stat"><span class="muted">أخطاء</span><br><b class="off">${Number(d.totals?.error||0)}</b></div><div class="stat"><span class="muted">تحذيرات</span><br><b class="warn">${Number(d.totals?.warn||0)}</b></div><div class="stat"><span class="muted">الإجمالي</span><br><b>${Number(d.totals?.total||0)}</b></div></div>`;
+  if(!issues.length){ box.innerHTML=top+'<div class="hint ok">✅ الفحص الحالي لا يظهر مشاكل واضحة في تكاليف الأوردرات أو الحسابات أو خصومات المخازن أو الربط.</div>'; return; }
+  box.innerHTML=top+`<div class="table-wrap"><table><thead><tr><th>المستوى</th><th>المشكلة</th><th>التفاصيل</th><th>إجراء سريع</th></tr></thead><tbody>${issues.map(i=>{const orderLabel=i.data?.order_label||((i.data?.order_id)?('أوردر #'+Number(i.data.order_id)):''); const extra=i.data?.due_date?('<br><small class="muted">تاريخ الاستحقاق: '+esc(i.data.due_date)+'</small>'):''; return `<tr><td>${severityLabel(i.severity)}</td><td><b>${esc(i.title)}</b>${orderLabel?`<br><small class="muted">${esc(orderLabel)}</small>`:''}</td><td><div style="white-space:normal;line-height:1.8">${esc(i.details||'')}${extra}</div></td><td>${i.data?.order_id?`<button class="dark" onclick="resyncOrder(${Number(i.data.order_id)}, '${esc(orderLabel).replace(/'/g,'&#39;')}')">مزامنة ${esc(orderLabel||('أوردر #'+Number(i.data.order_id)))}</button>`:'-'}</td></tr>`}).join('')}</tbody></table></div>`;
+}
+async function resyncOrder(id,label){ const title=label||('أوردر #'+id); if(!confirm('إعادة مزامنة حسابات '+title+'؟'))return; await authFetch('/resync-order-accounting/'+id,{method:'POST'}); await runHealthCheck(); alert('تمت مزامنة وإصلاح الأوردر'); }
+async function resyncAll(){ if(!confirm('إعادة مزامنة وإصلاح كل مشاكل الحسابات والتكاليف والمخازن؟ سيتم تصحيح المكرر والغير محسوب والمتخصمش بتاريخ المرحلة الأصلي، ويفضل تعمل Backup قبلها.'))return; const box=$('healthResult'); if(box) box.innerHTML='<div class="hint">جاري المزامنة والإصلاح...</div>'; const d=await authFetch('/system-resync-all',{method:'POST'}); renderHealthResult(d.health||{}); alert('تمت المزامنة والإصلاح. لو بقيت مشكلة ظاهرة بعد الفحص فهي غالبًا تحتاج بيانات ناقصة مثل صنف ورق غير محدد أو صنف محذوف.'); }
+async function loadBackupsList(){
+  const box=$('backupsList'); if(!box)return; box.innerHTML='<div class="hint">جاري تحميل النسخ...</div>';
+  try{ const d=await authFetch('/system-backups'); const rows=d.backups||[]; box.innerHTML=rows.length?`<div class="table-wrap"><table><thead><tr><th>الملف</th><th>النوع</th><th>الحجم</th><th>آخر تعديل</th><th>تحميل</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.name)}</td><td>${esc(r.type)}</td><td>${Math.round(Number(r.size||0)/1024)} KB</td><td>${esc(r.modified_at||'')}</td><td><a class="btn dark" href="${esc(((r.url||'').includes('token=')||(r.url||'').includes('dl='))?(r.url||''):((r.url||'')+(((r.url||'').includes('?')?'&':'?')+'token='+encodeURIComponent(token))))}" target="_blank">تحميل</a></td></tr>`).join('')}</tbody></table></div>`:'<div class="hint">لا توجد نسخ محفوظة حالياً.</div>'; }catch(e){box.innerHTML='<div class="hint off">'+esc(e.message||'فشل تحميل النسخ')+'</div>';}
+}
+async function manualBackupNow(){ const d=await authFetch('/system-backup-now',{method:'POST'}); alert('تم إنشاء نسخة قاعدة بيانات: '+(d.fileName||'')); await loadBackupsList(); }
+function renderHealthPanel(){
+  return `<div class="panel"><div class="section-title"><div><h2 style="margin:0">🧪 فحص الحسابات والمخازن والربط</h2><div class="muted">يفحص كل تكاليف الأوردرات: الورق، اليد، القص، الزنكات، التصميم، الطباعة، التصنيع، الفورمة، السلوفان، وتركيب اليد، ويقارنها بالحسابات وخصومات المخازن وسجلاتها ويظهر المتخصم والمتخصمش.</div></div><div class="actions"><button onclick="runHealthCheck()">تشغيل الفحص</button><button class="dark" onclick="resyncAll()">إعادة مزامنة شاملة</button></div></div><div id="healthResult" class="hint">اضغط تشغيل الفحص لعرض المشاكل الحالية.</div></div>`+
+  `<div class="panel"><div class="section-title"><div><h2 style="margin:0">💾 النسخ الاحتياطي</h2><div class="muted">كل نسخة DB أو ZIP تُنشأ كلقطة SQLite متسقة تشمل آخر الحركات المكتملة الموجودة في WAL لحظة الضغط، ثم تُفحص سلامتها قبل إتاحتها للتحميل. النسخ التلقائية تعمل يوميًا حسب الإعدادات.</div></div><div class="actions"><button onclick="manualBackupNow()">إنشاء نسخة DB الآن</button><button class="dark" onclick="loadBackupsList()">عرض النسخ</button></div></div><div id="backupsList" class="hint">اضغط عرض النسخ لمراجعة الملفات الموجودة.</div></div>`+
+  `<div class="panel"><div class="section-title"><div><h2 style="margin:0">⚙️ إعدادات النسخ التلقائية</h2><div class="muted">عدّلها من الإعدادات العامة تحت قسم النسخ الاحتياطي.</div></div></div>${renderSettingsPanel()}</div>`;
+}
+
+function renderContent(){
+  renderStats();
+  const info=sectionInfo[activeSection]||sectionInfo.security;
+  let html=`<div class="panel"><div class="section-title"><div><h2 style="margin:0">${esc(info.title)}</h2><div class="muted">${esc(info.desc)}</div></div><span class="pill">${activeSection==='all'?'عرض شامل':'قسم منفصل'}</span></div></div>`;
+  if(activeSection==='security') html+=renderSettingsPanel();
+  if(activeSection==='health') html+=renderHealthPanel();
+  html+=renderBostaIntro();
+  const types=typesForCurrentSection();
+  if(types.length) html+=types.map(renderCatalogCard).join('');
+  if(!types.length && activeSection!=='security') html+='<div class="panel muted">لا توجد قوائم في هذا القسم.</div>';
+  $('content').innerHTML=html;
+}
+function startNewItem(type){
+  $('itemId').value='';$('itemType').value=type;$('itemName').value='';$('itemCode').value='';$('itemSort').value='0';$('itemActive').value='1';$('itemExtra').value='';
+  $('editTitle').textContent='إضافة عنصر — '+labelType(type);$('editSub').textContent='الاسم يظهر في السيستم، والكود يستخدم للربط الخارجي لو موجود.';$('editBox').classList.remove('hidden');$('itemName').focus();window.scrollTo({top:$('editBox').offsetTop-10,behavior:'smooth'});
+}
+function hideItemForm(){$('editBox').classList.add('hidden');}
+function editItem(id){
+  const r=activeCatalogs().find(x=>Number(x.id)===Number(id));if(!r)return;
+  $('itemId').value=r.id;$('itemType').value=r.catalog_type;$('itemName').value=r.name||'';$('itemCode').value=r.code||'';$('itemSort').value=r.sort_order||0;$('itemActive').value=Number(r.is_active||0)?'1':'0';$('itemExtra').value=r.extra_json||'';
+  $('editTitle').textContent='تعديل عنصر — '+labelType(r.catalog_type);$('editSub').textContent='رقم العنصر #'+r.id;$('editBox').classList.remove('hidden');window.scrollTo({top:$('editBox').offsetTop-10,behavior:'smooth'});
+}
+async function saveSetting(key){const el=$('setting_'+key);if(!el)return;await authFetch('/system-setting',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({setting_key:key,setting_value:el.value})});await loadAll();alert('تم حفظ الإعداد');}
+async function saveItem(){
+  const type=$('itemType').value.trim();
+  if(!type)return alert('اختار نوع القائمة');
+  if(!$('itemName').value.trim())return alert('اكتب الاسم');
+  if($('itemExtra').value.trim()){try{JSON.parse($('itemExtra').value)}catch(e){return alert('بيانات JSON غير صحيحة');}}
+  await authFetch('/system-catalog-item',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:$('itemId').value||undefined,catalog_type:type,name:$('itemName').value.trim(),code:$('itemCode').value.trim(),sort_order:$('itemSort').value||0,is_active:$('itemActive').value,extra_json:$('itemExtra').value.trim()})});
+  hideItemForm();await loadAll();
+}
+async function deleteItem(id){if(!confirm('إيقاف العنصر؟ السجلات القديمة لن تتأثر.'))return;await authFetch('/system-catalog-item/'+id,{method:'DELETE'});await loadAll();}
+async function createZoneTypeForGov(){
+  const gov=$('newZoneGov')?.value||'';if(!gov)return alert('اختار المحافظة');
+  const type='bosta_zones:'+gov;
+  if(!activeCatalogs().some(i=>i.catalog_type===type)){
+    await authFetch('/system-catalog-item',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({catalog_type:type,name:'منطقة جديدة',code:'',sort_order:999,is_active:0,extra_json:'{}'})});
+  }
+  await loadAll();setSection('bosta');setTimeout(()=>{const id='card_'+type.replace(/[^\w\u0600-\u06FF-]/g,'_');const el=$(id);if(el)el.scrollIntoView({behavior:'smooth',block:'start'});},50);
+}
+async function loadAll(){data=await authFetch('/system-config-data');data.settings=data.settings||[];data.catalogs=data.catalogs||[];data.active_users=data.active_users||[];renderContent();}
+loadAll().catch(e=>alert(e.message||'حدث خطأ'));
+</script>
+<script src="idle_guard.js"></script><script id="auth-flicker-release">(function(){function done(){document.documentElement.classList.remove('auth-loading');document.documentElement.classList.add('auth-ready');}if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',done,{once:true});}else{done();}setTimeout(done,1200);})();</script>
+</body></html>

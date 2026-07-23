@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+  <script id="auth-flicker-guard">(function(){try{if(!localStorage.getItem('token')||!localStorage.getItem('user')){location.replace('login.html');return;}document.documentElement.classList.add('auth-loading');}catch(e){location.replace('login.html');}})();</script>
+  <style id="auth-flicker-style">html.auth-loading body{visibility:hidden!important}html.auth-ready body{visibility:visible}</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>مخطط القص الذكي</title>
+  <style>
+    :root{--bg:#0f172a;--panel:#1e293b;--panel2:#0b1220;--text:#f8fafc;--muted:#94a3b8;--cyan:#22d3ee;--green:#4ade80;--yellow:#facc15;--red:#f87171;--border:#334155}
+    *{box-sizing:border-box}body{font-family:'Segoe UI',Tahoma,sans-serif;background:var(--bg);color:var(--text);margin:0;padding:18px}.wrap{max-width:1450px;margin:auto}.card{background:var(--panel);border:1px solid var(--border);border-radius:18px;padding:16px;margin-bottom:16px}.top,.actions{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.actions{justify-content:flex-start}h1,h2,h3,h4{margin:0}.note{font-size:13px;color:var(--muted);line-height:1.7}.ok{color:#86efac}.warn{color:#fde68a}.bad{color:#fca5a5}.hidden{display:none!important}
+    button,.btn{border:1px solid var(--cyan);background:transparent;color:var(--cyan);padding:10px 14px;border-radius:10px;cursor:pointer;font-weight:800;text-decoration:none}button.primary{background:var(--cyan);color:#06202a}.btn.green,button.green{border-color:var(--green);background:var(--green);color:#062012}.danger{border-color:var(--red)!important;color:var(--red)!important}.ghost{border-color:var(--border);color:var(--text)}button:disabled{opacity:.5;cursor:not-allowed}
+    input,select{width:100%;background:var(--panel2);color:#fff;border:1px solid var(--border);border-radius:10px;padding:10px}.field{display:flex;flex-direction:column;gap:6px}.field label{font-size:12px;color:var(--muted);font-weight:800}.material-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}.source-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.source-card{display:block;background:var(--panel2);border:1px solid var(--border);border-radius:14px;padding:14px;cursor:pointer}.source-card:has(input:checked){border-color:var(--cyan);box-shadow:0 0 0 1px rgba(34,211,238,.25) inset}.source-card input{width:auto;margin-left:7px}.source-card b{display:block;margin-bottom:5px}.settings-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-top:12px}
+    .table-wrap{overflow:auto;border:1px solid var(--border);border-radius:14px;margin-top:12px}table{width:100%;border-collapse:collapse;min-width:880px;background:var(--panel2)}th,td{padding:10px;border-bottom:1px solid var(--border);text-align:center}th{color:#cbd5e1;font-size:13px;background:#111827}td input,td select{min-width:90px}.row-label{min-width:135px}.summary{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin:12px 0}.stat{background:var(--panel2);border:1px solid var(--border);border-radius:13px;padding:12px;text-align:center}.stat small{display:block;color:var(--muted);margin-bottom:5px}.stat b{font-size:21px}.plan{border:1px solid var(--border);border-radius:16px;padding:14px;margin-top:14px;background:rgba(11,18,32,.45)}.plan.best{border-color:var(--green)}.badge{display:inline-block;border:1px solid var(--border);border-radius:999px;padding:5px 9px;font-size:12px;margin:3px}.badge.good{border-color:var(--green);color:var(--green)}.badge.short{border-color:var(--yellow);color:var(--yellow)}.patterns{display:grid;grid-template-columns:repeat(auto-fit,minmax(500px,1fr));gap:12px;margin-top:12px}.pattern{background:var(--panel2);border:1px solid var(--border);border-radius:14px;padding:12px}.drawing{background:white;border-radius:12px;padding:8px;margin-top:9px;overflow:auto}.drawing svg{display:block;min-width:540px;width:100%;max-width:none;height:auto;margin:auto}.draw-caption{margin-top:8px;background:#111827;border:1px solid #334155;border-radius:10px;padding:8px;color:#cbd5e1;font-size:12px;line-height:1.7}.legend{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;font-size:11px;color:#cbd5e1}.dot{width:10px;height:10px;border-radius:3px;display:inline-block;margin-left:3px}.status{padding:14px;border-radius:13px;background:var(--panel2);border:1px solid var(--border);margin-top:12px}.spinner{display:inline-block;width:16px;height:16px;border:2px solid #334155;border-top-color:var(--cyan);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-left:7px}@keyframes spin{to{transform:rotate(360deg)}}
+    .shortage-box{background:#29200d;border:1px solid #a16207;color:#fde68a;border-radius:12px;padding:11px 13px;margin-top:10px;line-height:1.8}.filler-box{background:#071b18;border:1px solid #0f766e;border-radius:14px;padding:13px;margin-top:12px}.filler-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:9px;margin-top:10px}.filler-option{display:block;background:#0b1220;border:1px solid #334155;border-radius:12px;padding:10px;cursor:pointer}.filler-option:has(input:checked){border-color:var(--green);box-shadow:0 0 0 1px rgba(74,222,128,.25) inset}.filler-option input{width:auto;margin-left:6px}
+    .modal-backdrop{position:fixed;inset:0;z-index:1000;background:rgba(2,6,23,.82);display:flex;align-items:flex-start;justify-content:center;padding:24px;overflow:auto}.modal-box{width:min(1180px,100%);background:var(--panel);border:1px solid var(--border);border-radius:20px;padding:18px;box-shadow:0 24px 80px rgba(0,0,0,.45)}.production-table select{min-width:125px}.production-table .stock-state{min-width:145px;font-size:12px;line-height:1.6}.cost-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}.modal-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:14px 0}.modal-summary>div{background:var(--panel2);border:1px solid var(--border);border-radius:12px;padding:11px;text-align:center}.modal-summary small{display:block;color:var(--muted);margin-bottom:5px}.modal-summary b{font-size:18px}.modal-actions{display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap;margin-top:16px}
+    @media(max-width:1050px){.material-grid,.settings-grid,.summary,.cost-grid,.modal-summary{grid-template-columns:repeat(3,1fr)}}@media(max-width:760px){body{padding:10px}.source-grid,.material-grid,.settings-grid,.summary,.cost-grid,.modal-summary{grid-template-columns:1fr 1fr}.patterns{grid-template-columns:1fr}.card{padding:12px}.modal-backdrop{padding:10px}.modal-box{padding:12px}}@media(max-width:460px){.source-grid,.material-grid,.settings-grid,.summary,.cost-grid,.modal-summary{grid-template-columns:1fr}.stat b{font-size:18px}}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top" style="margin-bottom:14px">
+    <div><h1>🧠 مخطط القص الذكي</h1><div class="note">وزّع مقاسات شنط متعددة على أقل عدد أفرخ، واخلط «حتة واحدة» و«حتة ف حتة» داخل نفس الفرخ.</div></div>
+    <div class="actions"><a class="btn" href="calculator.html">🧮 احسب أوردر</a><a class="btn" href="index.html">🏠 الرئيسية</a></div>
+  </div>
+
+  <div class="card">
+    <div class="top"><div><h3>1) الخامة والمقاسات المطلوبة</h3><div class="note">المقاسات بالسنتيمتر، والكمية هي عدد الشنط وليست عدد قطع الورق.</div></div><button class="ghost" type="button" onclick="addItemRow()">+ إضافة مقاس</button></div>
+    <div class="material-grid" style="margin-top:12px">
+      <div class="field"><label>نوع الورق</label><select id="paperType" onchange="onMaterialChanged()"><option>كرافت</option><option>ورق طبع</option><option>برستول كوشيه</option><option>كوشيه</option></select></div>
+      <div class="field"><label>اللون</label><select id="paperColor" onchange="onMaterialChanged()"><option>بني</option><option>أبيض</option><option>أسود</option></select></div>
+      <div class="field"><label>الجرام</label><input id="grammage" type="number" min="1" value="100" oninput="syncManualMaterial()"></div>
+      <div class="field"><label>سعر كيلو مقترح/افتراضي</label><input id="priceKg" type="number" min="0" step="0.01" value="50" oninput="syncManualMaterial()"></div>
+      <div class="field"><label>طريقة القص العامة</label><select id="globalMode"><option value="auto">تلقائي هجين (الأقل هدرًا)</option><option value="single">حتة واحدة فقط</option><option value="piece">حتة ف حتة فقط</option></select></div>
+    </div>
+    <div class="table-wrap"><table><thead><tr><th>اسم المقاس</th><th>الطول</th><th>العرض</th><th>الجنب</th><th>عدد الشنط</th><th>طريقة المقاس</th><th>حساب قطعة القص</th><th></th></tr></thead><tbody id="itemsBody"></tbody></table></div>
+    <div class="note" style="margin-top:9px">«تلقائي» يسمح للمحرك باختيار الطريقة لكل مقاس، وقد يضع مقاسًا حتة واحدة ومقاسًا آخر حتة ف حتة على نفس الفرخ. دوران القطع مفعّل افتراضيًا.</div>
+  </div>
+
+  <div class="card">
+    <div class="top"><div><h3>2) حفظ وفتح المقاسات</h3><div class="note">احفظ الشغل باسم داخل السيستم وافتحه في أي وقت، وبعد الفتح تقدر تزود أو تقلل أي مقاس وكمية.</div></div></div>
+    <div class="settings-grid">
+      <div class="field" style="grid-column:span 2"><label>اسم الشغل</label><input id="templateName" placeholder="مثلاً طلبية مقاسات شهر يوليو"></div>
+      <div class="field" style="grid-column:span 2"><label>الشغل المحفوظ</label><select id="savedTemplateSelect"><option value="">اختر شغلًا محفوظًا</option></select></div>
+      <div class="actions" style="grid-column:span 2;align-self:end"><button class="green" type="button" onclick="saveTemplate()">💾 حفظ / تحديث</button><button class="ghost" type="button" onclick="loadSelectedTemplate()">📥 فتح</button></div>
+    </div>
+    <div class="actions" style="margin-top:10px"><button class="ghost" type="button" onclick="startTemplateCopy()">نسخة جديدة من المقاسات الحالية</button><button class="danger" type="button" onclick="deleteSelectedTemplate()">حذف المحفوظ</button></div>
+    <div id="templateStatus" class="note" style="margin-top:9px">لم يتم اختيار شغل محفوظ.</div>
+  </div>
+
+  <div class="card">
+    <h3>3) مصدر الفرخ</h3>
+    <div class="source-grid" style="margin-top:12px">
+      <label class="source-card"><input type="radio" name="sourceMode" value="stock" checked onchange="updateSourceUI()"><b>📦 من المخزن</b><span class="note">يجرب الأفرخ المتوافقة فعليًا، بأسعارها ورصيدها الحالي.</span></label>
+      <label class="source-card"><input type="radio" name="sourceMode" value="smart" onchange="updateSourceUI()"><b>✨ اقتراح ذكي</b><span class="note">يقترح مقاس فرخ من خارج المخزن بأقل هدر ممكن.</span></label>
+      <label class="source-card"><input type="radio" name="sourceMode" value="manual" onchange="updateSourceUI()"><b>📐 فرخ افتراضي</b><span class="note">أنت تحدد مقاس الفرخ وسعره والكمية المتاحة.</span></label>
+    </div>
+    <div id="stockSettings" class="settings-grid"><div class="note" id="stockMatchInfo" style="grid-column:1/-1">جاري قراءة مخزن الورق…</div></div>
+    <div id="smartSettings" class="settings-grid hidden">
+      <div class="field"><label>أقل ضلع</label><input id="smartMin" type="number" value="50"></div>
+      <div class="field"><label>أكبر ضلع</label><input id="smartMax" type="number" value="180"></div>
+      <div class="field"><label>خطوة التقريب</label><input id="smartStep" type="number" value="5" min="1"></div>
+      <div class="note" style="grid-column:span 3;align-self:end">سيعرض أفضل 3 مقاسات فرخ، بما فيها المقاسات القياسية والحلول المركبة من قطع الشغل.</div>
+    </div>
+    <div id="manualSettings" class="settings-grid hidden">
+      <div class="field"><label>طول الفرخ</label><input id="manualLength" type="number" value="100"></div>
+      <div class="field"><label>عرض الفرخ</label><input id="manualWidth" type="number" value="70"></div>
+      <div class="field"><label>الجرام</label><input id="manualGram" type="number" value="100"></div>
+      <div class="field"><label>سعر الكيلو</label><input id="manualPrice" type="number" value="50" step="0.01"></div>
+      <div class="field"><label>الأفرخ المتاحة</label><input id="manualAvailable" type="number" value="999999" min="1"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="actions"><button id="calculateBtn" class="primary" type="button" onclick="calculatePlans()">احسب أفضل توزيع</button><button class="ghost" type="button" onclick="loadExample()">تجربة مثال</button><button class="ghost" type="button" onclick="clearRows()">مسح المقاسات</button></div>
+    <div id="statusBox" class="status note">أدخل المقاسات واضغط «احسب أفضل توزيع».</div>
+  </div>
+  <div id="resultsWrap"></div>
+</div>
+
+<div id="productionModal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="productionModalTitle">
+  <div class="modal-box">
+    <div class="top">
+      <div><h2 id="productionModalTitle">⚙️ تنفيذ دفعة القص</h2><div class="note">كل المقاسات ستُحفظ تحت رقم دفعة قص واحد مع رسمة التوزيع، ولكل مقاس اختار أمر تشغيل شنط أو إرجاع قطع القص لمخزن الورق.</div></div>
+      <button class="ghost" type="button" onclick="closeOptimizerProductionModal()">إغلاق</button>
+    </div>
+    <div id="productionPlanInfo" class="status note"></div>
+    <div class="table-wrap"><table class="production-table"><thead><tr><th>المقاس</th><th>الكمية المخططة</th><th>طريقة القص</th><th>التصرف</th><th>اللون</th><th>اليد</th><th>ما سيحدث في المخزن</th></tr></thead><tbody id="productionItemsBody"></tbody></table></div>
+    <div class="card" style="margin-top:14px;margin-bottom:0">
+      <h3>مصاريف التشغيل</h3>
+      <div class="note" style="margin-top:5px">تكلفة القص تخص الخطة كلها مرة واحدة، والتصنيع وتركيب اليد محسوبان تلقائيًا ويمكن تعديلهما قبل التنفيذ.</div>
+      <div class="cost-grid" style="margin-top:12px">
+        <div class="field"><label>الخصم من عهدة</label><select id="productionActor"><option value="">اختار العهدة</option></select></div>
+        <div class="field"><label>إجمالي القص</label><input id="productionCutCost" type="number" min="0" step="0.01" value="50" oninput="updateOptimizerProductionSummary()"></div>
+        <div class="field"><label>إجمالي التصنيع</label><input id="productionMakeCost" type="number" min="0" step="0.01" oninput="updateOptimizerProductionSummary()"></div>
+        <div class="field"><label>إجمالي تركيب اليد</label><input id="productionHandleFixCost" type="number" min="0" step="0.01" oninput="updateOptimizerProductionSummary()"></div>
+        <div class="field"><label>مصاريف أخرى</label><input id="productionExtraCost" type="number" min="0" step="0.01" value="0" oninput="updateOptimizerProductionSummary()"></div>
+      </div>
+      <div class="field" style="margin-top:10px"><label>ملاحظة أمر التشغيل</label><input id="productionNote" placeholder="اختياري"></div>
+    </div>
+    <div id="productionSummary" class="modal-summary"></div>
+    <div id="productionModalStatus" class="note">حدد التصرف المطلوب لكل مقاس ثم نفّذ الخطة.</div>
+    <div class="modal-actions"><button id="submitProductionBtn" class="green" type="button" onclick="submitOptimizerProductionOrders()">✅ خصم الفرخ وتنفيذ الاختيارات</button><button class="ghost" type="button" onclick="closeOptimizerProductionModal()">إلغاء</button></div>
+  </div>
+</div>
+
+<script src="cutting_optimizer.js?v=20260721-6"></script>
+<script>
+const token = localStorage.getItem('token');
+let user = JSON.parse(localStorage.getItem('user') || 'null');
+if(!token || !user) location.href='login.html';
+let paperRows = [];
+let readyBagRows = [];
+let handleRows = [];
+let workCustodyUsers = [];
+let savedTemplates = [];
+let currentTemplateId = 0;
+let nextRowId = 1;
+let currentPlans = [];
+let basePlans = [];
+let currentItems = [];
+let activeProductionPlanIndex = -1;
+const fillerSuggestionsByPlan = {};
+const palette = ['#2563eb','#dc2626','#16a34a','#9333ea','#ea580c','#0891b2','#4f46e5','#be123c','#65a30d','#a16207'];
+const num = (v,f=0)=>Number.isFinite(Number(v))?Number(v):f;
+const money = v=>num(v).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})+' ج';
+const fmt = (v,d=2)=>num(v).toLocaleString('en-US',{maximumFractionDigits:d});
+const esc = value=>String(value??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+function hasPerm(key){return user?.username==='admin'||user?.role==='super_admin'||Number(user?.[key]||0)===1;}
+async function authFetch(url,opts={}){opts.cache=opts.cache||'no-store';opts.headers=Object.assign({},opts.headers||{},{Authorization:'Bearer '+token});const response=await fetch(url,opts);const data=await response.json().catch(()=>({}));if(response.status===401){localStorage.clear();location.href='login.html';throw new Error('انتهت جلسة الدخول');}if(!response.ok)throw new Error(data.error||'تعذر تحميل البيانات');return data;}
+function normalizePaperType(value){const v=String(value||'').trim(),low=v.toLowerCase();if(v==='ورق طبع'||v==='طبع'||low.includes('print'))return'ورق طبع';if(v==='برستول كوشيه'||low.includes('bristol'))return'برستول كوشيه';if(v==='كوشيه'||v==='كوشية'||low.includes('coated')||low.includes('couche'))return'كوشيه';return'كرافت';}
+function isCoated(type){return ['برستول كوشيه','كوشيه'].includes(normalizePaperType(type));}
+
+function latinDigits(value){return String(value??'').replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[۰-۹]/g,d=>'۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).replace(/٫/g,'.');}
+function parseSizeText(value){const numbers=latinDigits(value).match(/\d+(?:\.\d+)?/g)||[];if(numbers.length<3)return null;const [length,width,gusset]=numbers.slice(0,3).map(Number);return length>0&&width>0&&gusset>=0?{length,width,gusset}:null;}
+function generatedSizeLabel(length,width,gusset){return `${fmt(length)}×${fmt(width)}×${fmt(gusset)}`;}
+function syncSizeFromLabel(tr){if(tr.dataset.syncing==='1')return;const parsed=parseSizeText(tr.querySelector('.row-label').value);if(!parsed){tr.dataset.autoLabel='0';updateCutPreview(tr);return;}tr.dataset.syncing='1';tr.querySelector('.row-length').value=parsed.length;tr.querySelector('.row-width').value=parsed.width;tr.querySelector('.row-gusset').value=parsed.gusset;tr.dataset.autoLabel='1';tr.dataset.syncing='0';updateCutPreview(tr);}
+function syncLabelFromDimensions(tr){if(tr.dataset.syncing==='1')return;const length=num(tr.querySelector('.row-length').value),width=num(tr.querySelector('.row-width').value),gusset=num(tr.querySelector('.row-gusset').value);const label=tr.querySelector('.row-label');if(length>0&&width>0&&(tr.dataset.autoLabel==='1'||!label.value.trim()||!!parseSizeText(label.value))){tr.dataset.syncing='1';label.value=generatedSizeLabel(length,width,gusset);tr.dataset.autoLabel='1';tr.dataset.syncing='0';}updateCutPreview(tr);}
+function addItemRow(values={}){
+  const id = nextRowId++;
+  const tr = document.createElement('tr');
+  tr.dataset.id=id;
+  const initialLabel=values.label||((num(values.length)>0&&num(values.width)>0)?generatedSizeLabel(values.length,values.width,values.gusset):'');
+  tr.dataset.autoLabel=values.label?'0':'1';
+  tr.innerHTML=`<td><input class="row-label" dir="ltr" value="${esc(initialLabel)}" placeholder="مثلاً 40×50×12"></td><td><input class="row-length" type="number" min="0" value="${esc(values.length??'')}"></td><td><input class="row-width" type="number" min="0" value="${esc(values.width??'')}"></td><td><input class="row-gusset" type="number" min="0" value="${esc(values.gusset??'')}"></td><td><input class="row-qty" type="number" min="1" value="${esc(values.qty??'')}"></td><td><select class="row-mode"><option value="auto">يتبع التلقائي/العام</option><option value="single">حتة واحدة</option><option value="piece">حتة ف حتة</option></select></td><td class="cut-preview note">-</td><td><button type="button" class="danger" onclick="removeItemRow(this)">حذف</button></td>`;
+  tr.querySelector('.row-mode').value=values.mode||'auto';
+  tr.querySelector('.row-label').addEventListener('input',()=>syncSizeFromLabel(tr));
+  tr.querySelectorAll('.row-length,.row-width,.row-gusset').forEach(el=>el.addEventListener('input',()=>syncLabelFromDimensions(tr)));
+  tr.querySelectorAll('.row-qty,.row-mode').forEach(el=>el.addEventListener('input',()=>updateCutPreview(tr)));
+  itemsBody.appendChild(tr);updateCutPreview(tr);
+}
+function removeItemRow(button){button.closest('tr')?.remove();if(!itemsBody.children.length)addItemRow();}
+function updateCutPreview(tr){const item={length:num(tr.querySelector('.row-length').value),width:num(tr.querySelector('.row-width').value),gusset:num(tr.querySelector('.row-gusset').value)};if(!item.length||!item.width){tr.querySelector('.cut-preview').textContent='-';return;}const s=CuttingOptimizer.cutDimensions(item,'single'),p=CuttingOptimizer.cutDimensions(item,'piece');tr.querySelector('.cut-preview').innerHTML=`واحدة: ${fmt(s.w)}×${fmt(s.h)}<br>حته ف حته: 2 × (${fmt(p.w)}×${fmt(p.h)})`;}
+function readItems(){return [...itemsBody.querySelectorAll('tr')].map((tr,index)=>{const length=num(tr.querySelector('.row-length').value),width=num(tr.querySelector('.row-width').value),gusset=num(tr.querySelector('.row-gusset').value),qty=Math.ceil(num(tr.querySelector('.row-qty').value));return{id:`size-${tr.dataset.id}`,label:tr.querySelector('.row-label').value.trim()||`${length}×${width}×${gusset}`,length,width,gusset,qty,mode:tr.querySelector('.row-mode').value,index};}).filter(item=>item.length>0&&item.width>0&&item.qty>0);}
+function sourceMode(){return document.querySelector('input[name="sourceMode"]:checked')?.value||'stock';}
+function updateSourceUI(){const mode=sourceMode();stockSettings.classList.toggle('hidden',mode!=='stock');smartSettings.classList.toggle('hidden',mode!=='smart');manualSettings.classList.toggle('hidden',mode!=='manual');}
+function syncManualMaterial(){manualGram.value=grammage.value;manualPrice.value=priceKg.value;refreshStockInfo();}
+function onMaterialChanged(){if(isCoated(paperType.value))paperColor.value='أبيض';refreshStockInfo();}
+function compatiblePaper(){const type=normalizePaperType(paperType.value),color=String(paperColor.value||'').trim(),gram=num(grammage.value);return paperRows.filter(row=>normalizePaperType(row.paper_type)===type&&(!color||String(row.color||'').trim()===color)&&(!gram||Math.abs(num(row.grammage)-gram)<.01)&&num(row.total_sheets)>0);}
+function refreshStockInfo(){const matches=compatiblePaper();stockMatchInfo.innerHTML=matches.length?`متاح <b class="ok">${matches.length}</b> صنف مطابق لنوع الورق واللون والجرام. سيحترم المحرك عدد الأفرخ والكيلوهات الموجودة.`:`<span class="warn">لا يوجد فرخ مطابق للخامة المختارة في المخزن. غيّر الخامة أو استخدم الاقتراح الذكي/الافتراضي.</span>`;}
+function commonOptions(){return{globalMode:globalMode.value,allowRotation:true,grammage:num(grammage.value),priceKg:num(priceKg.value)};}
+function fillerOptions(){return{...commonOptions(),globalMode:'auto'};}
+function fillerAnalysisOptions(){return{...fillerOptions(),strategies:['fit','largest']};}
+function stockPlans(items){return compatiblePaper().map(row=>{const weight=CuttingOptimizer.sheetWeightKg(row.length,row.width,row.grammage);let available=Math.floor(num(row.total_sheets));if(num(row.total_kg)>0&&weight>0)available=Math.min(available,Math.floor((num(row.total_kg)+1e-7)/weight));return CuttingOptimizer.planSheet({id:row.id,label:`${row.color} ${row.length}×${row.width} - ${row.grammage} جم`,length:row.length,width:row.width,grammage:row.grammage,priceKg:row.buy_price_kg,availableSheets:available,source:'stock',stockKg:row.total_kg},items,commonOptions());}).sort(comparePlans).slice(0,3);}
+function comparePlans(a,b){const ca=Object.values(a.completed||{}).reduce((s,v)=>s+num(v),0),cb=Object.values(b.completed||{}).reduce((s,v)=>s+num(v),0);return Number(b.complete)-Number(a.complete)||cb-ca||b.utilization-a.utilization||a.totalCost-b.totalCost;}
+function manualPlans(items){return[CuttingOptimizer.planSheet({label:`افتراضي ${num(manualLength.value)}×${num(manualWidth.value)}`,length:num(manualLength.value),width:num(manualWidth.value),grammage:num(manualGram.value),priceKg:num(manualPrice.value),availableSheets:Math.floor(num(manualAvailable.value)),source:'manual'},items,commonOptions())];}
+function smartPlans(items){return CuttingOptimizer.suggestSheets(items,{...commonOptions(),minSide:num(smartMin.value,50),maxSide:num(smartMax.value,180),step:num(smartStep.value,5),limit:3});}
+
+async function calculatePlans(){
+  const items=readItems();if(!items.length){statusBox.innerHTML='<span class="bad">أدخل مقاسًا واحدًا على الأقل بكمية صحيحة.</span>';return;}
+  calculateBtn.disabled=true;statusBox.innerHTML='<span class="spinner"></span> جاري تجربة توزيعات وطرق قص متعددة…';resultsWrap.innerHTML='';
+  await new Promise(resolve=>setTimeout(resolve,30));
+  try{let plans=[];if(sourceMode()==='stock')plans=stockPlans(items);else if(sourceMode()==='smart')plans=smartPlans(items);else plans=manualPlans(items);plans=plans.filter(plan=>plan.patterns?.length);if(!plans.length)throw new Error(sourceMode()==='stock'?'لا يوجد فرخ مطابق في المخزن يستوعب قطع الشغل المطلوبة. جرّب الاقتراح الذكي.':'مقاس الفرخ لا يستوعب أي قطعة من المقاسات المطلوبة.');plans.forEach(plan=>attachShortageExplanation(plan,items));currentItems=items;basePlans=plans;currentPlans=[...plans];renderPlans(currentPlans,currentItems);const best=plans[0];statusBox.innerHTML=best.complete?'<span class="ok">✅ تم الوصول لتوزيع يكمل كل الكميات المطلوبة.</span>':`<span class="warn">⚠️ ${esc(best.shortageInfo?.summary||'توجد كميات ناقصة؛ السبب موضح داخل النتيجة.')}</span>`;}
+  catch(error){statusBox.innerHTML=`<span class="bad">${esc(error.message||error)}</span>`;}finally{calculateBtn.disabled=false;}
+}
+
+function attachShortageExplanation(plan,items){
+  if(plan.complete){plan.shortageInfo=null;return;}
+  const remainingItems=items.map(item=>({...item,qty:num(plan.remaining?.[item.id])})).filter(item=>item.qty>0);
+  const missingNames=remainingItems.map(item=>`${item.label}: ${fmt(item.qty,0)} شنطة`).join('، ');
+  const extension=CuttingOptimizer.planSheet({...plan.sheet,availableSheets:Number.MAX_SAFE_INTEGER},remainingItems,commonOptions());
+  if(extension.complete&&extension.totalSheets>0){
+    const available=fmt(plan.sheet.availableSheets,0),extra=fmt(extension.totalSheets,0);
+    const sourceReason=plan.sheet.source==='stock'?`رصيد المخزن المتاح من هذا الصنف ${available} فرخ وتم استهلاكه`:`أنت محدد للفرخ الافتراضي ${available} فرخ فقط وتم استخدامهم بالكامل`;
+    plan.shortageInfo={extraSheets:extension.totalSheets,summary:`${sourceReason}. تحتاج زيادة ${extra} فرخ لإكمال الباقي.`,details:`المتبقي: ${missingNames}.`};
+  }else{
+    plan.shortageInfo={extraSheets:null,summary:'المقاسات الناقصة لا تدخل على مقاس الفرخ المختار، وليست مشكلة رصيد.',details:`المقاسات التي لم تدخل: ${missingNames}. اختر فرخًا أكبر أو الاقتراح الذكي.`};
+  }
+}
+function renderPlans(plans,items){resultsWrap.innerHTML=plans.map((plan,index)=>renderPlan(plan,items,index)).join('');}
+function renderPlan(plan,items,index){
+  const displayItems=plan.items||items;
+  const sheetCost=CuttingOptimizer.sheetWeightKg(plan.sheet.length,plan.sheet.width,plan.sheet.grammage)*plan.sheet.priceKg;
+  const completeText=plan.complete?'يكمل كل الكميات':'يوجد نقص';
+  const sourceLabel=plan.sheet.source==='stock'?'من المخزن':plan.sheet.source==='smart'?'اقتراح ذكي':'فرخ افتراضي';
+  const shortage=plan.shortageInfo?`<div class="shortage-box"><b>سبب النقص:</b> ${esc(plan.shortageInfo.summary)}<br><span>${esc(plan.shortageInfo.details)}</span></div>`:'';
+  const fillSummary=plan.fillTotals&&Object.keys(plan.fillTotals).length?`<div class="filler-box"><b class="ok">♻️ تم استغلال جزء من الهدر</b><div class="note" style="margin-top:5px">${Object.entries(plan.fillTotals).map(([id,count])=>`${esc(displayItems.find(item=>item.id===id)?.label||id)}: ${fmt(count,0)} شنطة إضافية`).join(' — ')}</div></div>`:'';
+  const canCreate=plan.sheet.source==='stock'&&plan.complete&&num(plan.sheet.id)>0&&hasPerm('perm_cut_paper')&&hasPerm('perm_manage_paper')&&hasPerm('perm_manage_bags');
+  const productionLabel=plan.sheet.source!=='stock'?'أمر التشغيل متاح من مخزن الورق فقط':!plan.complete?'أكمل الكميات أولًا':canCreate?'⚙️ أمر تشغيل':'غير مصرح بإنشاء أمر تشغيل';
+  return`<section class="card plan ${index===0?'best':''}"><div class="top"><div><h2>${index===0?'⭐ ':''}${esc(plan.sheet.label||`${plan.sheet.length}×${plan.sheet.width}`)}</h2><div style="margin-top:6px"><span class="badge">${sourceLabel}</span><span class="badge ${plan.complete?'good':'short'}">${completeText}</span><span class="badge">${fmt(plan.sheet.grammage)} جم</span><span class="badge">${money(plan.sheet.priceKg)}/كجم</span></div></div><div class="actions"><button class="green" type="button" onclick="showFillerSuggestions(${index})">♻️ استغل الفراغات من مخزن الشنط</button><button class="primary" type="button" onclick="openOptimizerProductionModal(${index})" ${canCreate?'':'disabled'}>${productionLabel}</button></div></div>${shortage}<div class="summary"><div class="stat"><small>إجمالي الأفرخ</small><b>${fmt(plan.totalSheets,0)}</b></div><div class="stat"><small>إجمالي الوزن</small><b>${fmt(plan.totalKg,2)} كجم</b></div><div class="stat"><small>سعر الفرخ</small><b>${money(sheetCost)}</b></div><div class="stat"><small>إجمالي الورق</small><b>${money(plan.totalCost)}</b></div><div class="stat"><small>الهدر</small><b>${fmt(plan.wastePercent,2)}%</b></div><div class="stat"><small>تكلفة الهدر</small><b>${money(plan.wasteCost)}</b></div></div>${renderPerItemTable(plan,displayItems)}${fillSummary}<div id="fillerBox-${index}"></div><div class="note" style="margin-top:9px">الهدر: ${fmt(plan.wasteKg,3)} كجم بقيمة ${money(plan.wasteCost)}. التكلفة الفعلية لكل مقاس موزع عليها نصيبها من الهدر، لذلك مجموعها يساوي إجمالي تكلفة الورق.</div><div class="patterns">${plan.patterns.map((pattern,pIndex)=>renderPattern(pattern,displayItems,pIndex)).join('')}</div></section>`;
+}
+function modeText(counts){const bits=[];if(num(counts?.single))bits.push(`${fmt(counts.single,0)} حتة واحدة`);if(num(counts?.piece))bits.push(`${fmt(counts.piece,0)} حتة ف حتة`);return bits.join(' + ')||'-';}
+function renderPerItemTable(plan,items){return`<div class="table-wrap"><table><thead><tr><th>المقاس</th><th>مطلوب</th><th>مخطط</th><th>ناقص</th><th>طريقة القص</th><th>تكلفة الورق النظرية</th><th>التكلفة الفعلية بالهدر</th><th>ورق/شنطة</th></tr></thead><tbody>${items.map(item=>{const row=plan.perItem[item.id]||{};return`<tr><td><bdi dir="ltr">${esc(item.label)}</bdi>${item.isFiller?' <span class="badge good">من الهدر</span>':''}</td><td>${item.isFiller?'إضافي':fmt(item.qty,0)}</td><td class="ok">${fmt(row.completed,0)}</td><td class="${num(row.remaining)?'bad':'ok'}">${fmt(row.remaining,0)}</td><td>${esc(modeText(row.modeCounts))}</td><td>${money(row.theoreticalCost)}</td><td>${money(row.actualCost)}</td><td>${money(row.paperCostPerBag)}</td></tr>`;}).join('')}</tbody></table></div>`;}
+function colorFor(itemId,items){const idx=Math.max(0,items.findIndex(item=>item.id===itemId));return palette[idx%palette.length];}
+function patternItemCount(pattern,item){const single=num(pattern.modes?.[item.id]?.single),pieceBags=num(pattern.modes?.[item.id]?.piece),bits=[];if(single)bits.push(`${fmt(single,2)} شنطة حتة واحدة`);if(pieceBags)bits.push(`${fmt(pieceBags*2,0)} وجه حتة ف حتة`);return bits.join(' + ');}
+function uniqueSorted(values){return [...values].sort((a,b)=>a-b).filter((value,index,array)=>index===0||Math.abs(value-array[index-1])>.0001);}
+function getGapRectangles(pattern){
+  const sw=num(pattern?.sheet?.width),sh=num(pattern?.sheet?.length),placements=(pattern?.placements||[]).filter(rect=>num(rect.w)>0&&num(rect.h)>0);
+  if(!sw||!sh)return[];
+  const maxRight=Math.min(sw,Math.max(0,...placements.map(rect=>num(rect.x)+num(rect.w))));
+  const maxBottom=Math.min(sh,Math.max(0,...placements.map(rect=>num(rect.y)+num(rect.h))));
+  const gaps=[];
+  if(sw-maxRight>.0001)gaps.push({x:maxRight,y:0,w:sw-maxRight,h:sh,kind:'outer'});
+  if(sh-maxBottom>.0001&&maxRight>.0001)gaps.push({x:0,y:maxBottom,w:maxRight,h:sh-maxBottom,kind:'outer'});
+  if(maxRight>.0001&&maxBottom>.0001){
+    const xs=uniqueSorted([0,maxRight,...placements.flatMap(rect=>[Math.max(0,num(rect.x)),Math.min(maxRight,num(rect.x)+num(rect.w))])]);
+    const ys=uniqueSorted([0,maxBottom,...placements.flatMap(rect=>[Math.max(0,num(rect.y)),Math.min(maxBottom,num(rect.y)+num(rect.h))])]);
+    const rows=ys.length-1,cols=xs.length-1,empty=Array.from({length:rows},()=>Array(cols).fill(false)),used=Array.from({length:rows},()=>Array(cols).fill(false));
+    for(let row=0;row<rows;row++)for(let col=0;col<cols;col++){const cx=(xs[col]+xs[col+1])/2,cy=(ys[row]+ys[row+1])/2;empty[row][col]=!placements.some(rect=>cx>=num(rect.x)-.0001&&cx<=num(rect.x)+num(rect.w)+.0001&&cy>=num(rect.y)-.0001&&cy<=num(rect.y)+num(rect.h)+.0001);}
+    for(let row=0;row<rows;row++)for(let col=0;col<cols;col++){
+      if(!empty[row][col]||used[row][col])continue;
+      let endCol=col;while(endCol+1<cols&&empty[row][endCol+1]&&!used[row][endCol+1])endCol++;
+      let endRow=row,canGrow=true;while(canGrow&&endRow+1<rows){for(let c=col;c<=endCol;c++)if(!empty[endRow+1][c]||used[endRow+1][c]){canGrow=false;break;}if(canGrow)endRow++;}
+      for(let r=row;r<=endRow;r++)for(let c=col;c<=endCol;c++)used[r][c]=true;
+      const gap={x:xs[col],y:ys[row],w:xs[endCol+1]-xs[col],h:ys[endRow+1]-ys[row],kind:'inner'};if(gap.w*gap.h>.01)gaps.push(gap);
+    }
+  }
+  return gaps.sort((a,b)=>b.w*b.h-a.w*a.h);
+}
+function renderPattern(pattern,items,index){const counts=items.map(item=>num(pattern.bags[item.id])?`${esc(item.label)}: ${patternItemCount(pattern,item)}/فرخ`:'').filter(Boolean).join(' — '),gaps=getGapRectangles(pattern),sheetArea=num(pattern.sheet.width)*num(pattern.sheet.length),remainingArea=Math.max(0,sheetArea-num(pattern.usedArea)),gapText=gaps.length?gaps.map(gap=>`${fmt(gap.w)}×${fmt(gap.h)}`).join('، '):'لا يوجد فراغ قابل للقياس';return`<article class="pattern"><div class="top"><h4>نموذج ${index+1} × ${fmt(pattern.repetitions,0)} فرخ</h4><span class="badge good">استغلال ${fmt(pattern.utilization,2)}%</span></div><div class="note" style="margin-top:5px">${counts}</div><div class="drawing">${patternSvg(pattern,items,gaps)}</div><div class="draw-caption"><b>الفرخ:</b> <bdi dir="ltr">${fmt(pattern.sheet.width)}×${fmt(pattern.sheet.length)} سم</bdi> — <b>المساحة المستخدمة:</b> ${fmt(pattern.usedArea)} سم² — <b>الباقي:</b> ${fmt(remainingArea)} سم²<br><b>مقاسات الفراغات:</b> <bdi dir="ltr">${esc(gapText)}</bdi></div><div class="legend">${items.filter(item=>num(pattern.bags[item.id])).map(item=>`<span><i class="dot" style="background:${colorFor(item.id,items)}"></i>${esc(item.label)}</span>`).join('')}</div></article>`;}
+function patternSvg(pattern,items,gaps=getGapRectangles(pattern)){
+  const sw=num(pattern.sheet.width),sh=num(pattern.sheet.length),scale=Math.min(620/sw,450/sh,7),sheetW=sw*scale,sheetH=sh*scale,margin={left:46,top:34,right:82,bottom:62},viewW=margin.left+sheetW+margin.right,viewH=margin.top+sheetH+margin.bottom,sx=margin.left,sy=margin.top;
+  const gapShapes=gaps.map(gap=>{const x=sx+gap.x*scale,y=sy+gap.y*scale,w=gap.w*scale,h=gap.h*scale,label=`${fmt(gap.w)}×${fmt(gap.h)}`;let text='';if(w>=62&&h>=32)text=`<text x="${x+w/2}" y="${y+h/2-5}" text-anchor="middle" fill="#475569" font-size="12" font-weight="700">باقي</text><text x="${x+w/2}" y="${y+h/2+12}" text-anchor="middle" fill="#334155" font-size="13" font-weight="800" direction="ltr">${label}</text>`;else if(h>=65&&w>=20)text=`<text x="${x+w/2}" y="${y+h/2}" text-anchor="middle" fill="#334155" font-size="12" font-weight="800" direction="ltr" transform="rotate(-90 ${x+w/2} ${y+h/2})">باقي ${label}</text>`;else if(w>=34&&h>=18)text=`<text x="${x+w/2}" y="${y+h/2+4}" text-anchor="middle" fill="#334155" font-size="10" font-weight="800" direction="ltr">${label}</text>`;return`<g><rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4 3"/><title>باقي ${label} سم</title>${text}</g>`;}).join('');
+  const pieces=(pattern.placements||[]).map(rect=>{const fill=colorFor(rect.itemId,items),x=sx+rect.x*scale,y=sy+rect.y*scale,w=rect.w*scale,h=rect.h*scale,label=String(rect.itemLabel||''),cut=`${fmt(rect.w)}×${fmt(rect.h)}`,font=Math.max(10,Math.min(15,w/7,h/6)),edgeStyle='paint-order:stroke;stroke:#000;stroke-width:2px;stroke-linejoin:round';return`<g><rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}" fill-opacity=".86" stroke="#111827" stroke-width="1.4"/><title>مقاس الشنطة ${esc(label)} — قطعة القص ${cut} سم — ${esc(rect.modeLabel)}</title>${w>48?`<text x="${x+w/2}" y="${y+15}" text-anchor="middle" fill="white" font-size="11" font-weight="800" direction="ltr" style="${edgeStyle}">${fmt(rect.w)} سم</text>`:''}${h>52?`<text x="${x+13}" y="${y+h/2}" text-anchor="middle" fill="white" font-size="11" font-weight="800" direction="ltr" transform="rotate(-90 ${x+13} ${y+h/2})" style="${edgeStyle}">${fmt(rect.h)} سم</text>`:''}${w>62&&h>42?`<text x="${x+w/2}" y="${y+h/2-11}" text-anchor="middle" fill="white" font-size="${font}" font-weight="900" direction="ltr" style="${edgeStyle}">قص ${cut}</text><text x="${x+w/2}" y="${y+h/2+8}" text-anchor="middle" fill="white" font-size="${Math.max(10,font-2)}" font-weight="800" direction="ltr" style="${edgeStyle}">${esc(label)}</text><text x="${x+w/2}" y="${y+h/2+25}" text-anchor="middle" fill="white" font-size="10" font-weight="700" style="${edgeStyle}">${esc(rect.modeLabel)}</text>`:''}</g>`;}).join('');
+  const bottomY=sy+sheetH+28,rightX=sx+sheetW+29;
+  const dimensions=`<g stroke="#ef4444" fill="#ef4444" stroke-width="1"><line x1="${sx}" y1="${bottomY}" x2="${sx+sheetW}" y2="${bottomY}"/><line x1="${sx}" y1="${bottomY-6}" x2="${sx}" y2="${bottomY+6}"/><line x1="${sx+sheetW}" y1="${bottomY-6}" x2="${sx+sheetW}" y2="${bottomY+6}"/><text x="${sx+sheetW/2}" y="${bottomY+18}" text-anchor="middle" stroke="none" font-size="14" font-weight="900" direction="ltr">${fmt(sw)}</text><line x1="${rightX}" y1="${sy}" x2="${rightX}" y2="${sy+sheetH}"/><line x1="${rightX-6}" y1="${sy}" x2="${rightX+6}" y2="${sy}"/><line x1="${rightX-6}" y1="${sy+sheetH}" x2="${rightX+6}" y2="${sy+sheetH}"/><text x="${rightX+20}" y="${sy+sheetH/2}" text-anchor="middle" stroke="none" font-size="14" font-weight="900" direction="ltr" transform="rotate(-90 ${rightX+20} ${sy+sheetH/2})">${fmt(sh)}</text></g>`;
+  return`<svg viewBox="0 0 ${viewW} ${viewH}" width="${viewW}" height="${viewH}" role="img" aria-label="مخطط قص فرخ ${sw} في ${sh}"><rect x="${sx}" y="${sy}" width="${sheetW}" height="${sheetH}" fill="#fff" stroke="#111827" stroke-width="2"/>${gapShapes}${pieces}${dimensions}</svg>`;
+}
+
+function readyBagFillers(){
+  const baseKeys=new Set(currentItems.map(item=>`${num(item.length)}|${num(item.width)}|${num(item.gusset)}`));
+  const maxBaseArea=Math.max(0,...currentItems.map(item=>num(item.length)*num(item.width)));
+  const grouped=new Map();
+  readyBagRows.forEach(row=>{const length=num(row.length),width=num(row.width),gusset=num(row.gusset),rowColor=String(row.color||'').trim();if(!length||!width||gusset<0||length*width>=maxBaseArea)return;const sizeKey=`${length}|${width}|${gusset}`;if(baseKeys.has(sizeKey))return;if(!grouped.has(sizeKey))grouped.set(sizeKey,{id:`filler-${sizeKey.replace(/[^0-9A-Za-z]+/g,'-')}`,label:generatedSizeLabel(length,width,gusset),length,width,gusset,qty:Number.MAX_SAFE_INTEGER,mode:'auto',stockQty:0,handles:new Set(),colors:new Set()});const item=grouped.get(sizeKey);item.stockQty+=num(row.total_qty);if(String(row.handle||'').trim())item.handles.add(String(row.handle).trim());if(rowColor)item.colors.add(rowColor);});
+  return [...grouped.values()].map(item=>({...item,handles:[...item.handles],colors:[...item.colors]}));
+}
+async function showFillerSuggestions(planIndex){
+  const box=document.getElementById(`fillerBox-${planIndex}`);
+  if(!box)return;
+  try{
+    const fillers=readyBagFillers();
+    if(!fillers.length){box.innerHTML='<div class="filler-box warn">لا توجد أصناف أصغر مسجلة في مخزن الشنط غير المقاسات المطلوبة نفسها.</div>';return;}
+    if(typeof CuttingOptimizer?.analyzeFillers!=='function')throw new Error('المتصفح ما زال يشغل نسخة قديمة من محرك القص. حدّث الصفحة مرة واحدة.');
+    box.innerHTML='<div class="filler-box"><span class="spinner"></span> جاري فحص الفراغات الفعلية في كل نموذج…</div>';
+    await new Promise(resolve=>setTimeout(resolve,25));
+    const suggestions=CuttingOptimizer.analyzeFillers(basePlans[planIndex],fillers,fillerAnalysisOptions());
+    fillerSuggestionsByPlan[planIndex]=suggestions;
+    if(!suggestions.length){box.innerHTML='<div class="filler-box warn">تمت قراءة مقاسات مخزن الشنط، لكن لا يوجد مقاس أصغر يدخل كاملًا داخل الفراغات الحالية.</div>';return;}
+    box.innerHTML=`<div class="filler-box"><div class="top"><div><h3>مقاسات تدخل فعليًا في الفراغات</h3><div class="note">نأخذ المقاس فقط من كتالوج المخزن بغض النظر عن لون الصنف؛ الإنتاج الإضافي سيكون بلون الورق الحالي (${esc(paperColor.value)}). ولا يتم خصم شنط جاهزة.</div></div><div class="actions"><button class="ghost" type="button" onclick="toggleAllFillers(${planIndex},true)">تحديد الكل</button><button class="ghost" type="button" onclick="toggleAllFillers(${planIndex},false)">مسح</button></div></div><div class="filler-grid">${suggestions.map(item=>`<label class="filler-option"><div><input type="checkbox" data-filler-id="${esc(item.id)}"><b><bdi dir="ltr">${esc(item.label)}</bdi></b></div><div class="ok" style="margin-top:6px">حتى ${fmt(item.totalBags,0)} شنطة إضافية</div><div class="note">الرصيد الحالي بكل الألوان: ${fmt(item.stockQty,0)} — الألوان: ${esc((item.colors||[]).join(' / ')||'غير محدد')}</div><div class="note">${item.fits.map(f=>`نموذج ${f.patternNumber}: ${fmt(f.perSheet,2)} شنطة/فرخ × ${fmt(f.repetitions,0)}`).join(' — ')}</div></label>`).join('')}</div><div class="actions" style="margin-top:12px"><button class="green" type="button" onclick="applySelectedFillers(${planIndex})">تطبيق المقاسات المحددة على القص</button></div></div>`;
+  }catch(error){
+    box.innerHTML=`<div class="filler-box bad"><b>تعذر فحص الفراغات:</b> ${esc(error.message||error)}<div class="note" style="margin-top:5px">لن تظل الصفحة على التحميل. حدّثها وجرب مرة أخرى.</div></div>`;
+  }
+}
+function toggleAllFillers(planIndex,checked){document.querySelectorAll(`#fillerBox-${planIndex} input[data-filler-id]`).forEach(input=>{input.checked=checked;});}
+function applySelectedFillers(planIndex){const ids=[...document.querySelectorAll(`#fillerBox-${planIndex} input[data-filler-id]:checked`)].map(input=>input.dataset.fillerId);if(!ids.length){alert('حدد مقاسًا واحدًا على الأقل.');return;}const selected=(fillerSuggestionsByPlan[planIndex]||[]).filter(item=>ids.includes(item.id));const filled=CuttingOptimizer.applyFillers(basePlans[planIndex],selected,fillerOptions());if(!Object.keys(filled.fillTotals||{}).length){alert('المقاسات المحددة تتعارض داخل نفس الفراغ؛ جرّب اختيار مقاسات أقل.');return;}currentPlans[planIndex]=filled;renderPlans(currentPlans,currentItems);statusBox.innerHTML=`<span class="ok">✅ تم تطبيق الحشو المحدد على الاقتراح ${planIndex+1}. عدد الأفرخ والتكلفة لم يزيدا، ونسبة الهدر قلت.</span>`;document.querySelectorAll('.plan')[planIndex]?.scrollIntoView({behavior:'smooth',block:'start'});}
+
+function optimizerNoHandleOnlySize(length,width){const dims=[num(length),num(width)].sort((a,b)=>a-b);return(dims[0]===10&&dims[1]===10)||(dims[0]===10&&dims[1]===15);}
+function optimizerBagMatch(item,handle,color){return readyBagRows.find(row=>num(row.length)===num(item.length)&&num(row.width)===num(item.width)&&num(row.gusset)===num(item.gusset)&&String(row.color||'').trim()===String(color||'').trim()&&String(row.handle||'').trim()===String(handle||'').trim())||null;}
+function optimizerHandleStock(color){return handleRows.filter(row=>String(row.color||'').trim()===String(color||'').trim()).reduce((sum,row)=>sum+num(row.qty),0);}
+function optimizerLayoutKey(modeCounts){const single=num(modeCounts?.single),piece=num(modeCounts?.piece);return single>0&&piece>0?'mixed':single>0?'singlePiece':'pieceByPiece';}
+function optimizerDefaultHandle(item,color){
+  if(optimizerNoHandleOnlySize(item.length,item.width))return'بدون يد';
+  const variants=[...new Set(readyBagRows.filter(row=>num(row.length)===num(item.length)&&num(row.width)===num(item.width)&&num(row.gusset)===num(item.gusset)&&String(row.color||'').trim()===String(color||'').trim()).map(row=>String(row.handle||'').trim()).filter(Boolean))];
+  return variants.length===1?variants[0]:'';
+}
+function renderProductionActorOptions(){
+  const select=document.getElementById('productionActor');if(!select)return;
+  const preferred=String(select.value||user?.username||'').trim();
+  select.innerHTML='<option value="">اختار العهدة</option>'+workCustodyUsers.map(row=>`<option value="${esc(row.username)}">${esc(row.full_name||row.username)}</option>`).join('');
+  if([...select.options].some(option=>String(option.value)===preferred))select.value=preferred;
+}
+async function loadOptimizerWorkCustodyUsers(){try{const data=await authFetch('/active-users-lite?tracked_only=1');workCustodyUsers=Array.isArray(data.users)?data.users:[];renderProductionActorOptions();}catch(_){workCustodyUsers=[];renderProductionActorOptions();}}
+function optimizerCutStockDescription(tr){
+  const item={length:num(tr.dataset.length),width:num(tr.dataset.width),gusset:num(tr.dataset.gusset)},singleQty=Math.round(num(tr.dataset.singleQty)),pieceQty=Math.round(num(tr.dataset.pieceQty)),bits=[];
+  if(singleQty>0){const cut=CuttingOptimizer.cutDimensions(item,'single');bits.push(`<bdi dir="ltr">${fmt(cut.w)}×${fmt(cut.h)}</bdi> — ${fmt(singleQty,0)} قطعة`);}
+  if(pieceQty>0){const cut=CuttingOptimizer.cutDimensions(item,'piece');bits.push(`<bdi dir="ltr">${fmt(cut.w)}×${fmt(cut.h)}</bdi> — ${fmt(pieceQty*2,0)} قطعة`);}
+  return bits.join('<br>');
+}
+function updateOptimizerProductionItem(control){
+  const tr=control.closest('tr'),action=tr.querySelector('.production-action-select').value,handleSelect=tr.querySelector('.production-handle-select'),item={length:num(tr.dataset.length),width:num(tr.dataset.width),gusset:num(tr.dataset.gusset)},color=tr.dataset.color||'',state=tr.querySelector('.stock-state');
+  if(action==='paper'){
+    handleSelect.value='';handleSelect.disabled=true;
+    state.innerHTML=`<span class="ok">سيعود لمخزن الورق كقطع قص:</span><br>${optimizerCutStockDescription(tr)}`;
+  }else{
+    handleSelect.disabled=tr.dataset.forcedNoHandle==='1';
+    if(!handleSelect.value)handleSelect.value=tr.dataset.defaultHandle||'';
+    const handle=String(handleSelect.value||'').trim();
+    if(!handle)state.innerHTML='<span class="warn">اختار بيد أو بدون يد</span>';
+    else{
+      const existing=optimizerBagMatch(item,handle,color),handInfo=handle==='بيد'?`<br>رصيد اليد بنفس اللون: ${fmt(optimizerHandleStock(color),0)}`:'';
+      state.innerHTML=existing?`<span class="ok">أمر شنط — الصنف موجود ورصيده ${fmt(existing.total_qty,0)}</span>${handInfo}`:`<span class="warn">أمر شنط — صنف جديد سيُنشأ تلقائيًا</span>${handInfo}`;
+    }
+  }
+  const bagRows=[...document.querySelectorAll('#productionItemsBody tr')].filter(row=>row.querySelector('.production-action-select')?.value==='bag');
+  const bagQty=bagRows.reduce((sum,row)=>sum+num(row.dataset.qty),0),handledQty=bagRows.filter(row=>row.querySelector('.production-handle-select')?.value==='بيد').reduce((sum,row)=>sum+num(row.dataset.qty),0);
+  const makeInput=document.getElementById('productionMakeCost'),fixInput=document.getElementById('productionHandleFixCost');
+  if(makeInput)makeInput.value=(bagQty*1.2).toFixed(2);if(fixInput)fixInput.value=(handledQty*.1).toFixed(2);
+  updateOptimizerProductionSummary();
+}
+function updateOptimizerProductionSummary(){
+  const rows=[...document.querySelectorAll('#productionItemsBody tr')],bagRows=rows.filter(tr=>tr.querySelector('.production-action-select')?.value==='bag'),paperRowsSelected=rows.filter(tr=>tr.querySelector('.production-action-select')?.value==='paper');
+  const bagQty=bagRows.reduce((sum,tr)=>sum+num(tr.dataset.qty),0),handledQty=bagRows.filter(tr=>tr.querySelector('.production-handle-select')?.value==='بيد').reduce((sum,tr)=>sum+num(tr.dataset.qty),0),returnedPieces=paperRowsSelected.reduce((sum,tr)=>sum+num(tr.dataset.singleQty)+(num(tr.dataset.pieceQty)*2),0);
+  const plan=currentPlans[activeProductionPlanIndex],cut=Math.max(0,num(document.getElementById('productionCutCost')?.value)),make=Math.max(0,num(document.getElementById('productionMakeCost')?.value)),fix=Math.max(0,num(document.getElementById('productionHandleFixCost')?.value)),extra=Math.max(0,num(document.getElementById('productionExtraCost')?.value));
+  document.getElementById('productionSummary').innerHTML=`<div><small>أوامر الشنط</small><b>${fmt(bagRows.length,0)} أمر / ${fmt(bagQty,0)} شنطة</b></div><div><small>راجع لمخزن الورق</small><b>${fmt(returnedPieces,0)} قطعة قص</b></div><div><small>الفرخ الأصلي المخصوم</small><b>${fmt(plan?.totalSheets,0)} فرخ / ${fmt(plan?.totalKg,2)} كجم</b></div><div><small>مصاريف التشغيل</small><b>${money(cut+make+fix+extra)}</b><small>${fmt(handledQty,0)} شنطة بيد</small></div>`;
+}
+async function openOptimizerProductionModal(planIndex){
+  const plan=currentPlans[planIndex];
+  if(!plan||plan.sheet?.source!=='stock'||!plan.complete||!num(plan.sheet?.id))return alert('أمر التشغيل متاح فقط لخطة كاملة من ورق موجود بالمخزن.');
+  activeProductionPlanIndex=planIndex;
+  const color=String(plan.sheet.color||paperRows.find(row=>num(row.id)===num(plan.sheet.id))?.color||paperColor.value||'').trim();
+  const items=(plan.items||currentItems).map(item=>({item,row:plan.perItem?.[item.id]||{}})).filter(entry=>num(entry.row.completed)>0);
+  if(!items.length)return alert('الخطة لا تحتوي على كميات إنتاج.');
+  const body=document.getElementById('productionItemsBody');
+  body.innerHTML=items.map(({item,row},index)=>{
+    const qty=Math.max(1,Math.round(num(row.completed))),forced=optimizerNoHandleOnlySize(item.length,item.width),defaultHandle=optimizerDefaultHandle(item,color),layout=modeText(row.modeCounts),singleQty=Math.round(num(row.modeCounts?.single)),pieceQty=Math.round(num(row.modeCounts?.piece));
+    return`<tr data-index="${index}" data-item-id="${esc(item.id)}" data-length="${num(item.length)}" data-width="${num(item.width)}" data-gusset="${num(item.gusset)}" data-qty="${qty}" data-single-qty="${singleQty}" data-piece-qty="${pieceQty}" data-color="${esc(color)}" data-paper-share="${num(row.actualCost)||num(row.theoreticalCost)||qty}" data-layout-key="${optimizerLayoutKey(row.modeCounts)}" data-layout-label="${esc(layout)}" data-default-handle="${esc(forced?'بدون يد':defaultHandle)}" data-forced-no-handle="${forced?'1':'0'}"><td><bdi dir="ltr">${esc(item.label||generatedSizeLabel(item.length,item.width,item.gusset))}</bdi>${item.isFiller?' <span class="badge good">من الهدر</span>':''}</td><td>${fmt(qty,0)}</td><td>${esc(layout)}</td><td><select class="production-action-select" onchange="updateOptimizerProductionItem(this)"><option value="bag">أمر تشغيل شنط</option><option value="paper">إرجاع القص لمخزن الورق</option></select></td><td>${esc(color)}</td><td><select class="production-handle-select" onchange="updateOptimizerProductionItem(this)" ${forced?'disabled':''}><option value="">حدد اليد</option><option value="بيد">بيد</option><option value="بدون يد">بدون يد</option></select></td><td class="stock-state"></td></tr>`;
+  }).join('');
+  [...body.querySelectorAll('tr')].forEach((tr,index)=>{const select=tr.querySelector('.production-handle-select'),item=items[index].item;select.value=optimizerNoHandleOnlySize(item.length,item.width)?'بدون يد':optimizerDefaultHandle(item,color);updateOptimizerProductionItem(select);});
+  document.getElementById('productionPlanInfo').innerHTML=`<b>${esc(plan.sheet.label||'')}</b> — سيتم خصم <b>${fmt(plan.totalSheets,0)} فرخ</b> بوزن <b>${fmt(plan.totalKg,2)} كجم</b>. المقاس المختار «شنط» يفتح أمرًا في الصنايعية، والمختار «ورق» يرجع للمخزن بمقاس قطعة القص وعددها.`;
+  const totalQty=items.reduce((sum,entry)=>sum+Math.max(1,Math.round(num(entry.row.completed))),0);
+  document.getElementById('productionCutCost').value='50';
+  document.getElementById('productionMakeCost').value=(totalQty*1.2).toFixed(2);
+  const handledQty=[...body.querySelectorAll('tr')].filter(tr=>tr.querySelector('.production-handle-select')?.value==='بيد').reduce((sum,tr)=>sum+num(tr.dataset.qty),0);
+  document.getElementById('productionHandleFixCost').value=(handledQty*.1).toFixed(2);
+  document.getElementById('productionExtraCost').value='0';
+  document.getElementById('productionNote').value='';
+  document.getElementById('productionModalStatus').textContent='حدد التصرف المطلوب لكل مقاس، وحدد اليد لأصناف الشنط فقط.';
+  document.getElementById('submitProductionBtn').disabled=false;
+  renderProductionActorOptions();
+  if(!workCustodyUsers.length)await loadOptimizerWorkCustodyUsers();
+  document.getElementById('productionModal').classList.remove('hidden');document.body.style.overflow='hidden';
+  updateOptimizerProductionSummary();
+}
+function closeOptimizerProductionModal(){document.getElementById('productionModal').classList.add('hidden');document.body.style.overflow='';activeProductionPlanIndex=-1;}
+function optimizerCutPlanPayload(plan){
+  const sourceItems=plan?.items||currentItems||[];
+  return{
+    version:1,
+    waste_percent:num(plan?.wastePercent),
+    patterns:(plan?.patterns||[]).map((pattern,index)=>({
+      pattern_number:num(pattern.patternNumber)||index+1,
+      repetitions:Math.max(1,Math.round(num(pattern.repetitions)||1)),
+      sheet:{width:num(pattern?.sheet?.width||plan?.sheet?.width),length:num(pattern?.sheet?.length||plan?.sheet?.length)},
+      utilization:num(pattern.utilization),used_area:num(pattern.usedArea),waste_area:num(pattern.wasteArea),
+      bags:{...(pattern.bags||{})},modes:{...(pattern.modes||{})},
+      placements:(pattern.placements||[]).map(rect=>({x:num(rect.x),y:num(rect.y),w:num(rect.w),h:num(rect.h),rotated:!!rect.rotated,item_id:String(rect.itemId||''),item_label:String(rect.itemLabel||sourceItems.find(item=>String(item.id)===String(rect.itemId))?.label||''),mode:String(rect.mode||''),bag_index:num(rect.bagIndex),piece_index:num(rect.pieceIndex)}))
+    }))
+  };
+}
+async function submitOptimizerProductionOrders(){
+  const plan=currentPlans[activeProductionPlanIndex];if(!plan)return;
+  const rows=[...document.querySelectorAll('#productionItemsBody tr')];
+  const missing=rows.find(tr=>tr.querySelector('.production-action-select')?.value==='bag'&&!String(tr.querySelector('.production-handle-select')?.value||'').trim());if(missing){missing.querySelector('.production-handle-select')?.focus();return alert('حدد بيد أو بدون يد لكل مقاس اخترته كأمر شنط.');}
+  const operationExpense=['productionCutCost','productionMakeCost','productionHandleFixCost','productionExtraCost'].reduce((sum,id)=>sum+Math.max(0,num(document.getElementById(id)?.value)),0);
+  const actor=String(document.getElementById('productionActor').value||'').trim();if(operationExpense>0&&!actor)return alert('اختار العهدة التي ستُخصم منها مصاريف التشغيل.');
+  const items=rows.map(tr=>({item_id:tr.dataset.itemId,action:tr.querySelector('.production-action-select').value,l:num(tr.dataset.length),w:num(tr.dataset.width),g:num(tr.dataset.gusset),qty:Math.round(num(tr.dataset.qty)),single_qty:Math.round(num(tr.dataset.singleQty)),piece_qty:Math.round(num(tr.dataset.pieceQty)),color:tr.dataset.color,handle:tr.querySelector('.production-handle-select').value,handle_type:'مجدول',layout_key:tr.dataset.layoutKey,layout_label:tr.dataset.layoutLabel,paper_share:num(tr.dataset.paperShare),label:tr.querySelector('td')?.innerText||''}));
+  const button=document.getElementById('submitProductionBtn');button.disabled=true;button.textContent='⏳ جاري تنفيذ الخطة...';document.getElementById('productionModalStatus').innerHTML='<span class="spinner"></span> جاري خصم الفرخ وتسجيل كل ناتج في مخزنه…';
+  try{
+    const result=await authFetch('/cutting-optimizer-production-orders',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({paper_id:plan.sheet.id,total_sheets:plan.totalSheets,items,cut_plan:optimizerCutPlanPayload(plan),actor_username:actor,cost_cut:document.getElementById('productionCutCost').value,cost_make:document.getElementById('productionMakeCost').value,cost_hand_fix:document.getElementById('productionHandleFixCost').value,cost_extra:document.getElementById('productionExtraCost').value,note:document.getElementById('productionNote').value})});
+    const message=[result.cutting_batch_code?`تم إنشاء دفعة القص ${result.cutting_batch_code} وحفظ رسمة القَصّة.`:'',`تم خصم ${fmt(result.sheets,0)} فرخ أصلي وتنفيذ الخطة بنجاح.`,result.production_jobs_count?`تم ربط ${result.production_jobs_count} أمر تشغيل بنفس دفعة القص.`:'',result.returned_cut_pieces?`تم إرجاع ${fmt(result.returned_cut_pieces,0)} قطعة قص لمخزن الورق في ${result.created_or_updated_paper_items} صنف.`:'',result.created_bag_items?`تم إنشاء ${result.created_bag_items} صنف جديد في مخزن الشنط بكمية صفر لحين إتمام التشغيل.`:''].filter(Boolean).join('\n');
+    alert(message+(result.production_jobs_count?'\nسيتم فتح صفحة الصنايعية الآن.':''));
+    if(result.production_jobs_count){location.href='artisans.html';return;}
+    const fresh=await authFetch('/cutting-optimizer-stock-data');paperRows=Array.isArray(fresh.paper)?fresh.paper:[];readyBagRows=Array.isArray(fresh.bags)?fresh.bags:[];handleRows=Array.isArray(fresh.handles)?fresh.handles:[];closeOptimizerProductionModal();currentPlans=[];basePlans=[];resultsWrap.innerHTML='';refreshStockInfo();statusBox.innerHTML='<span class="ok">✅ تم إرجاع قطع القص لمخزن الورق. احسب خطة جديدة قبل أي تنفيذ آخر.</span>';
+  }catch(error){document.getElementById('productionModalStatus').innerHTML=`<span class="bad">${esc(error.message||error)}</span>`;button.disabled=false;button.textContent='✅ خصم الفرخ وتنفيذ الاختيارات';}
+}
+
+function templateRowsPayload(){return[...itemsBody.querySelectorAll('tr')].map(tr=>({label:tr.querySelector('.row-label').value.trim(),length:num(tr.querySelector('.row-length').value),width:num(tr.querySelector('.row-width').value),gusset:num(tr.querySelector('.row-gusset').value),qty:Math.ceil(num(tr.querySelector('.row-qty').value)),mode:tr.querySelector('.row-mode').value})).filter(item=>item.label||item.length||item.width||item.qty);}
+function workspacePayload(){return{version:1,items:templateRowsPayload(),material:{paperType:paperType.value,color:paperColor.value,grammage:num(grammage.value),priceKg:num(priceKg.value),globalMode:globalMode.value},sourceMode:sourceMode(),smart:{min:num(smartMin.value),max:num(smartMax.value),step:num(smartStep.value)},manual:{length:num(manualLength.value),width:num(manualWidth.value),grammage:num(manualGram.value),priceKg:num(manualPrice.value),available:Math.floor(num(manualAvailable.value))}};}
+function renderTemplateOptions(preferredId=0){const keep=String(preferredId||savedTemplateSelect.value||'');savedTemplateSelect.innerHTML='<option value="">اختر شغلًا محفوظًا</option>'+savedTemplates.map(row=>`<option value="${row.id}">${esc(row.name)}${row.created_by?' — '+esc(row.created_by):''}</option>`).join('');if(savedTemplates.some(row=>String(row.id)===keep))savedTemplateSelect.value=keep;}
+async function refreshTemplates(preferredId=0){savedTemplates=await authFetch('/cutting-optimizer-templates');renderTemplateOptions(preferredId);}
+async function saveTemplate(){const name=templateName.value.trim();const payload=workspacePayload();if(!name){templateStatus.innerHTML='<span class="bad">اكتب اسم الشغل أولًا.</span>';templateName.focus();return;}if(!payload.items.some(item=>item.length>0&&item.width>0&&item.qty>0)){templateStatus.innerHTML='<span class="bad">اكتب مقاسًا وكمية صحيحة قبل الحفظ.</span>';return;}templateStatus.innerHTML='<span class="spinner"></span> جاري الحفظ داخل السيستم…';try{const saved=await authFetch('/cutting-optimizer-templates',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:currentTemplateId||0,name,payload})});currentTemplateId=num(saved.id);await refreshTemplates(currentTemplateId);templateStatus.innerHTML=`<span class="ok">✅ تم حفظ «${esc(saved.name)}» داخل السيستم. فتحه لاحقًا يعيد كل المقاسات والإعدادات.</span>`;}catch(error){templateStatus.innerHTML=`<span class="bad">${esc(error.message||error)}</span>`;}}
+function applyWorkspacePayload(payload){const material=payload?.material||{},smart=payload?.smart||{},manual=payload?.manual||{};if(material.paperType)paperType.value=material.paperType;if(material.color)paperColor.value=material.color;if(num(material.grammage)>0)grammage.value=material.grammage;if(material.priceKg!==undefined&&material.priceKg!==null)priceKg.value=num(material.priceKg);if(['auto','single','piece'].includes(material.globalMode))globalMode.value=material.globalMode;if(num(smart.min)>0)smartMin.value=smart.min;if(num(smart.max)>0)smartMax.value=smart.max;if(num(smart.step)>0)smartStep.value=smart.step;if(num(manual.length)>0)manualLength.value=manual.length;if(num(manual.width)>0)manualWidth.value=manual.width;if(num(manual.grammage)>0)manualGram.value=manual.grammage;if(manual.priceKg!==undefined&&manual.priceKg!==null)manualPrice.value=num(manual.priceKg);if(num(manual.available)>0)manualAvailable.value=manual.available;const wantedSource=['stock','smart','manual'].includes(payload?.sourceMode)?payload.sourceMode:'stock';const sourceRadio=document.querySelector(`input[name="sourceMode"][value="${wantedSource}"]`);if(sourceRadio)sourceRadio.checked=true;itemsBody.innerHTML='';nextRowId=1;(Array.isArray(payload?.items)?payload.items:[]).forEach(item=>addItemRow(item));if(!itemsBody.children.length)addItemRow();currentPlans=[];basePlans=[];currentItems=[];resultsWrap.innerHTML='';statusBox.textContent='تم فتح المقاسات المحفوظة. عدّلها بحرية ثم احسب أفضل توزيع.';updateSourceUI();onMaterialChanged();}
+function loadSelectedTemplate(){const id=num(savedTemplateSelect.value);const selected=savedTemplates.find(row=>num(row.id)===id);if(!selected){templateStatus.innerHTML='<span class="bad">اختر شغلًا محفوظًا أولًا.</span>';return;}currentTemplateId=id;templateName.value=selected.name;applyWorkspacePayload(selected.payload||{});templateStatus.innerHTML=`<span class="ok">📥 تم فتح «${esc(selected.name)}». تقدر تزود أو تقلل المقاسات والكميات، ثم تضغط حفظ لتحديثه.</span>`;}
+function startTemplateCopy(){currentTemplateId=0;savedTemplateSelect.value='';templateName.value='';templateStatus.innerHTML='<span class="ok">المقاسات الحالية كما هي؛ اكتب اسمًا جديدًا واضغط حفظ لعمل نسخة مستقلة.</span>';templateName.focus();}
+async function deleteSelectedTemplate(){const id=num(savedTemplateSelect.value||currentTemplateId);const selected=savedTemplates.find(row=>num(row.id)===id);if(!selected){templateStatus.innerHTML='<span class="bad">اختر شغلًا محفوظًا لحذفه.</span>';return;}if(!confirm(`حذف الشغل المحفوظ «${selected.name}»؟ لن يتم حذف أي مخزون أو أوردر.`))return;try{await authFetch(`/cutting-optimizer-templates/${id}`,{method:'DELETE'});currentTemplateId=0;templateName.value='';await refreshTemplates();templateStatus.innerHTML='<span class="ok">تم حذف الشغل المحفوظ فقط.</span>';}catch(error){templateStatus.innerHTML=`<span class="bad">${esc(error.message||error)}</span>`;}}
+
+function clearRows(){itemsBody.innerHTML='';nextRowId=1;currentPlans=[];basePlans=[];currentItems=[];addItemRow();resultsWrap.innerHTML='';statusBox.textContent='تم مسح المقاسات.';}
+function loadExample(){itemsBody.innerHTML='';nextRowId=1;[[25,30,8,1500],[30,30,10,2250],[30,35,10,1400],[35,35,10,950],[40,40,12,1500],[45,45,12,1400]].forEach(([length,width,gusset,qty])=>addItemRow({length,width,gusset,qty}));grammage.value=80;priceKg.value=48;manualGram.value=80;manualPrice.value=48;refreshStockInfo();statusBox.textContent='تم تحميل مثال المقاسات المتعددة؛ اختر مصدر الفرخ ثم احسب.';}
+function applyQueryPrefill(){const q=new URLSearchParams(location.search);const length=num(q.get('length')),width=num(q.get('width')),gusset=num(q.get('gusset')),qty=num(q.get('qty'));if(q.get('paper_type'))paperType.value=q.get('paper_type');if(q.get('color'))paperColor.value=q.get('color');if(num(q.get('grammage'))>0)grammage.value=q.get('grammage');if(num(q.get('price_kg'))>0)priceKg.value=q.get('price_kg');if(length&&width&&qty){itemsBody.innerHTML='';addItemRow({length,width,gusset,qty});}else{addItemRow();addItemRow();}syncManualMaterial();}
+
+window.addEventListener('DOMContentLoaded',async()=>{try{const fresh=await authFetch('/current-user');user=fresh.user||user;localStorage.setItem('user',JSON.stringify(user));if(!hasPerm('perm_cutting_optimizer')){location.replace('index.html');return;}applyQueryPrefill();const [data,templatesResult]=await Promise.all([authFetch('/cutting-optimizer-stock-data'),authFetch('/cutting-optimizer-templates').catch(error=>({__error:error.message||String(error)})),loadOptimizerWorkCustodyUsers()]);paperRows=Array.isArray(data.paper)?data.paper:[];readyBagRows=Array.isArray(data.bags)?data.bags:[];handleRows=Array.isArray(data.handles)?data.handles:[];if(Array.isArray(templatesResult)){savedTemplates=templatesResult;renderTemplateOptions();}else if(templatesResult?.__error){templateStatus.innerHTML=`<span class="bad">تعذر تحميل الشغل المحفوظ: ${esc(templatesResult.__error)}</span>`;}refreshStockInfo();updateSourceUI();document.getElementById('productionModal').addEventListener('click',event=>{if(event.target.id==='productionModal')closeOptimizerProductionModal();});}catch(error){statusBox.innerHTML=`<span class="bad">${esc(error.message||'تعذر فتح مخطط القص')}</span>`;}});
+</script>
+<script src="idle_guard.js"></script>
+<script id="auth-flicker-release">(function(){function done(){document.documentElement.classList.remove('auth-loading');document.documentElement.classList.add('auth-ready');}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',done,{once:true});else done();setTimeout(done,1200);})();</script>
+</body>
+</html>
