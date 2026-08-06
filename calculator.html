@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head><script id="auth-flicker-guard">(function(){try{var p=location.pathname.toLowerCase();if(p.endsWith('/login.html')||p==='/'||p===''){return;}if(!localStorage.getItem('token')||!localStorage.getItem('user')){location.replace('login.html');return;}document.documentElement.classList.add('auth-loading');}catch(e){location.replace('login.html');}})();</script><style id="auth-flicker-style">html.auth-loading body{visibility:hidden!important}html.auth-ready body{visibility:visible}</style>
+<meta charset="UTF-8">
+<title>احسب أوردر</title>
+<style>
+:root{--bg:#0f172a;--panel:#1e293b;--panel2:#0b1220;--text:#f8fafc;--muted:#94a3b8;--cyan:#22d3ee;--green:#4ade80;--border:#334155;--yellow:#facc15}
+*{box-sizing:border-box}
+body{font-family:'Segoe UI',sans-serif;background:var(--bg);color:var(--text);margin:0;padding:18px}
+.wrap{max-width:1300px;margin:auto}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:18px;padding:16px;margin-bottom:16px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:10px}
+a.btn,button.btn{background:transparent;border:1px solid var(--cyan);color:var(--cyan);padding:9px 14px;border-radius:10px;text-decoration:none;cursor:pointer;font-weight:700}
+button.fill{background:var(--cyan);color:#06202a}
+button.green{background:var(--green);color:#062012;border:none}
+h1,h2,h3{margin:0}
+.grid{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-size:13px;color:var(--muted);font-weight:700}
+input,select{background:var(--panel2);border:1px solid var(--border);color:#fff;padding:11px 12px;border-radius:12px;width:100%}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+.stat{background:var(--panel2);border:1px solid var(--border);border-radius:14px;padding:12px;text-align:center}
+.stat small{display:block;color:var(--muted);margin-bottom:6px}
+.stat b{font-size:24px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin-top:12px}
+.option{background:var(--panel2);border:1px solid var(--border);border-radius:14px;padding:12px}
+.option.best{border-color:var(--green);box-shadow:0 0 0 1px rgba(74,222,128,.25) inset}
+.option h4{margin:0 0 8px 0;font-size:16px}
+.option .meta{font-size:13px;line-height:1.7;color:#dbeafe}
+.hidden{display:none!important}
+.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.summary .box{background:var(--panel2);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center}
+.summary .box b{font-size:26px}
+.note{color:var(--muted);font-size:13px}
+.draw{background:#fff;border-radius:16px;padding:12px;overflow:auto}
+.gram-filter{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.gram-btn{background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:9px 14px;border-radius:999px;cursor:pointer;font-weight:700}
+.gram-btn.active{border-color:var(--yellow);color:var(--yellow)}
+.cut-mode-wrap{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px;background:var(--panel2);border:1px solid var(--border);border-radius:14px;padding:10px}
+.cut-mode-wrap .label{color:var(--muted);font-size:13px;font-weight:800;margin-inline-end:4px}
+.cut-mode-btn{background:#111827;border:1px solid var(--border);color:var(--text);padding:9px 13px;border-radius:999px;cursor:pointer;font-weight:800}
+.cut-mode-btn.active{border-color:var(--green);color:var(--green);box-shadow:0 0 0 1px rgba(74,222,128,.2) inset}
+.cut-mode-btn:disabled{opacity:.45;cursor:not-allowed}
+.cut-mode-note{color:var(--muted);font-size:12px;line-height:1.6;width:100%;padding-top:2px}
+.subgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media(max-width:1000px){.grid,.stats,.summary,.subgrid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:700px){.grid,.stats,.summary,.subgrid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div>
+      <h1>🧮 احسب أوردر</h1>
+      <div class="note">احسب تكلفة الأوردر قبل التسعير للعميل بدون ما تلمس بيانات النظام.</div><div class="note" id="prefillNote" style="margin-top:6px;color:#86efac;display:none"></div>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn" id="cuttingOptimizerBtn" type="button" onclick="openCuttingOptimizer()">🧠 مخطط القص الذكي</button>
+      <button class="btn" id="toggleChoicesBtn" type="button" onclick="toggleChoices()">المخزن</button>
+      <button class="btn" id="toggleVirtualSheetBtn" type="button" onclick="toggleVirtualSheetBox()">فرخ افتراضي</button>
+      <a class="btn" href="index.html">🏠 الرئيسية</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="grid">
+      <div class="field"><label>الطول</label><input id="l" type="number" value="0"></div>
+      <div class="field"><label>العرض</label><input id="w" type="number" value="0"></div>
+      <div class="field"><label>الجنب</label><input id="g" type="number" value="0"></div>
+      <div class="field"><label>الكمية</label><input id="qty" type="number" value="0"></div>
+      <div class="field"><label>نوع الورق</label><select id="paper_type" onchange="updateMaterialUI(); calculateAll()"><option>كرافت</option><option>ورق طبع</option><option>برستول كوشيه</option><option>كوشيه</option></select></div>
+      <div class="field"><label>لون الشنطة</label><select id="color"><option>بني</option><option>أبيض</option><option>أسود</option></select></div>
+      <div class="field"><label>نوع اليد</label><select id="handle"><option value="بيد">بيد</option><option value="بدون يد">بدون يد</option></select></div>
+      <div class="field"><label>نوع خامة اليد</label><select id="handle_type"><option>مجدول</option><option>دوباره</option><option>ستان</option></select></div>
+      <div class="field"><label>نوع الطباعة</label><select id="printType" onchange="updatePrintFields()"><option value="سادة">سادة</option><option value="سلك سكرين">سلك سكرين</option><option value="أوفست">أوفست</option></select></div>
+      <div class="field" id="colorsField"><label>عدد الألوان</label><input id="colorsCount" type="number" value="1" min="1"></div>
+      <div class="field"><label>هامش الربح % (اختياري)</label><input id="profitMargin" type="number" value="35"></div>
+      <div class="field"><label>&nbsp;</label><button class="btn fill" onclick="calculateAll()">احسب الآن</button></div>
+    </div>
+  </div>
+
+  <div class="card" id="virtualSheetCard">
+    <div class="top"><div><h3>فرخ افتراضي</h3><div class="note">استخدمه لما تكون عايز تجرب مقاس فرخ لسه ما اشتريتوش. هيظهر في الاقتراحات كأنه موجود بشكل وهمي.</div></div></div>
+    <div class="subgrid">
+      <div class="field"><label>طول الفرخ</label><input id="virtual_length" type="number" value="70"></div>
+      <div class="field"><label>عرض الفرخ</label><input id="virtual_width" type="number" value="100"></div>
+      <div class="field"><label>الجرام</label><input id="virtual_grammage" type="number" value="100"></div>
+      <div class="field"><label>لون الفرخ</label><select id="virtual_color"><option value="">نفس لون الشنطة</option><option>بني</option><option>أبيض</option><option>أسود</option></select></div>
+      <div class="field"><label>سعر الكيلو المستخدم</label><input id="virtual_buy_price_kg" type="number" value="50"></div>
+      <div class="field"><label>سعر كرافت بني الافتراضي</label><input id="default_price_kraft_brown" type="number" value="50"></div>
+      <div class="field"><label>سعر كرافت أبيض الافتراضي</label><input id="default_price_kraft_white" type="number" value="60"></div>
+      <div class="field"><label>سعر ورق طبع أبيض الافتراضي</label><input id="default_price_print_white" type="number" value="54"></div>
+      <div class="field"><label>عدد الأفرخ الافتراضي</label><input id="virtual_sheets" type="number" value="999999"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="stats">
+      <div class="stat"><small>مقاس حته ف حته</small><b id="pieceByPieceDim">-</b></div>
+      <div class="stat"><small>مقاس حته واحدة</small><b id="singlePieceDim">-</b></div>
+      <div class="stat"><small>سعر اليد</small><b id="handCostStat">0 ج</b></div>
+      <div class="stat"><small>تركيب اليد</small><b id="handFixStat">0 ج</b></div>
+      <div class="stat"><small>التصنيع</small><b id="makeStat">0 ج</b></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+      <h3>أفضل مقترح للفرخ</h3>
+      <div class="note">يرتّب نفس لون الشنطة أولًا. وعند تفعيل الفرخ الافتراضي سيظهر هو فقط.</div>
+    </div>
+    <div id="cutModeWrap" class="cut-mode-wrap"></div>
+    <div id="gramFilterWrap" class="gram-filter"></div><div id="bestWrap" class="option best" style="margin-top:12px"></div>
+    <div id="choicesWrap" class="cards hidden"></div>
+    <div id="sheetDrawing" class="draw" style="margin-top:12px;display:none"></div>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-bottom:12px">تكاليف إضافية</h3>
+    <div class="subgrid">
+      <div class="field"><label>قص</label><input id="cost_cut" type="number" value="0"></div>
+      <div class="field"><label>طباعة</label><input id="cost_print" type="number" value="0"></div>
+      <div class="field"><label id="zincCostLabel">تكلفة الزنكة</label><input id="cost_zinc" type="number" value="0"></div>
+      <div class="field"><label>تصميم</label><input id="cost_design" type="number" value="0"></div>
+      <div class="field"><label>أخرى</label><input id="cost_other" type="number" value="0"></div>
+      <div class="field"><label>تكلفة اليد</label><input id="cost_hand" type="number" value="0" oninput="renderSummary()"></div>
+      <div class="field"><label>تركيب اليد</label><input id="cost_hand_fix" type="number" value="0" oninput="renderSummary()"></div>
+      <div class="field"><label>تصنيع</label><input id="cost_make" type="number" value="0" oninput="renderSummary()"></div>
+      <div class="field" id="formeCostWrap"><label>فورمة</label><input id="cost_forme" type="number" value="0" oninput="renderSummary()"></div>
+      <div class="field" id="laminationCostWrap"><label>سلوفان</label><input id="cost_lamination" type="number" value="0" oninput="renderSummary()"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-bottom:12px">النتيجة النهائية</h3>
+    <div class="summary">
+      <div class="box"><small>تكلفة الورق</small><b id="paperCost">0 ج</b></div>
+      <div class="box"><small>إجمالي التكلفة</small><b id="totalCost">0 ج</b></div>
+      <div class="box"><small>تكلفة القطعة</small><b id="unitCost">0 ج</b></div>
+      <div class="box"><small>سعر بيع مقترح</small><b id="sellSuggestion">0 ج</b></div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+const token = localStorage.getItem('token');
+const user = JSON.parse(localStorage.getItem('user') || 'null');
+if(!token || !user) location.href='login.html';
+
+function openCuttingOptimizer(){
+  const params = new URLSearchParams();
+  const values = {
+    length:document.getElementById('l')?.value,
+    width:document.getElementById('w')?.value,
+    gusset:document.getElementById('g')?.value,
+    qty:document.getElementById('qty')?.value,
+    paper_type:document.getElementById('paper_type')?.value,
+    color:document.getElementById('color')?.value,
+    grammage:document.getElementById('virtual_grammage')?.value,
+    price_kg:document.getElementById('virtual_buy_price_kg')?.value
+  };
+  Object.entries(values).forEach(([key,value])=>{ if(String(value||'').trim()) params.set(key,value); });
+  location.href = `cutting_optimizer.html?${params.toString()}`;
+}
+window.addEventListener('DOMContentLoaded', ()=>{
+  const allowed = user.username==='admin' || user.role==='super_admin' || Number(user.perm_cutting_optimizer||0)===1;
+  const button = document.getElementById('cuttingOptimizerBtn');
+  if(button && !allowed) button.style.display='none';
+});
+
+let papers = [];
+let handles = [];
+let allOptions = [];
+let selectedOption = null;
+let manualSheetChosen = false;
+let choicesVisible = false;
+let selectedGram = null;
+let selectedCutMode = 'auto';
+let virtualSheetEnabled = true;
+
+function uniqueTextValues(values=[]){
+  return [...new Set((Array.isArray(values) ? values : [values]).map(v => String(v == null ? '' : v).trim()).filter(Boolean))];
+}
+function populateSelectOptions(selectEl, values=[], { includeBlank=false, blankLabel='اختر' } = {}){
+  if(!selectEl) return;
+  const currentValue = String(selectEl.value == null ? '' : selectEl.value).trim();
+  const options = uniqueTextValues(values);
+  selectEl.innerHTML = `${includeBlank ? `<option value="">${esc(blankLabel)}</option>` : ''}${options.map(value=>`<option value="${esc(value)}">${esc(value)}</option>`).join('')}`;
+  if(currentValue) ensureSelectHasValue(selectEl, currentValue);
+  if(currentValue && Array.from(selectEl.options || []).some(opt => String(opt.value || '').trim() === currentValue)) selectEl.value = currentValue;
+  else if(includeBlank) selectEl.value = '';
+}
+function refreshVirtualSheetColorOptions(){
+  const bagColors = Array.from(color?.options || []).map(opt => String(opt.value || opt.textContent || '').trim()).filter(Boolean);
+  const paperColors = (papers || []).map(p => String(p?.color || '').trim()).filter(Boolean);
+  populateSelectOptions(virtual_color, [...bagColors, ...paperColors], { includeBlank:true, blankLabel:'نفس لون الشنطة' });
+}
+
+function ensureSelectHasValue(selectEl, value){
+  if(!selectEl) return;
+  const safeValue = String(value == null ? '' : value).trim();
+  if(!safeValue) return;
+  const exists = Array.from(selectEl.options || []).some(opt => String(opt.value || opt.textContent || '').trim() === safeValue);
+  if(!exists){
+    const opt = document.createElement('option');
+    opt.value = safeValue;
+    opt.textContent = safeValue;
+    selectEl.appendChild(opt);
+  }
+  selectEl.value = safeValue;
+}
+function inferOrderColorsCount(printTypeValue, colorSpecsValue){
+  const printTypeText = String(printTypeValue || '').trim();
+  if(printTypeText === 'سادة') return 1;
+  const txt = String(colorSpecsValue || '').trim();
+  const m = txt.match(/(\d+)/);
+  return Math.max(1, Number(m?.[1] || 0) || (txt.split('+').map(v=>String(v).trim()).filter(Boolean).length || 1));
+}
+function setInputValue(id, value, fallback='0'){
+  const el = document.getElementById(id);
+  if(!el) return;
+  const safeValue = value == null || value === '' ? fallback : String(value);
+  el.value = safeValue;
+}
+function getPrefillParams(){
+  return new URLSearchParams(location.search || '');
+}
+function applyOrderPrefill(order, sourceLabel=''){
+  if(!order) return false;
+  setInputValue('l', order.l, '0');
+  setInputValue('w', order.w, '0');
+  setInputValue('g', order.g, '0');
+  setInputValue('qty', order.qty, '0');
+  ensureSelectHasValue(document.getElementById('paper_type'), order.paper_type || 'كرافت');
+  ensureSelectHasValue(document.getElementById('color'), order.color || '');
+  ensureSelectHasValue(document.getElementById('handle'), order.handle || '');
+  ensureSelectHasValue(document.getElementById('handle_type'), order.handle_type || normalizeHandleType('', order.paper_type));
+  ensureSelectHasValue(document.getElementById('printType'), order.printType || 'سادة');
+  setInputValue('colorsCount', inferOrderColorsCount(order.printType, order.colorSpecs), '1');
+  const note = document.getElementById('prefillNote');
+  if(note){
+    const orderId = Number(order.id || 0);
+    const suffix = sourceLabel ? ` - ${sourceLabel}` : '';
+    if(orderId || sourceLabel){
+      note.textContent = orderId ? `تم تحميل بيانات الأوردر رقم ${orderId}${suffix}` : `تم تحميل بيانات الأوردر${suffix}`;
+      note.style.display = 'block';
+    }else{
+      note.textContent = '';
+      note.style.display = 'none';
+    }
+  }
+  updatePrintFields();
+  updateMaterialUI();
+  return true;
+}
+async function prefillFromOrderIfNeeded(){
+  const params = getPrefillParams();
+  const orderId = Number(params.get('order_id') || 0);
+  if(orderId > 0){
+    try{
+      const data = await authFetch(`/order-paper-plan/${orderId}`);
+      if(applyOrderPrefill(data?.order || {}, 'من صفحة الأوردرات')) return true;
+    }catch(_){ }
+  }
+  const hasFallbackData = ['l','w','g','qty','paper_type','color','handle','handle_type','printType','colorSpecs'].some(key=>params.has(key));
+  if(!hasFallbackData) return false;
+  const fallbackOrder = {
+    id: orderId || '',
+    l: params.get('l') || '0',
+    w: params.get('w') || '0',
+    g: params.get('g') || '0',
+    qty: params.get('qty') || '0',
+    paper_type: params.get('paper_type') || 'كرافت',
+    color: params.get('color') || 'بني',
+    handle: params.get('handle') || 'بيد',
+    handle_type: params.get('handle_type') || '',
+    printType: params.get('printType') || 'سادة',
+    colorSpecs: params.get('colorSpecs') || ''
+  };
+  return applyOrderPrefill(fallbackOrder, orderId ? 'من بيانات الرابط' : '');
+}
+
+function money(v){ return Number(v||0).toLocaleString('en-US',{maximumFractionDigits:2})+' ج'; }
+function num(v,d=0){ const n = Number(v); return Number.isFinite(n) ? n : d; }
+function authFetch(url, opts={}){
+  opts.headers = Object.assign({}, opts.headers || {}, { Authorization:'Bearer '+token });
+  return fetch(url, opts).then(async r=>{
+    const data = await r.json().catch(()=>({}));
+    if(r.status===401){ localStorage.clear(); location.href='login.html'; throw new Error('unauthorized'); }
+    if(!r.ok) throw new Error(data.error || 'error');
+    return data;
+  });
+}
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+function normalizePaperType(v){
+  v = String(v || '').trim();
+  const low = v.toLowerCase();
+  if(v === 'برستول كوشيه' || low.includes('bristol')) return 'برستول كوشيه';
+  if(v === 'كوشيه' || v === 'كوشية' || low.includes('couche') || low.includes('coated')) return 'كوشيه';
+  if(v === 'ورق طبع' || v === 'طبع' || v === 'ابيض طبع' || v === 'أبيض طبع' || low.includes('print paper') || low.includes('printing paper')) return 'ورق طبع';
+  return 'كرافت';
+}
+function paperTypeOf(p){
+  const stored = String(p?.paper_type || p?.paperType || '').trim();
+  const name = String(p?.paper_name || p?.item_name || '').trim();
+  const inferred = normalizePaperType(stored || name);
+  if(stored === 'كرافت' && (name.includes('كوشيه') || name.toLowerCase().includes('couche') || name.includes('برستول') || name.toLowerCase().includes('bristol') || name.includes('ورق طبع') || name.includes('طبع'))) return normalizePaperType(name);
+  return inferred;
+}
+function isCoatedPaperType(v){
+  const t = normalizePaperType(v);
+  return t === 'كوشيه' || t === 'برستول كوشيه';
+}
+function isWhiteFixedPaperType(v){
+  const t = normalizePaperType(v);
+  return t === 'ورق طبع' || isCoatedPaperType(t);
+}
+function normalizeHandleType(v, paperType){
+  v = String(v || '').trim();
+  const t = (v === 'دوباره' || v === 'دوبار' || v === 'دوبارة') ? 'دوباره'
+    : (v === 'ستان' || v === 'ساتان' || v.toLowerCase() === 'satin') ? 'ستان'
+    : (v === 'مجدول' ? 'مجدول' : '');
+  if(isCoatedPaperType(paperType)) return t === 'ستان' ? 'ستان' : 'دوباره';
+  return t || 'مجدول';
+}
+function availablePrintTypesForPaper(){
+  return isCoatedPaperType(paper_type.value) ? ['سادة','أوفست'] : ['سادة','سلك سكرين','أوفست'];
+}
+function rebuildPrintTypeOptions(){
+  const current = String(printType.value || 'سادة').trim();
+  const list = availablePrintTypesForPaper();
+  printType.innerHTML = list.map(v=>`<option value="${v}" ${v===current?'selected':''}>${v}</option>`).join('');
+  if(!list.includes(current)) printType.value = list[0];
+}
+function updatePrintFields(){
+  rebuildPrintTypeOptions();
+  const printed = printType.value !== 'سادة';
+  colorsField.classList.toggle('hidden', !printed);
+}
+function updateMaterialUI(){
+  const type = normalizePaperType(paper_type.value);
+  const coated = isCoatedPaperType(type);
+  if(isWhiteFixedPaperType(type)) color.value = 'أبيض';
+  color.disabled = isWhiteFixedPaperType(type);
+  refreshVirtualDefaultPrice();
+  handle_type.value = normalizeHandleType(handle_type.value, type);
+  Array.from(handle_type.options).forEach(opt=>{ opt.disabled = coated && opt.value === 'مجدول'; });
+  if(coated && handle_type.value === 'مجدول') handle_type.value = 'دوباره';
+  handle_type.disabled = false;
+  updatePrintFields();
+  if(window.formeCostWrap) formeCostWrap.classList.toggle('hidden', type !== 'برستول كوشيه');
+  if(window.laminationCostWrap) laminationCostWrap.classList.toggle('hidden', !coated);
+  if(type !== 'برستول كوشيه' && document.activeElement?.id !== 'cost_forme') cost_forme.value = '0';
+  if(!coated && document.activeElement?.id !== 'cost_lamination') cost_lamination.value = '0';
+}
+function getDims(){
+  return {
+    l: Math.max(0, num(l.value)),
+    w: Math.max(0, num(w.value)),
+    g: Math.max(0, num(g.value)),
+    qty: Math.max(0, num(qty.value)),
+    paperType: normalizePaperType(paper_type.value),
+    color: isWhiteFixedPaperType(paper_type.value) ? 'أبيض' : color.value,
+    handle: handle.value,
+    handleType: normalizeHandleType(handle_type.value, paper_type.value),
+    printType: printType.value,
+    colorsCount: Math.max(1, num(colorsCount.value, 1))
+  };
+}
+function hasBagSize(d){
+  d = d || getDims();
+  return num(d.l) > 0 && num(d.w) > 0;
+}
+function toggleVirtualSheetBox(){
+  const nowHidden = virtualSheetCard.classList.toggle('hidden');
+  toggleVirtualSheetBtn.textContent = nowHidden ? 'إعدادات الفرخ الافتراضي' : 'إخفاء إعدادات الفرخ';
+}
+function useDefaultSheetMode(){
+  virtualSheetEnabled = true;
+  choicesVisible = false;
+  choicesWrap.classList.add('hidden');
+  if(window.virtualSheetCard) virtualSheetCard.classList.remove('hidden');
+  toggleChoicesBtn.textContent = 'المخزن';
+  selectedGram = null;
+  manualSheetChosen = false;
+  refreshVirtualDefaultPrice();
+  calculateAll();
+}
+function currentDefaultVirtualKgPrice(){
+  const type = normalizePaperType(paper_type.value);
+  const c = isWhiteFixedPaperType(type) ? 'أبيض' : String(color.value || virtual_color.value || '').trim();
+  if(type === 'ورق طبع') return num(default_price_print_white?.value, 54);
+  if(type === 'كرافت' && c === 'أبيض') return num(default_price_kraft_white?.value, 60);
+  if(type === 'كرافت') return num(default_price_kraft_brown?.value, 50);
+  return 0;
+}
+function refreshVirtualDefaultPrice(){
+  if(!window.virtual_buy_price_kg) return;
+  const def = currentDefaultVirtualKgPrice();
+  if(def > 0 && document.activeElement !== virtual_buy_price_kg) virtual_buy_price_kg.value = def;
+  if(isWhiteFixedPaperType(paper_type.value)){
+    virtual_color.value = 'أبيض';
+    virtual_color.disabled = true;
+  }else{
+    virtual_color.disabled = false;
+  }
+}
+function getBestVirtualKgPrice(length, width, grammage, colorValue){
+  const normalizedColor = String(colorValue || '').trim();
+  const sameColorSameGram = papers.find(p => Number(p?.grammage) === Number(grammage) && String(p?.color || '').trim() === normalizedColor && num(p?.buy_price_kg) > 0);
+  if(sameColorSameGram) return num(sameColorSameGram.buy_price_kg);
+  const sameGram = papers.find(p => Number(p?.grammage) === Number(grammage) && num(p?.buy_price_kg) > 0);
+  if(sameGram) return num(sameGram.buy_price_kg);
+  const sameColor = papers.find(p => String(p?.color || '').trim() === normalizedColor && num(p?.buy_price_kg) > 0);
+  if(sameColor) return num(sameColor.buy_price_kg);
+  const anyPaper = papers.find(p => num(p?.buy_price_kg) > 0);
+  return anyPaper ? num(anyPaper.buy_price_kg) : 0;
+}
+function getVirtualPaper(){
+  if(!virtualSheetEnabled) return null;
+  const length = num(virtual_length.value), width = num(virtual_width.value), grammage = num(virtual_grammage.value);
+  if(length <= 0 || width <= 0 || grammage <= 0) return null;
+  const sheets = Math.max(1, num(virtual_sheets.value, 999999));
+  const colorValue = String(virtual_color.value || color.value || '').trim() || 'بني';
+  const forceColorForVirtual = isWhiteFixedPaperType(paper_type.value) ? 'أبيض' : '';
+  let buyPriceKg = num(virtual_buy_price_kg.value);
+  if(buyPriceKg <= 0) buyPriceKg = currentDefaultVirtualKgPrice() || getBestVirtualKgPrice(length, width, grammage, colorValue);
+  const totalKg = ((length * width * grammage * sheets) / 10000000);
+  return {
+    id: 'virtual-sheet',
+    length,
+    width,
+    grammage,
+    color: forceColorForVirtual ? forceColorForVirtual : colorValue,
+    paper_type: normalizePaperType(paper_type.value),
+    paper_name: 'فرخ افتراضي',
+    total_sheets: sheets,
+    total_kg: totalKg,
+    buy_price_kg: buyPriceKg,
+    buy_price_sheet: computeSheetPrice({ length, width, grammage, buy_price_kg: buyPriceKg })
+  };
+}
+function computeCut(mode, d){
+  const cutWidth = mode === 'pieceByPiece' ? (d.w + d.g + 2) : ((d.w * 2) + (d.g * 2) + 2);
+  const cutLength = d.l + (d.g / 2) + 2;
+  return {
+    cutWidth:+cutWidth.toFixed(2),
+    cutLength:+cutLength.toFixed(2),
+    label: mode==='pieceByPiece'?'حته ف حته':'حته واحدة',
+    piecesNeededPerBag: mode === 'pieceByPiece' ? 2 : 1
+  };
+}
+function getPlateTier(option){
+  if(!option) return { size:'-', zincCost:0, printCost:0, rank:999 };
+  const mxW = Math.max(num(option.cutWidth), num(option.cutLength));
+  const mxH = Math.min(num(option.cutWidth), num(option.cutLength));
+  if(mxW <= 50 && mxH <= 35) return { size:'ربع', zincCost:60, printCost:150, rank:1 };
+  if(mxW <= 70 && mxH <= 50) return { size:'نص', zincCost:150, printCost:200, rank:2 };
+  if(mxW <= 100 && mxH <= 70) return { size:'فرخ', zincCost:250, printCost:300, rank:3 };
+  return { size:'أكبر من فرخ', zincCost:0, printCost:0, rank:999 };
+}
+function computeSheetPrice(paper){
+  const kgPrice = num(paper.buy_price_kg);
+  const sheetWeight = ((num(paper.length) * num(paper.width) * num(paper.grammage)) / 10000000);
+  if(kgPrice > 0 && sheetWeight > 0) return +(kgPrice * sheetWeight).toFixed(4);
+  return +num(paper.buy_price_sheet).toFixed(4);
+}
+function computeOption(paper, mode, d){
+  const cut = computeCut(mode, d);
+  const orientations = [
+    { sheetWidth:num(paper.length), sheetHeight:num(paper.width), rotated:false },
+    { sheetWidth:num(paper.width), sheetHeight:num(paper.length), rotated:true }
+  ];
+  let best = null;
+  for(const ori of orientations){
+    const cols = Math.floor(ori.sheetWidth / cut.cutWidth);
+    const rows = Math.floor(ori.sheetHeight / cut.cutLength);
+    const piecesPerSheet = cols * rows;
+    if(piecesPerSheet <= 0) continue;
+    const piecesNeededPerBag = mode === 'pieceByPiece' ? 2 : 1;
+    const bagsPerSheet = piecesPerSheet / piecesNeededPerBag;
+    const neededSheets = d.qty > 0 ? Math.ceil((d.qty * piecesNeededPerBag) / piecesPerSheet) : 0;
+    const usedArea = piecesPerSheet * cut.cutWidth * cut.cutLength;
+    const totalArea = ori.sheetWidth * ori.sheetHeight;
+    const wastePercent = Math.max(0, ((totalArea - usedArea) / totalArea) * 100);
+    const sheetPrice = computeSheetPrice(paper);
+    const c = {
+      paperId: paper.id,
+      paperLabel: `${paper.length}×${paper.width} - ${num(paper.grammage)} جم - ${paperTypeOf(paper)}${String(paper.paper_name||'').trim()?` - ${paper.paper_name}`:''}`, 
+      paperColor: paper.color,
+      sheetWidth: ori.sheetWidth,
+      sheetHeight: ori.sheetHeight,
+      sheetWidthLabel: ori.rotated ? 'عرض الفرخ' : 'طول الفرخ',
+      sheetHeightLabel: ori.rotated ? 'طول الفرخ' : 'عرض الفرخ',
+      layoutKey: mode,
+      layoutLabel: cut.label,
+      cutWidth: cut.cutWidth,
+      cutLength: cut.cutLength,
+      cols, rows, rotated:ori.rotated,
+      piecesPerSheet,
+      piecesNeededPerBag,
+      bagsPerSheet:+bagsPerSheet.toFixed(2),
+      neededSheets,
+      availableSheets: Math.round(num(paper.total_sheets)),
+      wastePercent:+wastePercent.toFixed(2),
+      colorMatch: normalizePaperType(d.paperType) === paperTypeOf(paper) && (isCoatedPaperType(d.paperType) ? String(paper.color||'').trim()==='أبيض' : String(d.color||'').trim() === String(paper.color||'').trim()),
+      paperType: paperTypeOf(paper),
+      sheetPrice,
+      paperCost: +(neededSheets * sheetPrice).toFixed(2),
+      gram: num(paper.grammage),
+      outputLabel: mode === 'pieceByPiece' ? `${piecesPerSheet} حتة = ${(piecesPerSheet / 2).toFixed(2).replace(/\.00$/, '')} شنطة` : `${piecesPerSheet} شنطة`
+    };
+    if(!best || c.wastePercent < best.wastePercent || (c.wastePercent===best.wastePercent && c.neededSheets < best.neededSheets)) best = c;
+  }
+  return best;
+}
+function drawEmptySheetSvg(paper){
+  if(!paper) return '';
+  const sheetW = num(paper.sheetWidth || paper.length), sheetH = num(paper.sheetHeight || paper.width);
+  if(!sheetW || !sheetH) return '';
+  const padLeft = 24, padTop = 18, padRight = 44, padBottom = 42;
+  const maxW = 760, maxH = 760;
+  const scale = Math.min(maxW / sheetW, maxH / sheetH);
+  const width = sheetW * scale, height = sheetH * scale;
+  const sx = padLeft, sy = padTop;
+  const svgW = width + padLeft + padRight;
+  const svgH = height + padTop + padBottom;
+  const red = '#ef4444';
+  const fmt = (v)=>{
+    const n = num(v);
+    return Number.isInteger(n) ? String(n) : String(+n.toFixed(2)).replace(/\.00$/,'');
+  };
+  return `<svg class="cutting-plan-svg" width="${svgW}" height="${svgH}" viewBox="0 0 ${svgW} ${svgH}" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;height:auto;display:block;margin:auto;background:#ffffff">
+    <rect x="0" y="0" width="${svgW}" height="${svgH}" fill="#ffffff"/>
+    <rect x="${sx}" y="${sy}" width="${width}" height="${height}" fill="#fffdf4" stroke="#111111" stroke-width="2"/>
+    <line x1="${sx}" y1="${sy + height + 13}" x2="${sx + width}" y2="${sy + height + 13}" stroke="${red}" stroke-width="1"/>
+    <line x1="${sx}" y1="${sy + height + 8}" x2="${sx}" y2="${sy + height + 18}" stroke="${red}" stroke-width="1"/>
+    <line x1="${sx + width}" y1="${sy + height + 8}" x2="${sx + width}" y2="${sy + height + 18}" stroke="${red}" stroke-width="1"/>
+    <text x="${sx + width/2}" y="${sy + height + 34}" text-anchor="middle" font-size="14" fill="${red}">${fmt(sheetW)}</text>
+    <line x1="${sx + width + 14}" y1="${sy}" x2="${sx + width + 14}" y2="${sy + height}" stroke="${red}" stroke-width="1"/>
+    <line x1="${sx + width + 9}" y1="${sy}" x2="${sx + width + 19}" y2="${sy}" stroke="${red}" stroke-width="1"/>
+    <line x1="${sx + width + 9}" y1="${sy + height}" x2="${sx + width + 19}" y2="${sy + height}" stroke="${red}" stroke-width="1"/>
+    <text x="${sx + width + 34}" y="${sy + height/2}" text-anchor="middle" font-size="14" fill="${red}" transform="rotate(-90 ${sx+width+34} ${sy+height/2})">${fmt(sheetH)}</text>
+  </svg>`;
+}
+function drawSheetSvg(option, d){
+  if(!option) return '';
+  const sheetW = num(option.sheetWidth), sheetH = num(option.sheetHeight), cutW = num(option.cutWidth), cutH = num(option.cutLength);
+  if(!sheetW || !sheetH || !cutW || !cutH) return '';
+
+  // الرسم هنا مقصود يكون بنفس شكل مخطط القص الورقي: الفرخ كامل، القطع المستخدمة، والهالك على الجنب/فوق.
+  const padLeft = 24, padTop = 18, padRight = 44, padBottom = 42;
+  const maxW = 760, maxH = 760;
+  const scale = Math.min(maxW / sheetW, maxH / sheetH);
+  const width = sheetW * scale, height = sheetH * scale;
+  const sx = padLeft, sy = padTop;
+
+  const fitCols = Math.max(1, Math.floor(sheetW / cutW));
+  const fitRows = Math.max(1, Math.floor(sheetH / cutH));
+  const cols = Math.max(1, Math.min(option.cols || fitCols, fitCols));
+  const rows = Math.max(1, Math.min(option.rows || fitRows, fitRows));
+  const usedW = cols * cutW;
+  const usedH = rows * cutH;
+  const wasteRight = Math.max(0, +(sheetW - usedW).toFixed(2));
+  const wasteTop = Math.max(0, +(sheetH - usedH).toFixed(2));
+  const usedPxW = usedW * scale;
+  const usedPxH = usedH * scale;
+  const wasteRightPx = wasteRight * scale;
+  const wasteTopPx = wasteTop * scale;
+  const cutPxW = cutW * scale;
+  const cutPxH = cutH * scale;
+  const piecesStartX = sx;
+  // القطع تترص من تحت لفوق علشان الهالك الزائد يظهر فوق زي الصورة المرفقة.
+  const piecesStartY = sy + height - usedPxH;
+  const svgW = width + padLeft + padRight;
+  const svgH = height + padTop + padBottom;
+
+  const fmt = (v)=>{
+    const n = num(v);
+    return Number.isInteger(n) ? String(n) : String(+n.toFixed(2)).replace(/\.00$/,'');
+  };
+  const bagText = d && (num(d.l) || num(d.w) || num(d.g)) ? `${fmt(d.l)}*${fmt(d.w)}*${fmt(d.g)}` : `${fmt(cutH)}*${fmt(cutW)}`;
+  const fontMain = Math.max(12, Math.min(16, cutPxW / 5.5));
+  const fontDim = 14;
+  const innerLabelColor = '#222222';
+  const wasteLabelColor = '#8aa0b4';
+  const red = '#ef4444';
+  let cells = '';
+
+  // هالك أعلى الفرخ على عرض القصات المستخدمة.
+  if(wasteTop > 0){
+    cells += `<rect x="${sx}" y="${sy}" width="${usedPxW}" height="${wasteTopPx}" fill="#f3f3f3" stroke="#d7d7d7" stroke-width="1"/>`;
+    if(wasteTopPx >= 18){
+      cells += `<text x="${sx + usedPxW/2}" y="${sy + 14}" font-size="${fontDim}" text-anchor="middle" fill="${wasteLabelColor}">${fmt(usedW)}</text>`;
+      cells += `<text x="${sx + 12}" y="${sy + wasteTopPx/2}" font-size="${fontDim}" text-anchor="middle" fill="${wasteLabelColor}" transform="rotate(-90 ${sx+12} ${sy+wasteTopPx/2})">${fmt(wasteTop)}</text>`;
+    }
+  }else{
+    cells += `<text x="${sx + usedPxW/2}" y="${sy + 14}" font-size="${fontDim}" text-anchor="middle" fill="${wasteLabelColor}">${fmt(usedW)}</text>`;
+  }
+
+  // هالك يمين الفرخ بطول الفرخ كله.
+  if(wasteRight > 0){
+    cells += `<rect x="${sx + usedPxW}" y="${sy}" width="${wasteRightPx}" height="${height}" fill="#f3f3f3" stroke="#d7d7d7" stroke-width="1"/>`;
+    if(wasteRightPx >= 16){
+      cells += `<text x="${sx + usedPxW + wasteRightPx/2}" y="${sy + 14}" font-size="${fontDim}" text-anchor="middle" fill="${wasteLabelColor}">${fmt(wasteRight)}</text>`;
+      cells += `<text x="${sx + usedPxW + wasteRightPx/2}" y="${sy + height/2}" font-size="${fontDim}" text-anchor="middle" fill="${wasteLabelColor}" transform="rotate(-90 ${sx+usedPxW+wasteRightPx/2} ${sy+height/2})">${fmt(sheetH)}</text>`;
+    }
+  }
+
+  // قطع القص الفعلية.
+  for(let r=0;r<rows;r++){
+    for(let c=0;c<cols;c++){
+      const x = piecesStartX + c * cutPxW;
+      const y = piecesStartY + r * cutPxH;
+      const cx = x + cutPxW / 2;
+      const cy = y + cutPxH / 2;
+      cells += `<rect x="${x}" y="${y}" width="${cutPxW}" height="${cutPxH}" fill="#f6f1d8" stroke="#111111" stroke-width="1.2"/>`;
+      if(cutPxW >= 45){
+        cells += `<text x="${cx}" y="${y + 15}" font-size="${fontDim}" text-anchor="middle" fill="${innerLabelColor}">${fmt(cutW)}</text>`;
+      }
+      if(c === 0 && cutPxH >= 35){
+        cells += `<text x="${x + 10}" y="${cy}" font-size="${fontDim}" text-anchor="middle" fill="${innerLabelColor}" transform="rotate(-90 ${x+10} ${cy})">${fmt(cutH)}</text>`;
+      }
+      if(cutPxW >= 70 && cutPxH >= 45){
+        cells += `<text x="${cx}" y="${cy + 4}" font-size="${fontMain}" text-anchor="middle" fill="#333333" font-weight="700">${esc(bagText)}</text>`;
+      }else if(cutPxW >= 48 && cutPxH >= 30){
+        cells += `<text x="${cx}" y="${cy + 4}" font-size="11" text-anchor="middle" fill="#333333" font-weight="700">${esc(bagText)}</text>`;
+      }
+    }
+  }
+
+  const bottomY = sy + height + 14;
+  const rightX = sx + width + 12;
+  return `<svg class="cutting-plan-svg" width="${svgW}" height="${svgH}" viewBox="0 0 ${svgW} ${svgH}" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;height:auto;display:block;margin:auto;background:#ffffff">
+    <rect x="0" y="0" width="${svgW}" height="${svgH}" fill="#ffffff"/>
+    <rect x="${sx}" y="${sy}" width="${width}" height="${height}" fill="#f3f3f3" stroke="#111111" stroke-width="1.8"/>
+    ${cells}
+    <rect x="${sx}" y="${sy}" width="${width}" height="${height}" fill="none" stroke="#111111" stroke-width="2"/>
+
+    <line x1="${sx}" y1="${bottomY}" x2="${sx + width}" y2="${bottomY}" stroke="${red}" stroke-width="1.2"/>
+    <line x1="${sx}" y1="${bottomY - 6}" x2="${sx}" y2="${bottomY + 6}" stroke="${red}" stroke-width="1"/>
+    <line x1="${sx + width}" y1="${bottomY - 6}" x2="${sx + width}" y2="${bottomY + 6}" stroke="${red}" stroke-width="1"/>
+    <text x="${sx + width/2}" y="${bottomY + 17}" text-anchor="middle" font-size="${fontDim}" fill="${red}">${fmt(sheetW)}</text>
+
+    <line x1="${rightX}" y1="${sy}" x2="${rightX}" y2="${sy + height}" stroke="${red}" stroke-width="1.2"/>
+    <line x1="${rightX - 6}" y1="${sy}" x2="${rightX + 6}" y2="${sy}" stroke="${red}" stroke-width="1"/>
+    <line x1="${rightX - 6}" y1="${sy + height}" x2="${rightX + 6}" y2="${sy + height}" stroke="${red}" stroke-width="1"/>
+    <text x="${rightX + 17}" y="${sy + height/2}" text-anchor="middle" font-size="${fontDim}" fill="${red}" transform="rotate(-90 ${rightX+17} ${sy+height/2})">${fmt(sheetH)}</text>
+  </svg>`;
+}
+
+function autoHandCost(d){
+  if(d.handle !== 'بيد' || d.qty <= 0) return 0;
+  const wantedType = normalizeHandleType(d.handleType, d.paperType);
+  const match = handles.find(h => String(h.color||'').trim() === String(d.color||'').trim() && normalizeHandleType(h.handle_type, d.paperType) === wantedType) || handles.find(h => String(h.color||'').trim() === String(d.color||'').trim()) || handles[0];
+  return +(num(match?.buy_price) * d.qty).toFixed(2);
+}
+function autoHandFix(d){
+  if(d.handle !== 'بيد' || d.qty <= 0) return 0;
+  return +((d.qty / 1000) * 100).toFixed(2);
+}
+function autoMakeCost(d){
+  if(d.qty <= 0) return 0;
+  if(isCoatedPaperType(d.paperType)){
+    const unit = (d.l <= 30 && d.w <= 30) ? 1.5 : 2;
+    return +(d.qty * unit).toFixed(2);
+  }
+  return +(d.qty * 1.2).toFixed(2);
+}
+function getPrintingCosts(d, option){
+  const result = { cut:50, print:0, zinc:0, design:0, unitsForPrint:0, printUnits:0, printSheets:0 };
+  if(d.printType === 'سادة') return result;
+  result.design = 100;
+  if(d.printType === 'سلك سكرين') return result;
+  if(d.printType === 'أوفست'){
+    const tier = getPlateTier(option);
+    const piecesNeededPerBag = Math.max(1, num(option?.piecesNeededPerBag, option?.layoutKey === 'pieceByPiece' ? 2 : 1));
+    const unitsForPrint = Math.max(0, d.qty) * piecesNeededPerBag;
+    const printSheets = unitsForPrint;
+    const printUnits = printSheets > 0 ? Math.ceil(printSheets / 1000) : 0;
+    result.tier = tier.size;
+    result.unitsForPrint = unitsForPrint;
+    result.printSheets = printSheets;
+    result.printUnits = printUnits;
+    result.print = tier.printCost * d.colorsCount * printUnits;
+    result.zinc = tier.zincCost * d.colorsCount;
+  }
+  return result;
+}
+function chooseBestOption(options){
+  return options.sort((x,y)=>{
+    const xa = x.availableSheets >= x.neededSheets, ya = y.availableSheets >= y.neededSheets;
+    if(xa !== ya) return xa ? -1 : 1;
+    if(x.wastePercent !== y.wastePercent) return x.wastePercent - y.wastePercent;
+    if(x.paperCost !== y.paperCost) return x.paperCost - y.paperCost;
+    return x.piecesPerSheet - y.piecesPerSheet;
+  })[0] || null;
+}
+function getColorMatchedOptions(){
+  return allOptions.filter(o => o.colorMatch);
+}
+function optionSignature(o){
+  return o ? `${o.paperId}|${o.layoutKey}|${o.sheetWidth}|${o.sheetHeight}` : '';
+}
+function cutModeLabel(mode){
+  if(mode === 'singlePiece') return 'حتة واحدة';
+  if(mode === 'pieceByPiece') return 'حتة ف حتة';
+  return 'تلقائي';
+}
+function getOptionsByCutMode(mode, { includeGram=true } = {}){
+  let opts = getColorMatchedOptions();
+  if(includeGram && selectedGram != null) opts = opts.filter(o => Number(o.gram) === Number(selectedGram));
+  if(mode && mode !== 'auto') opts = opts.filter(o => o.layoutKey === mode);
+  return opts;
+}
+function getFilteredOptions(){
+  return getOptionsByCutMode(selectedCutMode, { includeGram:true });
+}
+function choosePreferredOption(options){
+  if(selectedCutMode === 'auto'){
+    const singleOptions = (options || []).filter(o => o.layoutKey === 'singlePiece');
+    if(singleOptions.length) return chooseBestOption(singleOptions);
+  }
+  return chooseBestOption(options || []);
+}
+function renderCutModeControls(){
+  const baseOptions = getColorMatchedOptions().filter(o => selectedGram == null || Number(o.gram) === Number(selectedGram));
+  const singleCount = baseOptions.filter(o => o.layoutKey === 'singlePiece').length;
+  const pieceCount = baseOptions.filter(o => o.layoutKey === 'pieceByPiece').length;
+  const singleActive = selectedCutMode === 'singlePiece';
+  const pieceActive = selectedCutMode === 'pieceByPiece';
+  const autoActive = selectedCutMode === 'auto';
+  const activeText = selectedOption ? `المفتوح الآن: ${cutModeLabel(selectedOption.layoutKey)} - ${selectedOption.paperLabel}` : 'لا يوجد مقاس مناسب حاليًا';
+  cutModeWrap.innerHTML = `
+    <span class="label">طريقة القص في الرسمة:</span>
+    <button type="button" class="cut-mode-btn ${autoActive?'active':''}" onclick="selectCutMode('auto')" ${baseOptions.length?'':'disabled'}>تلقائي</button>
+    <button type="button" class="cut-mode-btn ${singleActive?'active':''}" onclick="selectCutMode('singlePiece')" ${singleCount?'':'disabled'}>حتة واحدة ${singleCount?`(${singleCount})`:''}</button>
+    <button type="button" class="cut-mode-btn ${pieceActive?'active':''}" onclick="selectCutMode('pieceByPiece')" ${pieceCount?'':'disabled'}>حتة ف حتة ${pieceCount?`(${pieceCount})`:''}</button>
+    <div class="cut-mode-note">في الوضع التلقائي لو مقاس حتة واحدة مناسب هيفتحه الأول، ولو مش مناسب وحتة ف حتة مناسبة هيفتحها. تقدر تختار الطريقة بنفسك من الأزرار.</div>
+    <div class="cut-mode-note">${esc(activeText)}</div>`;
+}
+function selectCutMode(mode){
+  if(!['auto','singlePiece','pieceByPiece'].includes(mode)) mode = 'auto';
+  const nextOptions = getOptionsByCutMode(mode, { includeGram:true });
+  if(mode !== 'auto' && !nextOptions.length) return;
+  selectedCutMode = mode;
+  selectedOption = choosePreferredOption(getFilteredOptions());
+  manualSheetChosen = !!selectedOption;
+  const d = getDims();
+  syncAutoCosts(d);
+  renderGramFilters();
+  renderBest(d);
+  renderChoices();
+  renderSummary();
+}
+function renderGramFilters(){
+  if(virtualSheetEnabled){
+    gramFilterWrap.innerHTML = '';
+    gramFilterWrap.classList.add('hidden');
+    return;
+  }
+  gramFilterWrap.classList.remove('hidden');
+  const modeBase = getOptionsByCutMode(selectedCutMode, { includeGram:false });
+  const grams=[...new Set(modeBase.map(o=>Number(o.gram)).filter(g=>g>0))].sort((a,b)=>a-b);
+  gramFilterWrap.innerHTML = `<button type="button" class="gram-btn ${selectedGram==null?'active':''}" onclick="selectGramFilter('all')">كل الجرامات</button>`
+    + grams.map(g=>`<button type="button" class="gram-btn ${Number(selectedGram)===Number(g)?'active':''}" onclick="selectGramFilter(${g})">${g} جم</button>`).join('');
+}
+function selectGramFilter(value){
+  selectedGram = value==='all' ? null : Number(value||0);
+  const nextOptions = getFilteredOptions();
+  const currentSig = optionSignature(selectedOption);
+  if(!nextOptions.find(o => optionSignature(o) === currentSig)){
+    selectedOption = choosePreferredOption(nextOptions);
+    manualSheetChosen = false;
+  }
+  const d = getDims();
+  syncAutoCosts(d);
+  renderGramFilters();
+  renderBest(d);
+  renderChoices();
+  renderSummary();
+}
+function syncAutoCosts(d){
+  const printing = getPrintingCosts(d, selectedOption);
+  if(!document.activeElement || document.activeElement.id !== 'cost_cut') cost_cut.value = printing.cut;
+  if(!document.activeElement || document.activeElement.id !== 'cost_print') cost_print.value = printing.print;
+  if(!document.activeElement || document.activeElement.id !== 'cost_zinc') cost_zinc.value = printing.zinc;
+  if(!document.activeElement || document.activeElement.id !== 'cost_design') cost_design.value = printing.design;
+}
+function calculateAll(){
+  const d = getDims();
+  pieceByPieceDim.textContent = `${(d.w+d.g+2).toFixed(2)} × ${(d.l+d.g/2+2).toFixed(2)} (كل 2 حتة = شنطة)`;
+  singlePieceDim.textContent = `${((d.w*2)+(d.g*2)+2).toFixed(2)} × ${(d.l+d.g/2+2).toFixed(2)} (شنطة كاملة)`;
+
+  const handCost = autoHandCost(d);
+  const handFix = autoHandFix(d);
+  const makeCost = autoMakeCost(d);
+  handCostStat.textContent = money(handCost);
+  handFixStat.textContent = money(handFix);
+  makeStat.textContent = money(makeCost);
+  if(!document.activeElement || document.activeElement.id !== 'cost_hand') cost_hand.value = handCost;
+  if(!document.activeElement || document.activeElement.id !== 'cost_hand_fix') cost_hand_fix.value = handFix;
+  if(!document.activeElement || document.activeElement.id !== 'cost_make') cost_make.value = makeCost;
+
+  allOptions = [];
+  const hasValidBagSize = hasBagSize(d);
+  const virtualPaper = getVirtualPaper();
+  const calculationPapers = hasValidBagSize ? ((virtualSheetEnabled && virtualPaper) ? [virtualPaper] : papers.filter(p => paperTypeOf(p) === d.paperType)) : [];
+  calculationPapers.forEach(p => {
+    const a = computeOption(p, 'pieceByPiece', d);
+    const b = computeOption(p, 'singlePiece', d);
+    if(a) allOptions.push(a);
+    if(b) allOptions.push(b);
+  });
+
+  const availableGrams=[...new Set(getOptionsByCutMode(selectedCutMode, { includeGram:false }).map(o=>Number(o.gram)).filter(g=>g>0))];
+  if(virtualSheetEnabled) selectedGram = null;
+  if(selectedCutMode !== 'auto' && !getOptionsByCutMode(selectedCutMode, { includeGram:false }).length) selectedCutMode = 'auto';
+  if(selectedGram!=null && !availableGrams.some(g=>Number(g)===Number(selectedGram))) selectedGram=null;
+  selectedOption = hasValidBagSize ? choosePreferredOption(getFilteredOptions()) : null;
+  manualSheetChosen = false;
+  syncAutoCosts(d);
+  renderGramFilters();
+  renderBest(d);
+  renderChoices();
+  renderSummary();
+}
+function renderBest(d){
+  const validBagSize = hasBagSize(d);
+  if(!validBagSize){
+    renderCutModeControls();
+    bestWrap.innerHTML = 'ادخل مقاس الشنطة علشان يظهر مخطط القص. الفرخ الافتراضي هيظهر فاضي بدون تقسيمات لحد ما تدخل المقاس.';
+    const previewPaper = virtualSheetEnabled ? getVirtualPaper() : null;
+    const emptySvg = previewPaper ? drawEmptySheetSvg(previewPaper) : '';
+    sheetDrawing.innerHTML = emptySvg;
+    sheetDrawing.style.display = emptySvg ? 'block' : 'none';
+    zincCostLabel.textContent='تكلفة الزنكة';
+    return;
+  }
+  const printing = getPrintingCosts(d, selectedOption);
+  if(!selectedOption){
+    renderCutModeControls();
+    bestWrap.innerHTML = selectedGram==null ? 'لا يوجد فرخ مناسب في المخزن لهذا النوع/اللون' : `لا يوجد فرخ مناسب في المخزن بجرام ${selectedGram}`;
+    sheetDrawing.innerHTML='';
+    sheetDrawing.style.display='none';
+    zincCostLabel.textContent='تكلفة الزنكة';
+    return;
+  }
+  const o = selectedOption;
+  renderCutModeControls();
+  zincCostLabel.textContent = printing.tier && printing.tier !== '-' ? `تكلفة الزنكة (${printing.tier})` : 'تكلفة الزنكة';
+  bestWrap.innerHTML = `
+    <h4>⭐ أفضل فرخ مناسب: ${o.paperColor} | ${o.paperLabel} | ${o.layoutLabel}</h4>
+    <div class="meta">
+      الكمية المدخلة: <b>${d.qty}</b> | إنتاج الفرخ: <b>${esc(o.outputLabel || o.piecesPerSheet)}</b> | الأفرخ المطلوبة: <b>${o.neededSheets}</b> | المتاح: <b>${o.availableSheets}</b><br>
+      مقاس القطعة: <b>${o.cutLength} × ${o.cutWidth}</b> | الهدر: <b>${o.wastePercent}%</b> | سعر الفرخ: <b>${money(o.sheetPrice)}</b> | تكلفة الورق: <b>${money(o.paperCost)}</b><br>
+      مقاس الطباعة: <b>${printing.tier}</b> | طباعة: <b>${money(printing.print)}</b> | زنكات: <b>${money(printing.zinc)}</b> | تصميم: <b>${money(printing.design)}</b>
+    </div>`;
+  const shouldShowDrawing = !!selectedOption;
+  sheetDrawing.innerHTML = shouldShowDrawing ? drawSheetSvg(o, d) : '';
+  sheetDrawing.style.display = shouldShowDrawing ? 'block' : 'none';
+}
+function renderChoices(){
+  if(virtualSheetEnabled){
+    choicesWrap.innerHTML = '';
+    choicesWrap.classList.add('hidden');
+    return;
+  }
+  const visibleOptions = getFilteredOptions();
+  const bestSig = optionSignature(selectedOption);
+  choicesWrap.innerHTML = visibleOptions.map((o)=>{
+    const sig = optionSignature(o);
+    const isBest = sig === bestSig;
+    return `
+      <div class="option ${isBest ? 'best':''}">
+        <h4>${isBest ? '⭐ ' : ''}${esc(o.paperColor)} | ${esc(o.paperLabel)}</h4>
+        <div class="meta">
+          ${esc(o.layoutLabel)}<br>
+          مقاس القطعة: ${o.cutLength} × ${o.cutWidth}<br>
+          إنتاج الفرخ: ${esc(o.outputLabel || o.piecesPerSheet)}<br>
+          المطلوب: ${o.neededSheets} فرخ | المتاح: ${o.availableSheets}<br>
+          الهدر: ${o.wastePercent}%<br>
+          سعر الفرخ: ${money(o.sheetPrice)}<br>
+          تكلفة الورق: ${money(o.paperCost)}
+        </div>
+        <div style="margin-top:10px"><button class="btn green" onclick="pickOptionBySignature('${sig}')">اختيار هذا الفرخ</button></div>
+      </div>`;
+  }).join('');
+}
+function pickOptionBySignature(sig){
+  const currentSig = optionSignature(selectedOption);
+
+  if(currentSig === sig){
+    manualSheetChosen = !manualSheetChosen;
+  }else{
+    selectedOption = allOptions.find(o => optionSignature(o) === sig) || null;
+    if(selectedOption) selectedCutMode = selectedOption.layoutKey;
+    manualSheetChosen = !!selectedOption;
+  }
+
+  const d = getDims();
+  syncAutoCosts(d);
+  renderGramFilters();
+  renderBest(d);
+  renderChoices();
+  renderSummary();
+}
+function toggleChoices(){
+  if(virtualSheetEnabled){
+    virtualSheetEnabled = false;
+    choicesVisible = true;
+    choicesWrap.classList.remove('hidden');
+    if(window.virtualSheetCard) virtualSheetCard.classList.add('hidden');
+    toggleChoicesBtn.textContent = 'الرجوع للفرخ الافتراضي';
+    selectedGram = null;
+    calculateAll();
+    return;
+  }
+  useDefaultSheetMode();
+}
+function renderSummary(){
+  const o = selectedOption;
+  const paper = o ? num(o.paperCost) : 0;
+  const extras = ['cost_cut','cost_print','cost_zinc','cost_design','cost_other','cost_hand','cost_hand_fix','cost_make','cost_forme','cost_lamination']
+    .reduce((s,id)=> s + num(document.getElementById(id).value), 0);
+  const total = +(paper + extras).toFixed(2);
+  const d = getDims();
+  const unit = d.qty > 0 ? +(total / d.qty).toFixed(4) : 0;
+  const margin = num(profitMargin.value, 35);
+  const sell = +(unit * (1 + (margin/100))).toFixed(4);
+  paperCost.textContent = money(paper);
+  totalCost.textContent = money(total);
+  unitCost.textContent = money(unit);
+  sellSuggestion.textContent = money(sell);
+}
+['l','w','g','qty','paper_type','color','handle','handle_type','printType','colorsCount','profitMargin','cost_cut','cost_print','cost_zinc','cost_design','cost_other','cost_forme','cost_lamination'].forEach(id=>{
+  window.addEventListener('DOMContentLoaded', ()=>{
+    const el = document.getElementById(id);
+    if(el) el.addEventListener('input', ()=>{ if(['cost_cut','cost_print','cost_zinc','cost_design','cost_other'].includes(id)) renderSummary(); else calculateAll(); });
+    if(el && el.tagName === 'SELECT') el.addEventListener('change', ()=>{ if(id==='printType') updatePrintFields(); if(id==='paper_type') updateMaterialUI(); calculateAll(); });
+  });
+});
+window.addEventListener('DOMContentLoaded', async ()=>{
+  try{
+    l.value = '0';
+    w.value = '0';
+    g.value = '0';
+    qty.value = '0';
+    const stockData = await authFetch('/calculator-stock-data');
+    papers = (Array.isArray(stockData.paper) ? stockData.paper : []).map(p=>({...p, paper_type: paperTypeOf(p), color: isCoatedPaperType(paperTypeOf(p)) ? 'أبيض' : p.color}));
+    handles = Array.isArray(stockData.handles) ? stockData.handles : [];
+    refreshVirtualSheetColorOptions();
+    await prefillFromOrderIfNeeded();
+    if(!virtual_color.value) virtual_color.value = '';
+    ['virtual_length','virtual_width','virtual_grammage','virtual_color','virtual_buy_price_kg','virtual_sheets','default_price_kraft_brown','default_price_kraft_white','default_price_print_white'].forEach(id=>{
+      const el = document.getElementById(id);
+      if(!el) return;
+      const evt = el.tagName === 'SELECT' ? 'change' : 'input';
+      el.addEventListener(evt, ()=>{ if(id.startsWith('default_price_')) refreshVirtualDefaultPrice(); if(virtualSheetEnabled) calculateAll(); });
+    });
+    color.addEventListener('change', ()=>{ refreshVirtualDefaultPrice(); if(virtualSheetEnabled && !String(virtual_color.value||'').trim()) calculateAll(); });
+    toggleVirtualSheetBtn.textContent = 'إخفاء إعدادات الفرخ';
+    toggleChoicesBtn.textContent = 'المخزن';
+    refreshVirtualDefaultPrice();
+    updatePrintFields();
+    updateMaterialUI();
+    calculateAll();
+  }catch(e){
+    document.body.innerHTML = '<div class="wrap"><div class="card">حدث خطأ في تحميل بيانات المخزون. تأكد من الصلاحيات وتسجيل الدخول.</div></div>';
+  }
+});
+</script>
+
+<script src="idle_guard.js"></script><script id="auth-flicker-release">(function(){function done(){document.documentElement.classList.remove('auth-loading');document.documentElement.classList.add('auth-ready');}if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',done,{once:true});}else{done();}setTimeout(done,1200);})();</script></body>
+</html>
