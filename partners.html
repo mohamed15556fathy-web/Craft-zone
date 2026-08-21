@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head><script id="auth-flicker-guard">(function(){try{var p=location.pathname.toLowerCase();if(p.endsWith('/login.html')||p==='/'||p===''){return;}if(!localStorage.getItem('token')||!localStorage.getItem('user')){location.replace('login.html');return;}document.documentElement.classList.add('auth-loading');}catch(e){location.replace('login.html');}})();</script><style id="auth-flicker-style">html.auth-loading body{visibility:hidden!important}html.auth-ready body{visibility:visible}</style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الشركاء</title>
+<style>
+:root{--bg:#0f172a;--panel:#1e293b;--card:#111827;--border:#334155;--text:#f8fafc;--muted:#94a3b8;--cyan:#22d3ee;--green:#22c55e;--red:#ef4444;--warn:#f59e0b;--purple:#a78bfa}
+*{box-sizing:border-box}body{font-family:'Segoe UI',Tahoma,sans-serif;background:var(--bg);color:var(--text);margin:0;padding:22px}.hidden{display:none!important}
+.header,.panel,.stat{background:rgba(30,41,59,.96);border:1px solid var(--border);border-radius:18px;box-shadow:0 18px 40px rgba(0,0,0,.22)}.header{padding:18px 22px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18px}.header h1{margin:0}.muted{color:var(--muted);font-size:13px;line-height:1.7}.toolbar{display:flex;gap:10px;flex-wrap:wrap}button,a.btn{background:transparent;border:1px solid var(--cyan);color:var(--cyan);padding:10px 14px;border-radius:12px;text-decoration:none;cursor:pointer;font-weight:800}.filled{background:var(--cyan);color:#001018}.danger{border-color:rgba(239,68,68,.7);color:#fecaca;background:rgba(239,68,68,.12)}.ok{border-color:rgba(34,197,94,.7);color:#bbf7d0;background:rgba(34,197,94,.10)}.warn{border-color:rgba(245,158,11,.75);color:#fde68a;background:rgba(245,158,11,.12)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:18px}.stat{padding:20px;cursor:default;transition:.15s transform,.15s border-color}.stat:hover{transform:translateY(-2px);border-color:var(--cyan)}.stat small{color:var(--muted)}.stat b{display:block;font-size:28px;margin-top:8px;color:var(--cyan)}.panel{padding:0;margin-bottom:18px;overflow:hidden}.section-head{padding:16px 18px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;border-bottom:1px solid rgba(51,65,85,.75)}.section-head h2,.section-head h3{margin:0}.section-body{padding:18px}.collapsed .section-body{display:none}.collapsed .section-head{border-bottom:0}.section-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.badge{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;background:#0b1220;border:1px solid var(--border);color:#cbd5e1;font-size:13px}.badge.warn{border-color:rgba(245,158,11,.7);color:#fde68a}.badge.good{border-color:rgba(34,197,94,.7);color:#bbf7d0}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;align-items:end}label{display:block;margin-bottom:7px;color:#cbd5e1;font-size:14px}input,select,textarea{width:100%;background:#0b1220;border:1px solid var(--border);border-radius:12px;color:#fff;padding:11px 12px}textarea{resize:vertical}.actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}.table-wrap{overflow:auto;border-radius:14px;border:1px solid rgba(51,65,85,.7);margin-top:12px}
+table{width:100%;border-collapse:collapse;min-width:760px}th,td{padding:10px;border-bottom:1px solid var(--border);text-align:center;vertical-align:top}th{background:#0b1220;color:var(--cyan);position:sticky;top:0}tbody tr:hover{background:rgba(255,255,255,.03)}.module-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}.module-card{background:#0b1220;border:1px solid var(--border);border-radius:16px;padding:14px}.module-card h3,.module-card h4{margin:0 0 10px}.cards-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:14px}.big-number{font-size:26px;font-weight:900;color:var(--cyan);margin:8px 0 10px}.hint{color:var(--muted);font-size:13px}.type-tag{display:inline-flex;padding:4px 8px;border-radius:999px;border:1px solid var(--border);font-size:12px;color:#cbd5e1}.type-tag.murabaha{border-color:rgba(167,139,250,.75);color:#ddd6fe;background:rgba(167,139,250,.12)}.type-tag.equity{border-color:rgba(34,211,238,.55);color:#a5f3fc;background:rgba(34,211,238,.10)}.tabs{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}.tab{border-color:var(--border);color:#e2e8f0}.tab.active{border-color:var(--cyan);background:rgba(34,211,238,.12);color:var(--cyan)}.statement-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}.partner-card{background:#0b1220;border:1px solid var(--border);border-radius:16px;padding:14px}.partner-card h3{margin:0 0 10px}.metric{display:grid;grid-template-columns:1fr auto;gap:8px;padding:8px 0;border-bottom:1px dashed rgba(148,163,184,.25)}.metric:last-child{border-bottom:0}.metric span{color:var(--muted)}.metric b{color:#fff}.positive{color:#bbf7d0!important}.negative{color:#fecaca!important}.note-box{background:#0b1220;border:1px dashed var(--border);border-radius:14px;padding:12px;color:#cbd5e1;line-height:1.8;margin-bottom:18px}.mini-title{margin:18px 0 8px;color:#e2e8f0}.split{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}.pill{display:inline-block;padding:4px 8px;border-radius:999px;background:#111827;border:1px solid var(--border);font-size:12px;color:#cbd5e1}
+@media(max-width:760px){body{padding:12px}.header{align-items:flex-start}.section-head{align-items:flex-start}.stat b{font-size:22px}button,a.btn{padding:9px 11px}.table-wrap{margin-inline:-4px}}
+@media print{.toolbar,.section-toggle,.actions,.no-print{display:none!important}body{background:#fff;color:#000}.header,.panel,.stat{box-shadow:none;border:1px solid #ddd;background:#fff}.collapsed .section-body{display:block!important}th{position:static;color:#000}.muted,.badge{color:#333}}
+</style>
+</head>
+<body>
+<div class="header">
+  <div><h1>🤝 الشركاء</h1><div id="welcome" class="muted"></div></div>
+  <div class="toolbar"><a class="btn" href="index.html">🏠 الرئيسية</a><a class="btn" href="accounts.html">💰 الحسابات</a><button onclick="logout()">🚪 خروج</button></div>
+</div>
+
+<div class="note-box">
+  الصفحة دي متقسمة بنظام كروت زي صفحة الحسابات، وكل قسم له زر فتح/إخفاء علشان تفتح اللي محتاجه فقط. الشريك العادي يأخذ نسبة من صافي ربح التشغيل، وشريك المرابحة يدخل برأس مال وله نسبة ربح على رأس ماله فقط ولا يدخل ضمن نسب الشراكة الأساسية.
+</div>
+
+<div class="note-box"><b>شرح سريع يمنع اللخبطة:</b><br>
+• <b>الشريك الأساسي</b>: يأخذ نسبة من صافي ربح التشغيل بعد التكاليف والمرتجعات، ولا يكون ممول مرابحة.<br>
+• <b>شريك المرابحة</b>: رأس مال داخل لفترة/طلبية وله ربح متفق عليه، ولا يدخل في مجموع نسب الشراكة الأساسية.<br>
+• <b>عهدة الشريك/الأدمن</b>: فلوس تشغيل داخلة أو خارجة، وليست ربح شراكة إلا بعد تسوية واضحة.<br>
+• <b>المبلغ القابل للصرف</b>: نصيب الشريك من الربح ناقص السحوبات والتسويات، وليس نفس رقم رأس المال أو العهدة.</div>
+
+<section id="sec-filter-card" class="panel">
+  <div class="section-head"><div><h3>فلترة الفترة</h3><div class="muted">الفلتر يطبق على الربح، رأس المال، السحوبات، العهد، المصروفات والتسويات.</div></div><div class="section-actions"><span class="badge" id="shareWarning">نسب الشراكة</span><button class="section-toggle" onclick="toggleSection('filter')">إخفاء</button></div></div>
+  <div id="sec-filter" class="section-body">
+    <div class="form-grid">
+      <div><label>من تاريخ</label><input id="fromDate" type="date"></div>
+      <div><label>إلى تاريخ</label><input id="toDate" type="date"></div>
+      <div class="actions"><button class="filled" onclick="loadAll()">تطبيق</button><button onclick="clearFilter()">مسح</button><button onclick="setThisMonth()">الشهر الحالي</button></div>
+    </div>
+  </div>
+</section>
+
+<div class="grid">
+  <div class="stat"><small>عدد الشركاء الحاليين</small><b id="statPartners">0</b></div>
+  <div class="stat"><small>صافي ربح الفترة</small><b id="statNetProfit">0</b></div>
+  <div class="stat"><small>إجمالي رأس المال</small><b id="statCapital">0</b></div>
+  <div class="stat"><small>أرباح الشركاء الأساسيين</small><b id="statEquityProfit">0</b></div>
+  <div class="stat"><small>أرباح المرابحة</small><b id="statMurabahaProfit">0</b></div>
+  <div class="stat"><small>إجمالي سحوبات/صرف أرباح</small><b id="statWithdrawals">0</b></div>
+  <div class="stat"><small>إجمالي عهدة الشغل الحالية</small><b id="statFundBalance">0</b></div>
+  <div class="stat"><small>مصروفات من عهد الشركاء</small><b id="statCustodyExpenses">0</b></div>
+</div>
+
+<section id="partnerManager" class="panel hidden">
+  <div class="section-head"><div><h2>إدارة أسماء الشركاء</h2><div class="muted">إضافة، تعديل، حذف نهائي من قائمة الشركاء.</div></div><div class="section-actions"><span class="badge">إضافة + تعديل + حذف</span><button class="section-toggle" onclick="toggleSection('manager')">فتح</button></div></div>
+  <div id="sec-manager" class="section-body">
+    <div class="form-grid">
+      <input id="partnerEditId" type="hidden">
+      <div><label>اسم الشريك</label><input id="partnerName" placeholder="مثال: أحمد"></div>
+      <div><label>الشريك مربوط بأدمن؟</label><select id="partnerAccountType" onchange="togglePartnerAccountFields()"><option value="external">شريك مش أدمن</option><option value="admin">أدمن من الموجودين</option></select></div>
+      <div id="linkedAdminWrap" class="hidden"><label>اختار الأدمن</label><select id="linkedAdminUsername" onchange="syncPartnerNameFromAdmin()"></select></div>
+      <div><label>نوع الشريك</label><select id="partnerType" onchange="togglePartnerTypeFields()"><option value="equity">شريك أساسي بنسبة من الربح</option><option value="murabaha">شريك مرابحة / ممول فقط</option></select></div>
+      <div id="partnerShareWrap"><label>نسبة الشراكة من صافي الربح %</label><input id="partnerShare" type="number" step="0.01" min="0" max="100" placeholder="مثال: 50"></div>
+      <div id="partnerProfitRateWrap" class="hidden"><label>نسبة ربح المرابحة على رأس المال %</label><input id="partnerProfitRate" type="number" step="0.01" min="0" placeholder="مثال: 5"></div>
+      <div><label>رقم/وسيلة تواصل</label><input id="partnerPhone" placeholder="اختياري"></div>
+      <div><label>ملاحظات</label><input id="partnerNotes" placeholder="اختياري"></div>
+      <div class="actions"><button class="filled" id="savePartnerBtn" onclick="savePartner()">إضافة شريك</button><button onclick="resetPartnerForm()">مسح</button></div>
+    </div>
+    <div class="cards-grid" id="partnersBody"></div>
+  </div>
+</section>
+
+<section class="panel">
+  <div class="section-head"><div><h2>طريقة حساب شريك المرابحة</h2><div class="muted">لما حد يدخل بفلوس فقط بدون إدارة أو نسبة ملكية.</div></div><div class="section-actions"><span class="badge">مرابحة</span><button class="section-toggle" onclick="toggleSection('murabahaHelp')">فتح</button></div></div>
+  <div id="sec-murabahaHelp" class="section-body">
+    <div class="module-grid">
+      <div class="module-card"><h3>1) أضف الشريك</h3><div class="hint">اختار نوعه: شريك مرابحة / ممول فقط، واكتب نسبة ربحه المتفق عليها.</div></div>
+      <div class="module-card"><h3>2) سجّل رأس المال</h3><div class="hint">من قسم رأس المال سجّل المبلغ اللي دخل به. الرصيد الحالي لرأس المال هو أساس الحساب.</div></div>
+      <div class="module-card"><h3>3) الحساب في التسوية</h3><div class="hint">ربحه = رأس المال الحالي × نسبة ربح المرابحة. ولا يدخل ضمن مجموع نسب الشركاء الأساسيين 100%.</div></div>
+      <div class="module-card"><h3>مثال سريع</h3><div class="big-number">50,000 × 5% = 2,500 ج</div><div class="hint">لو اتصرف له 1,000 ج، النهائي له = 1,500 ج.</div></div>
+    </div>
+  </div>
+</section>
+
+
+
+<section id="murabahaPortfolioPanel" class="panel">
+  <div class="section-head"><div><h2>محفظة المرابحة</h2><div class="muted">كل مبلغ يدخل من شريك المرابحة يتسجل كتمويل مستقل: تشغيل عام بفترة، أوردر كبير، أو طلبية تاجر.</div></div><div class="section-actions"><span class="badge">تمويلات مستقلة</span><button class="section-toggle" onclick="toggleSection('murabahaPortfolio')">فتح</button></div></div>
+  <div id="sec-murabahaPortfolio" class="section-body">
+    <div class="note-box">المدة الزمنية تُستخدم فقط مع <b>تمويل الشغل كله</b>. أما تمويل أوردر كبير أو طلبية تاجر فيتحسب على ربح الأوردر/الطلبية والتحصيلات، وليس على عدد الأيام.</div>
+    <div class="grid">
+      <div class="stat"><small>رأس مال مرابحة مفتوح</small><b id="murStatCapital">0</b></div>
+      <div class="stat"><small>أرباح متوقعة</small><b id="murStatProfit">0</b></div>
+      <div class="stat"><small>متاح صرفه الآن</small><b id="murStatPayable">0</b></div>
+      <div class="stat"><small>مدفوع للممولين</small><b id="murStatPaid">0</b></div>
+      <div class="stat"><small>متبقي للممولين</small><b id="murStatRemain">0</b></div>
+    </div>
+    <div id="murabahaFormWrap" class="module-card hidden"><h3>إضافة / تعديل تمويل مرابحة</h3>
+      <div class="form-grid">
+        <input id="murEditId" type="hidden">
+        <div><label>شريك المرابحة</label><select id="murPartner"></select></div>
+        <div><label>اسم التمويل</label><input id="murName" placeholder="مثال: تمويل طلبية تاجر أحمد"></div>
+        <div><label>نوع التمويل</label><select id="murType" onchange="toggleMurabahaFields()"><option value="general_work">تشغيل عام لفترة</option><option value="big_order">أوردر كبير</option><option value="trader_batch">طلبية تاجر</option></select></div>
+        <div><label>مبلغ التمويل</label><input id="murAmount" type="number" step="0.01" min="0"></div>
+        <div class="mur-general"><label>تاريخ البداية</label><input id="murStart" type="date"></div>
+        <div class="mur-general"><label>تاريخ النهاية</label><input id="murEnd" type="date"></div>
+        <div class="mur-general"><label>إجمالي السيولة/رأس المال الشغال في الفترة</label><input id="murWorkingBase" type="number" step="0.01" min="0" placeholder="لازم لحساب نسبة مساهمة الممول"></div>
+        <div class="mur-order hidden"><label>رقم الأوردر الكبير</label><input id="murOrderId" type="number" min="0"></div>
+        <div class="mur-batch hidden"><label>طلبية التاجر</label><select id="murBatchId"></select></div>
+        <div><label>طريقة الربح</label><select id="murProfitMethod" onchange="toggleMurabahaProfitFields()"><option value="percent_of_net">نسبة من صافي ربح الشغل</option><option value="fixed">مبلغ ربح ثابت</option><option value="percent_of_capital">نسبة على مبلغ التمويل</option></select></div>
+        <div class="mur-percent"><label>نسبة الربح %</label><input id="murProfitPercent" type="number" step="0.01" min="0"></div>
+        <div class="mur-fixed hidden"><label>مبلغ الربح الثابت</label><input id="murFixedProfit" type="number" step="0.01" min="0"></div>
+        <div><label>طريقة التسوية</label><select id="murSettlementMode"><option value="after_full_collection">بعد التحصيل الكامل</option><option value="proportional">تدريجي حسب نسبة التحصيل</option><option value="manual">يدوي / تحت الحساب</option></select></div>
+        <div><label>الحالة</label><select id="murStatus"><option value="open">مفتوح</option><option value="in_progress">قيد التنفيذ</option><option value="ready_to_settle">جاهز للتسوية</option><option value="closed">مغلق</option></select></div>
+        <div style="grid-column:1/-1"><label>ملاحظات</label><textarea id="murNotes" rows="2"></textarea></div>
+        <div class="actions"><button class="filled" id="murSaveBtn" onclick="saveMurabahaFinancing()">حفظ التمويل</button><button onclick="resetMurabahaForm()">مسح</button></div>
+      </div>
+    </div>
+    <div class="module-card" style="margin-top:14px"><h3>صرف مبلغ للممول / دفعة تحت الحساب</h3><div class="form-grid">
+      <div><label>التمويل</label><select id="murPayoutFunding"></select></div>
+      <div><label>نوع الصرف</label><select id="murPayoutType"><option value="under_account">دفعة تحت الحساب</option><option value="capital_return">رد جزء من رأس المال</option><option value="profit_advance">دفعة من الربح</option><option value="final_settlement">تسوية نهائية</option></select></div>
+      <div><label>المبلغ</label><input id="murPayoutAmount" type="number" step="0.01" min="0"></div>
+      <div><label>التاريخ</label><input id="murPayoutDate" type="date"></div>
+      <div style="grid-column:1/-1"><label>ملاحظة</label><input id="murPayoutNote"></div>
+      <div class="actions"><button class="filled" onclick="saveMurabahaPayout()">تسجيل الصرف</button></div>
+    </div></div>
+    <h3 class="mini-title">تمويلات المرابحة</h3><div id="murabahaCards" class="cards-grid"></div>
+    <h3 class="mini-title">دفعات الممولين</h3><div class="table-wrap"><table><thead><tr><th>التاريخ</th><th>الممول</th><th>التمويل</th><th>النوع</th><th>المبلغ</th><th>ملاحظة</th><th>بواسطة</th><th>تحكم</th></tr></thead><tbody id="murabahaPayoutsBody"></tbody></table></div>
+  </div>
+</section>
+
+<section id="capitalPanel" class="panel">
+  <div class="section-head"><div><h2>رأس مال الشركاء</h2><div class="muted">سجل رأس المال منفصل عن السحوبات وعهدة الشغل.</div></div><div class="section-actions"><span class="badge">رأس مال + استرداد</span><button class="section-toggle" onclick="toggleSection('capital')">فتح</button></div></div>
+  <div id="sec-capital" class="section-body">
+    <div class="module-grid"><div id="capitalFormWrap" class="module-card hidden"><h3>تسجيل رأس مال</h3><div class="form-grid">
+      <input id="capitalEditId" type="hidden">
+      <div><label>الشريك</label><select id="capitalPartner"></select></div>
+      <div><label>نوع الحركة</label><select id="capitalMode"><option value="add">إضافة رأس مال</option><option value="sub">استرداد/تخفيض رأس مال</option></select></div>
+      <div><label>المبلغ</label><input id="capitalAmount" type="number" step="0.01" min="0"></div>
+      <div><label>التاريخ</label><input id="capitalDate" type="date"></div>
+      <div style="grid-column:1/-1"><label>ملاحظات</label><textarea id="capitalNote" rows="2"></textarea></div>
+      <div class="actions"><button class="filled" id="saveCapitalBtn" onclick="saveCapitalEntry()">حفظ حركة رأس المال</button><button onclick="resetCapitalForm()">مسح</button></div>
+    </div></div><div class="module-card"><h3>ملخص سريع</h3><div class="metric"><span>رأس المال الحالي</span><b id="capitalQuickTotal">0</b></div><div class="metric"><span>حركات الفترة</span><b id="capitalQuickRows">0</b></div><div class="hint">رأس مال المرابحة هو أساس حساب ربح الممول.</div></div></div>
+    <div class="table-wrap"><table><thead><tr><th>التاريخ</th><th>الشريك</th><th>النوع</th><th>المبلغ</th><th>التأثير</th><th>ملاحظات</th><th>بواسطة</th><th>تحكم</th></tr></thead><tbody id="capitalBody"></tbody></table></div>
+  </div>
+</section>
+
+<section id="transactionsPanel" class="panel">
+  <div class="section-head"><div><h2>تسجيل حركات الشركاء</h2><div class="muted">سحوبات/صرف أرباح + عهدة شغل.</div></div><div class="section-actions"><span class="badge">نماذج تسجيل</span><button class="section-toggle" onclick="toggleSection('transactions')">فتح</button></div></div>
+  <div id="sec-transactions" class="section-body">
+    <div class="split">
+      <div class="module-card">
+        <h3>سحوبات / صرف أرباح الشركاء</h3>
+        <div class="form-grid">
+          <input id="withdrawalEditId" type="hidden">
+          <div><label>الشريك</label><select id="withdrawalPartner"></select></div>
+          <div><label>المبلغ</label><input id="withdrawalAmount" type="number" step="0.01" min="0"></div>
+          <div><label>التاريخ</label><input id="withdrawalDate" type="date"></div>
+          <div style="grid-column:1/-1"><label>ملاحظات</label><textarea id="withdrawalNote" rows="2"></textarea></div>
+          <div class="actions"><button class="filled" id="saveWithdrawalBtn" onclick="saveWithdrawal()">حفظ السحب/الصرف</button><button onclick="resetWithdrawalForm()">مسح</button></div>
+        </div>
+      </div>
+      <div class="module-card">
+        <h3>عهدة الشغل مع الشركاء</h3>
+        <div class="form-grid">
+          <input id="fundEditId" type="hidden">
+          <div><label>الشريك</label><select id="fundPartner"></select></div>
+          <div><label>نوع الحركة</label><select id="fundMode"><option value="add">تسليم فلوس شغل</option><option value="sub">استرداد/خصم من العهدة</option><option value="set">تعيين الرصيد الفعلي</option></select></div>
+          <div><label>المبلغ</label><input id="fundAmount" type="number" step="0.01" min="0"></div>
+          <div><label>التاريخ</label><input id="fundDate" type="date"></div>
+          <div style="grid-column:1/-1"><label>ملاحظات</label><textarea id="fundNote" rows="2"></textarea></div>
+          <div class="actions"><button class="filled" id="saveFundBtn" onclick="saveFundEntry()">حفظ حركة العهدة</button><button onclick="resetFundForm()">مسح</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="panel">
+  <div class="section-head"><div><h2>كشف سريع لكل شريك</h2><div class="muted">ملخص سريع: رأس المال، نصيب الربح، السحوبات، العهدة، والرصيد المتوقع.</div></div><div class="section-actions"><span class="badge">ملخصات</span><button class="section-toggle" onclick="toggleSection('summary')">إخفاء</button></div></div>
+  <div id="sec-summary" class="section-body"><div id="statementCards" class="statement-grid"></div></div>
+</section>
+
+<section class="panel">
+  <div class="section-head"><div><h2>تسوية شهرية / فترة محددة</h2><div class="muted">اعتماد Snapshot للفترة: الربح، نصيب كل شريك، السحوبات، العهدة، رأس المال، والنهائي.</div></div><div class="section-actions"><span class="badge">قفل فترة</span><button class="section-toggle" onclick="toggleSection('settlement')">فتح</button></div></div>
+  <div id="sec-settlement" class="section-body">
+    <div class="note-box">التسوية تحسب الشريك الأساسي هكذا: <b>صافي ربح الفترة × نسبة الشراكة - السحوبات</b>. أما شريك المرابحة فيتحسب هكذا: <b>رأس ماله الحالي حتى نهاية الفترة × نسبة ربح المرابحة - ما تم صرفه له</b>.</div>
+    <div class="form-grid">
+      <div><label>ملاحظة التسوية</label><input id="settlementNote" placeholder="مثال: تسوية شهر يونيو"></div>
+      <div class="actions"><button class="filled" onclick="closeSettlement()">قفل/تحديث تسوية الفترة المعروضة</button><button onclick="printPage()">طباعة</button></div>
+    </div>
+    <h3 class="mini-title">نصيب الربح الحالي قبل القفل</h3>
+    <div class="table-wrap"><table><thead><tr><th>الشريك</th><th>النوع</th><th>نسبة الشراكة</th><th>نسبة المرابحة</th><th>طريقة الحساب</th><th>نصيبه/ربحه</th><th>سحوباته/مصروف له</th><th>النهائي</th><th>رأس المال</th><th>عهدة مفتوحة</th></tr></thead><tbody id="profitShareBody"></tbody></table></div>
+    <h3 class="mini-title">التسويات المقفولة</h3>
+    <div class="table-wrap"><table><thead><tr><th>الفترة</th><th>الشريك</th><th>النوع</th><th>نسبة الشراكة</th><th>نسبة المرابحة</th><th>صافي الربح</th><th>ربحه</th><th>مصروف له</th><th>النهائي</th><th>ملاحظة</th><th>بواسطة</th><th>تحكم</th></tr></thead><tbody id="settlementsBody"></tbody></table></div>
+  </div>
+</section>
+
+<section class="panel">
+  <div class="section-head"><div><h2>كشف حساب تفصيلي</h2><div class="muted">اختار شريك وشوف كل الحركات الخاصة به في جدول واحد.</div></div><div class="section-actions"><span class="badge">كشف تفصيلي</span><button class="section-toggle" onclick="toggleSection('statement')">فتح</button></div></div>
+  <div id="sec-statement" class="section-body">
+    <div class="form-grid"><div><label>الشريك</label><select id="statementPartner" onchange="renderStatementDetail()"></select></div><div class="actions"><button onclick="printPage()">طباعة الكشف</button></div></div>
+    <div id="statementDetail" class="statement-grid" style="margin-top:14px"></div>
+    <div class="table-wrap"><table><thead><tr><th>التاريخ</th><th>نوع الحركة</th><th>الشريك</th><th>التأثير</th><th>المبلغ الأصلي</th><th>ملاحظات</th><th>بواسطة</th></tr></thead><tbody id="statementMovementsBody"></tbody></table></div>
+  </div>
+</section>
+
+<section class="panel">
+  <div class="section-head"><div><h2>سجل موحد لكل حركات الشركاء</h2><div class="muted">كل الحركات في مكان واحد: رأس مال، سحوبات، عهدة، مصروفات، وتسويات.</div></div><div class="section-actions"><span class="badge">سجل موحد</span><button class="section-toggle" onclick="toggleSection('movements')">فتح</button></div></div>
+  <div id="sec-movements" class="section-body">
+    <div id="partnerTabs" class="tabs"></div>
+    <div class="table-wrap"><table><thead><tr><th>التاريخ</th><th>الشريك</th><th>القسم</th><th>النوع</th><th>التأثير</th><th>المبلغ الأصلي</th><th>ملاحظات</th><th>بواسطة</th></tr></thead><tbody id="movementsBody"></tbody></table></div>
+  </div>
+</section>
+
+<section class="panel">
+  <div class="section-head"><div><h2>تفاصيل السجلات الأصلية</h2><div class="muted">الجداول الأصلية منفصلة للبحث والمراجعة.</div></div><div class="section-actions"><span class="badge">جداول تفصيلية</span><button class="section-toggle" onclick="toggleSection('rawlogs')">فتح</button></div></div>
+  <div id="sec-rawlogs" class="section-body">
+    <h3>سجل السحوبات</h3>
+    <div class="table-wrap"><table><thead><tr><th>التاريخ</th><th>الشريك</th><th>المبلغ</th><th>ملاحظات</th><th>بواسطة</th><th>تحكم</th></tr></thead><tbody id="withdrawalsBody"></tbody></table></div>
+    <h3 class="mini-title">سجل عهدة الشغل</h3>
+    <div class="table-wrap"><table><thead><tr><th>التاريخ</th><th>الشريك</th><th>العملية</th><th>المبلغ</th><th>التغيير</th><th>الرصيد بعد الحركة</th><th>ملاحظات</th><th>بواسطة</th><th>تحكم</th></tr></thead><tbody id="fundBody"></tbody></table></div>
+    <h3 class="mini-title">مصروفات مدفوعة من عهد الشركاء</h3>
+    <div class="table-wrap"><table><thead><tr><th>التاريخ</th><th>الشريك</th><th>النوع</th><th>المبلغ</th><th>التفاصيل</th><th>بواسطة</th></tr></thead><tbody id="expensesBody"></tbody></table></div>
+  </div>
+</section>
+
+<script>
+const token=localStorage.getItem('token');
+const user=JSON.parse(localStorage.getItem('user')||'null');
+if(!token||!user) location.href='login.html';
+function isSuper(){return user.username==='admin'||user.role==='super_admin';}
+function hasPerm(key){return isSuper() || Number(user[key]||0)===1;}
+if(!hasPerm('perm_view_partners')) location.href='index.html';
+const canManagePartners=hasPerm('perm_manage_financial_partners');
+const canManageTransactions=hasPerm('perm_manage_partner_transactions') || hasPerm('perm_manage_expenses');
+const canManageMurabaha=hasPerm('perm_manage_murabaha_financing') || canManageTransactions;
+let data={partners:[],withdrawals:[],fund_rows:[],expenses:[],capital_rows:[],settlements:[],summary:[],totals:{},active_users:[]};
+let murabahaData={partners:[],financings:[],payouts:[],traders:[],batches:[],orders:[],totals:{}};
+let activeFilter='all';
+const sectionDefaults={filter:false,manager:true,murabahaHelp:true,murabahaPortfolio:true,capital:true,transactions:true,summary:false,settlement:true,statement:true,movements:true,rawlogs:true};
+function authFetch(url,opts={}){opts.headers=Object.assign({},opts.headers||{},{Authorization:'Bearer '+token});return fetch(url,opts).then(async r=>{const d=await r.json().catch(()=>({}));if(r.status===401){localStorage.clear();location.href='login.html';throw new Error('unauthorized')}if(!r.ok)throw new Error(d.error||'error');return d;});}
+function logout(){try{fetch('/logout',{method:'POST',headers:{Authorization:'Bearer '+token}})}catch(e){}localStorage.clear();location.href='login.html';}
+function money(v){return Number(v||0).toLocaleString('en-US',{maximumFractionDigits:2})+' ج';}
+function percent(v){return Number(v||0).toLocaleString('en-US',{maximumFractionDigits:2})+'%';}
+function getPartnerType(p){return String((p&&p.partner_type)||'equity')==='murabaha'?'murabaha':'equity';}
+function typeLabel(t){return t==='murabaha'?'مرابحة / ممول':'شريك أساسي';}
+function typeTag(t){const kind=t==='murabaha'?'murabaha':'equity';return `<span class="type-tag ${kind}">${typeLabel(kind)}</span>`;}
+function accountTypeLabel(p){return String(p?.partner_account_type||'external')==='admin'?'أدمن داخل السيستم':'شريك خارجي';}
+function linkedAdminText(p){return String(p?.partner_account_type||'external')==='admin' ? (p.linked_admin_name||p.linked_admin_username||'-') : '-';}
+function fillLinkedAdminOptions(selected=''){const users=data.active_users||[];linkedAdminUsername.innerHTML=users.length?users.map(u=>`<option value="${esc(u.username)}" ${String(u.username)===String(selected)?'selected':''}>${esc(u.full_name||u.username)} (${esc(u.username)})</option>`).join(''):'<option value="">لا يوجد أدمن نشط</option>';}
+function togglePartnerAccountFields(){const isAdmin=partnerAccountType.value==='admin';linkedAdminWrap.classList.toggle('hidden',!isAdmin);if(isAdmin&&!linkedAdminUsername.value)fillLinkedAdminOptions();}
+function syncPartnerNameFromAdmin(){const u=(data.active_users||[]).find(x=>String(x.username)===String(linkedAdminUsername.value));if(u&&!partnerName.value.trim())partnerName.value=u.full_name||u.username||'';}
+function calcLabel(r){return getPartnerType(r)==='murabaha'?`رأس المال × ${percent(r.profit_rate_percent)}`:`صافي الربح × ${percent(r.share_percent)}`;}
+function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+function today(){return new Date().toISOString().slice(0,10);}
+function monthStart(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-01`;}
+function norm(v=''){return String(v||'').trim().replace(/\s+/g,' ');}
+function roleLabel(role){return ({super_admin:'مدير عام',admin:'أدمن',moderator:'مودريتور',operation:'أوبريشن',production:'إنتاج',store:'مخزن',accountant:'محاسب'})[role]||role||'';}
+function qs(){const p=new URLSearchParams();if(fromDate.value)p.set('from',fromDate.value);if(toDate.value)p.set('to',toDate.value);const s=p.toString();return s?'?'+s:'';}
+function clearFilter(){fromDate.value='';toDate.value='';loadAll();}
+function setThisMonth(){fromDate.value=monthStart();toDate.value=today();loadAll();}
+function printPage(){window.print();}
+function activePartnerNames(opts={}){return data.partners.filter(p=>!opts.excludeMurabaha || getPartnerType(p)!=='murabaha').map(p=>norm(p.name)).filter(Boolean);}
+function allNames(){return [...new Set([...activePartnerNames(),...data.summary.map(s=>norm(s.name)).filter(Boolean),...data.capital_rows.map(r=>norm(r.partner_name)).filter(Boolean),...data.settlements.map(r=>norm(r.partner_name)).filter(Boolean)])];}
+function fillPartnerSelects(){const names=activePartnerNames();const html=names.length?names.map(n=>`<option value="${esc(n)}">${esc(n)}</option>`).join(''):'<option value="">لا يوجد شركاء</option>';withdrawalPartner.innerHTML=html;capitalPartner.innerHTML=html;const fundNames=activePartnerNames({excludeMurabaha:true});fundPartner.innerHTML=fundNames.length?fundNames.map(n=>`<option value="${esc(n)}">${esc(n)}</option>`).join(''):'<option value="">لا يوجد شركاء عهدة</option>';const all=allNames();statementPartner.innerHTML=all.length?all.map(n=>`<option value="${esc(n)}">${esc(n)}</option>`).join(''):'<option value="">لا يوجد بيانات</option>';}
+function canUsePartner(name){return activePartnerNames().includes(norm(name));}
+function canUseFundPartner(name){return activePartnerNames({excludeMurabaha:true}).includes(norm(name));}
+function actionLabel(kind){return ({add:'تسليم/إضافة',sub:'استرداد/خصم',set:'تعيين الرصيد',expense:'مصروف من العهدة',order_cost:'تكلفة أوردر من العهدة'})[kind]||kind||'-';}
+function capitalLabel(kind){return kind==='sub'?'استرداد/تخفيض رأس مال':'إضافة رأس مال';}
+function expenseType(r){if(Number(r.linked_to_order)===1)return 'تكلفة أوردر: '+(r.order_cost_field||'');return r.category==='أخرى'?(r.custom_category||'أخرى'):(r.category||'-');}
+function filteredRows(rows, field){if(activeFilter==='all')return rows;return rows.filter(r=>norm(r[field])===activeFilter);}
+function classAmount(v){return Number(v||0)>=0?'positive':'negative';}
+function signed(v){return `<span class="${classAmount(v)}">${money(v)}</span>`;}
+function setSection(key, collapsed){const body=document.getElementById('sec-'+key);if(!body)return;const card=body.closest('.panel');if(!card)return;card.classList.toggle('collapsed',!!collapsed);const btn=card.querySelector('.section-toggle');if(btn)btn.textContent=collapsed?'فتح':'إخفاء';localStorage.setItem('partners_section_'+key, collapsed?'1':'0');}
+function toggleSection(key){const body=document.getElementById('sec-'+key);if(!body)return;const card=body.closest('.panel');setSection(key,!card.classList.contains('collapsed'));}
+function initSections(){Object.entries(sectionDefaults).forEach(([k,def])=>{const saved=localStorage.getItem('partners_section_'+k);setSection(k, saved===null?def:saved==='1');});}
+function renderStats(){
+  statPartners.textContent=data.partners.length;
+  statNetProfit.textContent=money(data.totals.net_profit||0);
+  statCapital.textContent=money(data.totals.capital_balance||0);
+  statEquityProfit.textContent=money(data.totals.equity_profit_total||0);
+  statMurabahaProfit.textContent=money((murabahaData.totals&&murabahaData.totals.expected_profit)||data.totals.murabaha_profit_total||0);
+  statWithdrawals.textContent=money(data.totals.withdrawals_total||0);
+  statFundBalance.textContent=money(data.totals.fund_balance_total||0);
+  statCustodyExpenses.textContent=money(data.totals.custody_expenses_total||0);
+  const sp=Number(data.totals.share_percent_total||0);
+  shareWarning.textContent='إجمالي نسب الشركاء الأساسيين: '+percent(sp);
+  shareWarning.className='badge '+(Math.abs(sp-100)<0.01?'good':'warn');
+}
+function renderManager(){
+  partnerManager.classList.toggle('hidden',!canManagePartners);
+  if(!canManagePartners)return;
+  partnersBody.innerHTML=data.partners.length?data.partners.map(p=>{const t=getPartnerType(p);return `<div class="module-card"><div style="display:flex;justify-content:space-between;gap:10px;align-items:start;flex-wrap:wrap"><h3>${esc(p.name)}</h3>${typeTag(t)}</div><div class="metric"><span>${t==='murabaha'?'نسبة ربح المرابحة':'نسبة الشراكة'}</span><b>${t==='murabaha'?percent(p.profit_rate_percent):percent(p.share_percent)}</b></div><div class="metric"><span>نوع الحساب</span><b>${esc(accountTypeLabel(p))}</b></div><div class="metric"><span>الأدمن المرتبط</span><b>${esc(linkedAdminText(p))}</b></div><div class="metric"><span>التواصل</span><b>${esc(p.phone||'-')}</b></div><div class="metric"><span>ملاحظات</span><b>${esc(p.notes||'-')}</b></div><div class="actions" style="justify-content:flex-start;margin-top:10px"><button onclick="editPartner(${Number(p.id)})">تعديل</button><button class="danger" onclick="deletePartner(${Number(p.id)})">حذف</button></div></div>`}).join(''):'<div class="muted">لا يوجد شركاء</div>';
+}
+function renderStatements(){
+  const byName=Object.fromEntries(data.summary.map(r=>[norm(r.name),r]));
+  const partnerRows=allNames().map(name=>({partner:data.partners.find(p=>norm(p.name)===name)||{name},summary:byName[name]||{name}}));
+  statementCards.innerHTML=partnerRows.length?partnerRows.map(({partner:p,summary:s})=>{
+    const capital=Number(s.capital_balance||0), balance=Number(s.fund_balance||0), withdrawals=Number(s.withdrawals_total||0), profit=Number(s.profit_share||0), final=Number(s.final_amount||0), exp=Number(s.custody_expenses_total||0);
+    return `<div class="module-card"><div style="display:flex;justify-content:space-between;gap:10px;align-items:start;flex-wrap:wrap"><h3>${esc(p.name||s.name)}</h3>${typeTag(s.partner_type||p.partner_type)}</div>
+      <div class="metric"><span>رأس المال الحالي</span><b class="${classAmount(capital)}">${money(capital)}</b></div>
+      <div class="metric"><span>طريقة الحساب</span><b>${esc(calcLabel(s))}</b></div>
+      <div class="metric"><span>${getPartnerType(s)==='murabaha'?'ربح المرابحة':'نصيبه من صافي الربح'}</span><b class="${classAmount(profit)}">${money(profit)}</b></div>
+      <div class="metric"><span>سحوبات/مصروف له</span><b class="negative">${money(withdrawals)}</b></div>
+      <div class="metric"><span>النهائي بعد السحوبات</span><b class="${classAmount(final)}">${money(final)}</b></div>
+      <div class="metric"><span>رصيد عهدة الشغل</span><b class="${classAmount(balance)}">${money(balance)}</b></div>
+      <div class="metric"><span>مصروفات من عهدته</span><b>${money(exp)}</b></div>
+      <div class="metric"><span>عدد الحركات</span><b>${Number(s.movements_count||0)}</b></div>
+      <div class="metric"><span>آخر حركة</span><b>${s.last_activity?`${esc(s.last_activity.date)} - ${esc(s.last_activity.type)} - ${money(s.last_activity.amount)}`:'-'}</b></div>
+    </div>`;
+  }).join(''):'<div class="muted">لا توجد بيانات شركاء حتى الآن.</div>';
+}
+function renderTabs(){const names=allNames();const tabs=[{key:'all',label:'الكل'},...names.map(n=>({key:n,label:n}))];partnerTabs.innerHTML=tabs.map(t=>`<button class="tab ${activeFilter===t.key?'active':''}" data-key="${esc(t.key)}">${esc(t.label)}</button>`).join('');partnerTabs.querySelectorAll('button').forEach(btn=>btn.addEventListener('click',()=>setFilter(btn.dataset.key||'all')));}
+function setFilter(name){activeFilter=name||'all';renderTables();renderMovements();renderTabs();}
+function getMovements(){
+  const rows=[];
+  data.capital_rows.forEach(r=>rows.push({date:r.entry_date,partner:r.partner_name,section:'رأس المال',type:capitalLabel(r.entry_kind),delta:Number(r.delta||0),amount:Number(r.amount||0),note:r.note,created_by:r.created_by}));
+  data.withdrawals.forEach(r=>rows.push({date:r.withdrawal_date,partner:r.partner_name,section:'سحوبات',type:'سحب شخصي',delta:-Number(r.amount||0),amount:Number(r.amount||0),note:r.note,created_by:r.created_by,id:r.id,kind:'withdrawal'}));
+  data.fund_rows.forEach(r=>rows.push({date:r.entry_date,partner:r.partner_name,section:'عهدة الشغل',type:actionLabel(r.entry_kind),delta:Number(r.delta||0),amount:Number(r.amount||0),note:r.note,created_by:r.created_by,id:r.id,kind:'fund'}));
+  data.expenses.forEach(r=>rows.push({date:r.expense_date,partner:r.expense_partner_name,section:'مصروفات من العهدة',type:expenseType(r),delta:-Number(r.amount||0),amount:Number(r.amount||0),note:Number(r.linked_to_order)===1?`أوردر #${r.order_id||''}`:(r.notes||''),created_by:r.created_by}));
+  data.settlements.forEach(r=>rows.push({date:r.period_to||r.period_from,partner:r.partner_name,section:'تسوية',type:`${typeLabel(getPartnerType(r))} | ${r.period_from||''} → ${r.period_to||''}`,delta:Number(r.final_amount||0),amount:Number(r.profit_share||0),note:r.note,created_by:r.created_by}));
+  return rows.filter(r=>r.partner||activeFilter==='all').sort((a,b)=>String(b.date||'').localeCompare(String(a.date||'')));
+}
+function renderMovements(){
+  const rows=activeFilter==='all'?getMovements():getMovements().filter(r=>norm(r.partner)===activeFilter);
+  movementsBody.innerHTML=rows.length?rows.map(r=>`<tr><td>${esc(r.date||'')}</td><td>${esc(r.partner||'-')}</td><td>${esc(r.section)}</td><td>${esc(r.type)}</td><td>${signed(r.delta)}</td><td>${money(r.amount)}</td><td>${esc(r.note||'-')}</td><td>${esc(r.created_by||'-')}</td></tr>`).join(''):'<tr><td colspan="8">لا توجد حركات</td></tr>';
+}
+function renderCapital(){
+  capitalFormWrap.classList.toggle('hidden',!canManageTransactions);
+  const rows=filteredRows(data.capital_rows,'partner_name');
+  if(typeof capitalQuickTotal!=='undefined'){capitalQuickTotal.textContent=money(data.totals.capital_balance||0);capitalQuickRows.textContent=rows.length;}
+  capitalBody.innerHTML=rows.length?rows.map(r=>`<tr><td>${esc(r.entry_date||'')}</td><td>${esc(r.partner_name||'-')}</td><td>${esc(capitalLabel(r.entry_kind))}</td><td>${money(r.amount)}</td><td>${signed(r.delta)}</td><td>${esc(r.note||'-')}</td><td>${esc(r.created_by||'-')}</td><td>${canManageTransactions?`<div class="actions"><button onclick="editCapital(${Number(r.id)})">تعديل</button><button class="danger" onclick="deleteCapital(${Number(r.id)})">حذف</button></div>`:'-'}</td></tr>`).join(''):'<tr><td colspan="8">لا توجد حركات رأس مال</td></tr>';
+}
+function renderProfitShares(){
+  const rows=data.summary;
+  profitShareBody.innerHTML=rows.length?rows.map(r=>`<tr><td>${esc(r.name)}</td><td>${typeTag(r.partner_type)}</td><td>${getPartnerType(r)==='murabaha'?'-':percent(r.share_percent)}</td><td>${getPartnerType(r)==='murabaha'?percent(r.profit_rate_percent):'-'}</td><td>${esc(calcLabel(r))}</td><td>${money(r.profit_share)}</td><td>${money(r.withdrawals_total)}</td><td>${signed(r.final_amount)}</td><td>${money(r.capital_balance)}</td><td>${money(r.fund_balance)}</td></tr>`).join(''):'<tr><td colspan="10">لا توجد بيانات</td></tr>';
+  settlementsBody.innerHTML=data.settlements.length?data.settlements.map(r=>`<tr><td>${esc(r.period_from||'')} → ${esc(r.period_to||'')}</td><td>${esc(r.partner_name||'-')}</td><td>${typeTag(r.partner_type)}</td><td>${getPartnerType(r)==='murabaha'?'-':percent(r.share_percent)}</td><td>${getPartnerType(r)==='murabaha'?percent(r.profit_rate_percent):'-'}</td><td>${money(r.total_profit)}</td><td>${money(r.profit_share)}</td><td>${money(r.withdrawals_total)}</td><td>${signed(r.final_amount)}</td><td>${esc(r.note||'-')}</td><td>${esc(r.created_by||'-')}</td><td>${canManageTransactions?`<button class="danger" onclick="deleteSettlement(${Number(r.id)})">حذف</button>`:'-'}</td></tr>`).join(''):'<tr><td colspan="12">لا توجد تسويات مقفولة لهذه الفترة</td></tr>';
+}
+function renderStatementDetail(){
+  const name=statementPartner.value || allNames()[0] || '';
+  const s=data.summary.find(r=>norm(r.name)===norm(name)) || {name};
+  statementDetail.innerHTML=name?`<div class="module-card"><h3>${esc(name)}</h3>
+    <div class="metric"><span>نسبة الشراكة</span><b>${percent(s.share_percent)}</b></div>
+    <div class="metric"><span>نصيبه من الربح</span><b>${money(s.profit_share)}</b></div>
+    <div class="metric"><span>سحوبات/مصروف له</span><b>${money(s.withdrawals_total)}</b></div>
+    <div class="metric"><span>النهائي</span><b class="${classAmount(s.final_amount)}">${money(s.final_amount)}</b></div>
+  </div><div class="module-card"><h3>الأرصدة الرقابية</h3>
+    <div class="metric"><span>رأس المال</span><b>${money(s.capital_balance)}</b></div>
+    <div class="metric"><span>عهدة الشغل</span><b>${money(s.fund_balance)}</b></div>
+    <div class="metric"><span>مصروفات من عهدته</span><b>${money(s.custody_expenses_total)}</b></div>
+    <div class="metric"><span>عدد الحركات</span><b>${Number(s.movements_count||0)}</b></div>
+  </div>`:'<div class="muted">اختار شريك لعرض كشف الحساب.</div>';
+  const rows=getMovements().filter(r=>norm(r.partner)===norm(name));
+  statementMovementsBody.innerHTML=rows.length?rows.map(r=>`<tr><td>${esc(r.date||'')}</td><td>${esc(r.section+' - '+r.type)}</td><td>${esc(r.partner||'-')}</td><td>${signed(r.delta)}</td><td>${money(r.amount)}</td><td>${esc(r.note||'-')}</td><td>${esc(r.created_by||'-')}</td></tr>`).join(''):'<tr><td colspan="7">لا توجد حركات لهذا الشريك في الفترة المحددة</td></tr>';
+}
+function renderTables(){
+  const withdrawals=filteredRows(data.withdrawals,'partner_name');
+  withdrawalsBody.innerHTML=withdrawals.length?withdrawals.map(r=>`<tr><td>${esc(r.withdrawal_date||'')}</td><td>${esc(r.partner_name||'-')}</td><td>${money(r.amount)}</td><td>${esc(r.note||'-')}</td><td>${esc(r.created_by||'-')}</td><td>${canManageTransactions?`<div class="actions"><button onclick="editWithdrawal(${Number(r.id)})">تعديل</button><button class="danger" onclick="deleteWithdrawal(${Number(r.id)})">حذف</button></div>`:'-'}</td></tr>`).join(''):'<tr><td colspan="6">لا توجد سحوبات</td></tr>';
+  const fund=filteredRows(data.fund_rows,'partner_name');
+  fundBody.innerHTML=fund.length?fund.map(r=>`<tr><td>${esc(r.entry_date||'')}</td><td>${esc(r.partner_name||'-')}</td><td>${esc(actionLabel(r.entry_kind))}</td><td>${money(r.amount)}</td><td>${signed(r.delta)}</td><td>${money(r.balance_after)}</td><td>${esc(r.note||'-')}</td><td>${esc(r.created_by||'-')}</td><td>${canManageTransactions&&Number(r.is_auto)!==1?`<div class="actions"><button onclick="editFund(${Number(r.id)})">تعديل</button><button class="danger" onclick="deleteFund(${Number(r.id)})">حذف</button></div>`:(Number(r.is_auto)===1?'<span class="muted">تلقائي</span>':'-')}</td></tr>`).join(''):'<tr><td colspan="9">لا توجد حركات عهدة</td></tr>';
+  const exp=filteredRows(data.expenses,'expense_partner_name');
+  expensesBody.innerHTML=exp.length?exp.map(r=>`<tr><td>${esc(r.expense_date||'')}</td><td>${esc(r.expense_partner_name||'-')}</td><td>${esc(expenseType(r))}</td><td>${money(r.amount)}</td><td>${Number(r.linked_to_order)===1?`أوردر #${esc(r.order_id||'')}`:esc(r.notes||'-')}</td><td>${esc(r.created_by||'-')}</td></tr>`).join(''):'<tr><td colspan="6">لا توجد مصروفات من عهد الشركاء</td></tr>';
+  renderCapital();renderMovements();renderStatementDetail();renderProfitShares();
+}
+
+function fundingTypeLabel(v){return ({general_work:'تشغيل عام لفترة',big_order:'أوردر كبير',trader_batch:'طلبية تاجر'})[v]||v||'-';}
+function profitMethodLabel(v){return ({percent_of_net:'نسبة من صافي الربح',fixed:'ربح ثابت',percent_of_capital:'نسبة على التمويل'})[v]||v||'-';}
+function settlementModeLabel(v){return ({after_full_collection:'بعد التحصيل الكامل',proportional:'حسب نسبة التحصيل',manual:'يدوي / تحت الحساب'})[v]||v||'-';}
+function payoutTypeLabel(v){return ({under_account:'تحت الحساب',capital_return:'رد رأس مال',profit_advance:'دفعة ربح',final_settlement:'تسوية نهائية'})[v]||v||'-';}
+function fillMurabahaSelects(){
+  if(!document.getElementById('murPartner')) return;
+  const partnerOpts=(murabahaData.partners||[]).map(p=>`<option value="${esc(p.name)}">${esc(p.name)}</option>`).join('');
+  murPartner.innerHTML=partnerOpts||'<option value="">لا يوجد شركاء مرابحة</option>';
+  const batchOpts=(murabahaData.batches||[]).map(b=>`<option value="${b.id}" data-trader="${b.trader_id||0}">${esc((b.batch_name||('#'+b.id))+' - '+(b.trader_name||''))}</option>`).join('');
+  murBatchId.innerHTML=batchOpts||'<option value="0">لا توجد طلبيات تجار</option>';
+  murPayoutFunding.innerHTML=(murabahaData.financings||[]).map(f=>`<option value="${f.id}">${esc((f.funding_name||('#'+f.id))+' - '+f.partner_name)}</option>`).join('')||'<option value="">لا توجد تمويلات</option>';
+}
+function toggleMurabahaFields(){
+  if(!document.getElementById('murType')) return;
+  const t=murType.value;
+  document.querySelectorAll('.mur-general').forEach(x=>x.classList.toggle('hidden',t!=='general_work'));
+  document.querySelectorAll('.mur-order').forEach(x=>x.classList.toggle('hidden',t!=='big_order'));
+  document.querySelectorAll('.mur-batch').forEach(x=>x.classList.toggle('hidden',t!=='trader_batch'));
+}
+function toggleMurabahaProfitFields(){
+  if(!document.getElementById('murProfitMethod')) return;
+  const fixed=murProfitMethod.value==='fixed';
+  document.querySelectorAll('.mur-fixed').forEach(x=>x.classList.toggle('hidden',!fixed));
+  document.querySelectorAll('.mur-percent').forEach(x=>x.classList.toggle('hidden',fixed));
+}
+function resetMurabahaForm(){
+  if(!document.getElementById('murEditId')) return;
+  murEditId.value=''; murName.value=''; murType.value='general_work'; murAmount.value=''; murStart.value=today(); murEnd.value=today(); murOrderId.value=''; murWorkingBase.value=''; murProfitMethod.value='percent_of_net'; murProfitPercent.value=''; murFixedProfit.value=''; murSettlementMode.value='after_full_collection'; murStatus.value='open'; murNotes.value=''; murSaveBtn.textContent='حفظ التمويل'; toggleMurabahaFields(); toggleMurabahaProfitFields();
+}
+function editMurabahaFinancing(id){const f=(murabahaData.financings||[]).find(x=>Number(x.id)===Number(id)); if(!f)return; murEditId.value=f.id; murPartner.value=f.partner_name||''; murName.value=f.funding_name||''; murType.value=f.funding_type||'general_work'; murAmount.value=f.amount||''; murStart.value=f.start_date||today(); murEnd.value=f.end_date||''; murOrderId.value=f.order_id||''; murBatchId.value=f.batch_id||''; murWorkingBase.value=f.working_capital_base||''; murProfitMethod.value=f.profit_method||'percent_of_net'; murProfitPercent.value=f.profit_percent||''; murFixedProfit.value=f.fixed_profit||''; murSettlementMode.value=f.settlement_mode||'after_full_collection'; murStatus.value=f.status||'open'; murNotes.value=f.notes||''; murSaveBtn.textContent='حفظ التعديل'; toggleMurabahaFields(); toggleMurabahaProfitFields(); setSection('murabahaPortfolio',false); murabahaPortfolioPanel.scrollIntoView({behavior:'smooth'});}
+async function saveMurabahaFinancing(){if(!canManageMurabaha)return alert('غير مصرح'); const opt=murBatchId.options[murBatchId.selectedIndex]; const body={id:murEditId.value||undefined,partner_name:murPartner.value,funding_name:murName.value,funding_type:murType.value,amount:murAmount.value,start_date:murStart.value,end_date:murEnd.value,order_id:murOrderId.value||0,batch_id:murBatchId.value||0,trader_id:opt?Number(opt.dataset.trader||0):0,profit_method:murProfitMethod.value,profit_percent:murProfitPercent.value||0,fixed_profit:murFixedProfit.value||0,working_capital_base:murWorkingBase.value||0,settlement_mode:murSettlementMode.value,status:murStatus.value,notes:murNotes.value}; await authFetch('/save-murabaha-financing',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}); resetMurabahaForm(); await loadAll();}
+async function deleteMurabahaFinancing(id){if(!confirm('حذف تمويل المرابحة؟ لا يمكن حذفه لو عليه دفعات.'))return; await authFetch('/delete-murabaha-financing/'+id,{method:'DELETE'}); await loadAll();}
+async function saveMurabahaPayout(){if(!canManageMurabaha)return alert('غير مصرح'); const body={financing_id:murPayoutFunding.value,payout_type:murPayoutType.value,amount:murPayoutAmount.value,payout_date:murPayoutDate.value||today(),note:murPayoutNote.value}; await authFetch('/save-murabaha-payout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}); murPayoutAmount.value=''; murPayoutNote.value=''; await loadAll();}
+async function deleteMurabahaPayout(id){if(!confirm('حذف دفعة الممول؟'))return; await authFetch('/delete-murabaha-payout/'+id,{method:'DELETE'}); await loadAll();}
+function renderMurabahaPortfolio(){
+  if(!document.getElementById('murabahaPortfolioPanel')) return;
+  murabahaFormWrap.classList.toggle('hidden',!canManageMurabaha);
+  const t=murabahaData.totals||{}; murStatCapital.textContent=money(t.capital_open||0); murStatProfit.textContent=money(t.expected_profit||0); murStatPayable.textContent=money(t.currently_payable||0); murStatPaid.textContent=money(t.paid_to_partners||0); murStatRemain.textContent=money(t.remaining_due||0);
+  murabahaCards.innerHTML=(murabahaData.financings||[]).map(f=>`<div class="module-card"><div style="display:flex;justify-content:space-between;gap:8px;align-items:start"><h3>${esc(f.funding_name||('#'+f.id))}</h3><span class="pill">${esc(f.status||'open')}</span></div><div class="metric"><span>الممول</span><b>${esc(f.partner_name||'-')}</b></div><div class="metric"><span>النوع</span><b>${fundingTypeLabel(f.funding_type)}</b></div><div class="metric"><span>مرتبط بـ</span><b>${esc(f.base?.label||'-')}</b></div><div class="metric"><span>مبلغ التمويل</span><b>${money(f.amount)}</b></div><div class="metric"><span>الفترة</span><b>${esc((f.start_date||'-')+(f.funding_type==='general_work'?' → '+(f.end_date||'-'):''))}</b></div><div class="metric"><span>صافي الربح المرتبط</span><b class="${classAmount(f.base?.net_profit)}">${money(f.base?.net_profit)}</b></div><div class="metric"><span>نسبة تمويله</span><b>${percent((f.funding_ratio||0)*100)}</b></div><div class="metric"><span>طريقة الربح</span><b>${profitMethodLabel(f.profit_method)}</b></div><div class="metric"><span>ربحه المتوقع</span><b>${money(f.profit_amount)}</b></div><div class="metric"><span>إجمالي المستحق</span><b>${money(f.total_due)}</b></div><div class="metric"><span>نسبة التحصيل</span><b>${percent((f.base?.collection_ratio||0)*100)}</b></div><div class="metric"><span>متاح صرفه الآن</span><b>${money(f.currently_payable)}</b></div><div class="metric"><span>مدفوع له</span><b>${money(f.paid_to_partner)}</b></div><div class="metric"><span>متبقي له</span><b class="negative">${money(f.remaining_due)}</b></div><div class="actions" style="justify-content:flex-start;margin-top:10px">${canManageMurabaha?`<button onclick="editMurabahaFinancing(${Number(f.id)})">تعديل</button><button class="danger" onclick="deleteMurabahaFinancing(${Number(f.id)})">حذف</button>`:''}</div></div>`).join('')||'<div class="muted">لا توجد تمويلات مرابحة حتى الآن.</div>';
+  const finById=Object.fromEntries((murabahaData.financings||[]).map(f=>[Number(f.id),f]));
+  murabahaPayoutsBody.innerHTML=(murabahaData.payouts||[]).map(p=>`<tr><td>${esc(p.payout_date||'')}</td><td>${esc(p.partner_name||'-')}</td><td>${esc(finById[Number(p.financing_id)]?.funding_name||('#'+p.financing_id))}</td><td>${payoutTypeLabel(p.payout_type)}</td><td>${money(p.amount)}</td><td>${esc(p.note||'-')}</td><td>${esc(p.created_by||'-')}</td><td>${canManageMurabaha?`<button class="danger" onclick="deleteMurabahaPayout(${Number(p.id)})">حذف</button>`:'-'}</td></tr>`).join('')||'<tr><td colspan="8">لا توجد دفعات للممولين</td></tr>';
+  fillMurabahaSelects(); toggleMurabahaFields(); toggleMurabahaProfitFields();
+}
+
+function renderAll(){togglePartnerTypeFields();fillLinkedAdminOptions(linkedAdminUsername?.value||'');togglePartnerAccountFields();welcome.textContent=`${user.full_name||user.username} | ${roleLabel(user.role)}`;fillPartnerSelects();renderStats();renderManager();renderStatements();renderTabs();renderTables();renderMurabahaPortfolio();transactionsPanel.classList.toggle('hidden',!canManageTransactions);capitalPanel.classList.toggle('hidden',!canManageTransactions&&!data.capital_rows.length);}
+async function loadAll(){const results=await Promise.all([authFetch('/partners-dashboard-data'+qs()),authFetch('/murabaha-financings-data')]);data=results[0];murabahaData=results[1]||murabahaData;data.capital_rows=data.capital_rows||[];data.settlements=data.settlements||[];data.active_users=data.active_users||[];data.totals=data.totals||{};murabahaData.totals=murabahaData.totals||{};renderAll();}
+function togglePartnerTypeFields(){const isM=document.getElementById('partnerType').value==='murabaha';partnerShareWrap.classList.toggle('hidden',isM);partnerProfitRateWrap.classList.toggle('hidden',!isM);if(isM)partnerShare.value=0;}
+function resetPartnerForm(){partnerEditId.value='';partnerName.value='';partnerAccountType.value='external';fillLinkedAdminOptions('');document.getElementById('partnerType').value='equity';partnerShare.value='';partnerProfitRate.value='';partnerPhone.value='';partnerNotes.value='';togglePartnerTypeFields();togglePartnerAccountFields();savePartnerBtn.textContent='إضافة شريك';}
+function editPartner(id){const p=data.partners.find(x=>Number(x.id)===Number(id));if(!p)return;partnerEditId.value=p.id;partnerName.value=p.name||'';partnerAccountType.value=String(p.partner_account_type||'external')==='admin'?'admin':'external';fillLinkedAdminOptions(p.linked_admin_username||'');document.getElementById('partnerType').value=getPartnerType(p);partnerShare.value=p.share_percent||'';partnerProfitRate.value=p.profit_rate_percent||'';partnerPhone.value=p.phone||'';partnerNotes.value=p.notes||'';togglePartnerTypeFields();togglePartnerAccountFields();savePartnerBtn.textContent='حفظ التعديل';setSection('manager',false);window.scrollTo({top:partnerManager.offsetTop-15,behavior:'smooth'});}
+async function savePartner(){if(!canManagePartners)return alert('غير مصرح');const body={id:partnerEditId.value||undefined,name:partnerName.value.trim(),partner_account_type:partnerAccountType.value,linked_admin_username:partnerAccountType.value==='admin'?linkedAdminUsername.value:'',partner_type:document.getElementById('partnerType').value,share_percent:document.getElementById('partnerType').value==='murabaha'?0:(partnerShare.value||0),profit_rate_percent:partnerProfitRate.value||0,phone:partnerPhone.value.trim(),notes:partnerNotes.value.trim(),is_active:1};if(!body.name)return alert('اكتب اسم الشريك');if(body.partner_account_type==='admin'&&!body.linked_admin_username)return alert('اختار الأدمن المرتبط بالشريك');await authFetch('/save-financial-partner',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});resetPartnerForm();await loadAll();}
+async function deletePartner(id){if(!canManagePartners)return alert('غير مصرح');const p=data.partners.find(x=>Number(x.id)===Number(id));if(!p)return;if(!confirm(`حذف الشريك ${p.name} نهائيًا من قائمة الشركاء؟\nالسجلات القديمة لن تُحذف حتى تظل الحسابات صحيحة.`))return;await authFetch('/delete-financial-partner/'+id,{method:'DELETE'});await loadAll();}
+function resetCapitalForm(){capitalEditId.value='';capitalMode.value='add';capitalAmount.value='';capitalNote.value='';capitalDate.value=today();saveCapitalBtn.textContent='حفظ حركة رأس المال';}
+function editCapital(id){const r=data.capital_rows.find(x=>Number(x.id)===Number(id));if(!r)return;capitalEditId.value=r.id;capitalPartner.value=r.partner_name||'';capitalMode.value=r.entry_kind==='sub'?'sub':'add';capitalAmount.value=r.amount||Math.abs(Number(r.delta||0))||'';capitalDate.value=r.entry_date||today();capitalNote.value=r.note||'';saveCapitalBtn.textContent='حفظ التعديل';setSection('capital',false);window.scrollTo({top:capitalPanel.offsetTop-15,behavior:'smooth'});}
+async function saveCapitalEntry(){if(!canManageTransactions)return alert('غير مصرح');const body={partner_name:capitalPartner.value,entry_mode:capitalMode.value,amount:capitalAmount.value,entry_date:capitalDate.value||today(),note:capitalNote.value.trim()};if(!canUsePartner(body.partner_name))return alert('اختار شريك موجود في القائمة');if(Number(body.amount)<=0)return alert('اكتب مبلغ صحيح');const id=capitalEditId.value;await authFetch(id?'/update-partner-capital-entry/'+id:'/save-partner-capital-entry',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});resetCapitalForm();await loadAll();}
+async function deleteCapital(id){if(!confirm('حذف حركة رأس المال؟'))return;await authFetch('/delete-partner-capital-entry/'+id,{method:'DELETE'});await loadAll();}
+function resetWithdrawalForm(){withdrawalEditId.value='';withdrawalAmount.value='';withdrawalNote.value='';withdrawalDate.value=today();saveWithdrawalBtn.textContent='حفظ السحب/الصرف';}
+function editWithdrawal(id){const r=data.withdrawals.find(x=>Number(x.id)===Number(id));if(!r)return;withdrawalEditId.value=r.id;withdrawalPartner.value=r.partner_name||'';withdrawalAmount.value=r.amount||'';withdrawalDate.value=r.withdrawal_date||today();withdrawalNote.value=r.note||'';saveWithdrawalBtn.textContent='حفظ التعديل';setSection('transactions',false);window.scrollTo({top:transactionsPanel.offsetTop-15,behavior:'smooth'});}
+async function saveWithdrawal(){if(!canManageTransactions)return alert('غير مصرح');const body={partner_name:withdrawalPartner.value,amount:withdrawalAmount.value,withdrawal_date:withdrawalDate.value||today(),note:withdrawalNote.value.trim()};if(!canUsePartner(body.partner_name))return alert('اختار شريك موجود في القائمة');if(Number(body.amount)<=0)return alert('اكتب مبلغ صحيح');const id=withdrawalEditId.value;await authFetch(id?'/update-partner-withdrawal/'+id:'/save-partner-withdrawal',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});resetWithdrawalForm();await loadAll();}
+async function deleteWithdrawal(id){if(!confirm('حذف سحب الشريك؟'))return;await authFetch('/delete-partner-withdrawal/'+id,{method:'DELETE'});await loadAll();}
+function resetFundForm(){fundEditId.value='';fundMode.value='add';fundAmount.value='';fundNote.value='';fundDate.value=today();saveFundBtn.textContent='حفظ حركة العهدة';}
+function editFund(id){const r=data.fund_rows.find(x=>Number(x.id)===Number(id));if(!r||Number(r.is_auto)===1)return;fundEditId.value=r.id;fundPartner.value=r.partner_name||'';fundMode.value=['add','sub','set'].includes(String(r.entry_kind||''))?r.entry_kind:(Number(r.delta)>=0?'add':'sub');fundAmount.value=r.amount||Math.abs(Number(r.delta||0))||'';fundDate.value=r.entry_date||today();fundNote.value=r.note||'';saveFundBtn.textContent='حفظ التعديل';setSection('transactions',false);window.scrollTo({top:transactionsPanel.offsetTop-15,behavior:'smooth'});}
+async function saveFundEntry(){if(!canManageTransactions)return alert('غير مصرح');const body={partner_name:fundPartner.value,entry_mode:fundMode.value,amount:fundAmount.value,entry_date:fundDate.value||today(),note:fundNote.value.trim()};if(!canUseFundPartner(body.partner_name))return alert('اختار شريك أساسي موجود في القائمة، شريك المرابحة لا يدخل في عهدة الشغل');if(Number(body.amount)<=0)return alert('اكتب مبلغ صحيح');const id=fundEditId.value;await authFetch(id?'/update-partner-fund-entry/'+id:'/save-partner-fund-entry',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});resetFundForm();await loadAll();}
+async function deleteFund(id){const row=data.fund_rows.find(x=>Number(x.id)===Number(id));if(row&&Number(row.is_auto)===1)return alert('الحركات التلقائية تتحذف من المصروف نفسه');if(!confirm('حذف حركة العهدة؟'))return;await authFetch('/delete-partner-fund-entry/'+id,{method:'DELETE'});await loadAll();}
+async function closeSettlement(){if(!canManageTransactions)return alert('غير مصرح');if(!fromDate.value||!toDate.value)return alert('حدد من تاريخ وإلى تاريخ قبل قفل التسوية');if(!confirm(`قفل/تحديث تسوية الفترة من ${fromDate.value} إلى ${toDate.value}؟\nلو فيه تسوية قديمة لنفس الفترة سيتم تحديثها.`))return;await authFetch('/close-partner-settlement',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({period_from:fromDate.value,period_to:toDate.value,note:settlementNote.value.trim()})});await loadAll();setSection('settlement',false);}
+async function deleteSettlement(id){if(!confirm('حذف بند التسوية؟'))return;await authFetch('/delete-partner-settlement/'+id,{method:'DELETE'});await loadAll();}
+function boot(){initSections();fromDate.value=fromDate.value||monthStart();toDate.value=toDate.value||today();withdrawalDate.value=today();fundDate.value=today();capitalDate.value=today();resetCapitalForm();resetWithdrawalForm();resetFundForm();resetMurabahaForm();if(typeof murPayoutDate!=='undefined')murPayoutDate.value=today();loadAll().catch(e=>alert(e.message||'حدث خطأ'));}
+boot();
+</script>
+<script src="idle_guard.js"></script><script id="auth-flicker-release">(function(){function done(){document.documentElement.classList.remove('auth-loading');document.documentElement.classList.add('auth-ready');}if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',done,{once:true});}else{done();}setTimeout(done,1200);})();</script></body>
+</html>
