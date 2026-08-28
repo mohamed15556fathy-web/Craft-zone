@@ -1,0 +1,24 @@
+{
+  "name": "bag-orders-system",
+  "version": "8.9.0",
+  "description": "Order and inventory system with two-way store sync, unified CZ order codes, branded login (phone/username/email), quick link to the sales-site settings, and a configurable mobile app download link.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "check": "node -c server.js",
+    "health:db": "node professional_health_check.js",
+    "test": "node --test tests/*.test.js",
+    "validate:regression": "node scripts/validate_regression.js"
+  },
+  "engines": {
+    "node": "20.x"
+  },
+  "dependencies": {
+    "archiver": "^7.0.1",
+    "express": "^4.21.2",
+    "multer": "^1.4.5-lts.1",
+    "sqlite3": "^5.1.7",
+    "unzipper": "^0.12.3"
+  }
+}

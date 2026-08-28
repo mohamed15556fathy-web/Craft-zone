@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head><head><script id="auth-flicker-guard">(function(){try{var p=location.pathname.toLowerCase();if(p.endsWith('/login.html')||p==='/'||p===''){return;}if(!localStorage.getItem('token')||!localStorage.getItem('user')){location.replace('login.html');return;}document.documentElement.classList.add('auth-loading');}catch(e){location.replace('login.html');}})();</script><style id="auth-flicker-style">html.auth-loading body{visibility:hidden!important}html.auth-ready body{visibility:visible}</style>
+<meta charset="UTF-8">
+<title>الورشة</title>
+<style>
+
+:root{--bg:#0f172a;--panel:#1e293b;--card:#0b1220;--border:#334155;--text:#f8fafc;--muted:#94a3b8;--cyan:#22d3ee;--green:#22c55e;--red:#ef4444;--warn:#f59e0b;--purple:#a78bfa}
+*{box-sizing:border-box}body{font-family:'Segoe UI',Tahoma,sans-serif;background:var(--bg);color:var(--text);margin:0;padding:22px}.hidden{display:none!important}
+.header,.panel,.stat{background:rgba(30,41,59,.96);border:1px solid var(--border);border-radius:18px;box-shadow:0 18px 40px rgba(0,0,0,.22)}.header{padding:18px 22px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18px}.header h1{margin:0}.muted{color:var(--muted);font-size:13px;line-height:1.7}.toolbar{display:flex;gap:10px;flex-wrap:wrap}button,a.btn{background:transparent;border:1px solid var(--cyan);color:var(--cyan);padding:10px 14px;border-radius:12px;text-decoration:none;cursor:pointer;font-weight:800}.filled{background:var(--cyan);color:#001018}.danger{border-color:rgba(239,68,68,.7);color:#fecaca;background:rgba(239,68,68,.12)}.ok{border-color:rgba(34,197,94,.7);color:#bbf7d0;background:rgba(34,197,94,.10)}.warn{border-color:rgba(245,158,11,.75);color:#fde68a;background:rgba(245,158,11,.12)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px;margin-bottom:18px}.stat{padding:18px}.stat small{color:var(--muted)}.stat b{display:block;font-size:26px;margin-top:8px;color:var(--cyan)}.panel{padding:0;margin-bottom:18px;overflow:hidden}.section-head{padding:16px 18px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;border-bottom:1px solid rgba(51,65,85,.75)}.section-head h2,.section-head h3{margin:0}.section-body{padding:18px}.collapsed .section-body{display:none}.collapsed .section-head{border-bottom:0}.section-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.badge{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;background:#0b1220;border:1px solid var(--border);color:#cbd5e1;font-size:13px}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;align-items:end}label{display:block;margin-bottom:7px;color:#cbd5e1;font-size:14px}input,select,textarea{width:100%;background:#0b1220;border:1px solid var(--border);border-radius:12px;color:#fff;padding:11px 12px}textarea{resize:vertical}.actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}.table-wrap{overflow:auto;border-radius:14px;border:1px solid rgba(51,65,85,.7);margin-top:12px}table{width:100%;border-collapse:collapse;min-width:900px}th,td{padding:10px;border-bottom:1px solid var(--border);text-align:center;vertical-align:top}th{background:#0b1220;color:var(--cyan);position:sticky;top:0}tbody tr:hover{background:rgba(255,255,255,.03)}.cards-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:14px;margin-top:14px}.card{background:#0b1220;border:1px solid var(--border);border-radius:16px;padding:14px}.card h3{margin:0 0 10px}.metric{display:grid;grid-template-columns:1fr auto;gap:8px;padding:8px 0;border-bottom:1px dashed rgba(148,163,184,.25)}.metric:last-child{border-bottom:0}.metric span{color:var(--muted)}.metric b{color:#fff}.positive{color:#bbf7d0!important}.negative{color:#fecaca!important}.note-box{background:#0b1220;border:1px dashed var(--border);border-radius:14px;padding:12px;color:#cbd5e1;line-height:1.8;margin-bottom:18px}.mini-title{margin:18px 0 8px;color:#e2e8f0}.tabs{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}.tab{border-color:var(--border);color:#e2e8f0}.tab.active{border-color:var(--cyan);background:rgba(34,211,238,.12);color:var(--cyan)}.pill{display:inline-block;padding:4px 8px;border-radius:999px;background:#111827;border:1px solid var(--border);font-size:12px;color:#cbd5e1}.filelink{color:#a5f3fc;text-decoration:underline}
+@media(max-width:760px){body{padding:12px}.stat b{font-size:22px}button,a.btn{padding:9px 11px}.table-wrap{margin-inline:-4px}}
+
+.att-present{accent-color:var(--cyan)}
+#attSheet input,#attSheet select{padding:7px 8px;border-radius:9px}
+#attSheet td{vertical-align:middle}
+
+/* ---- v10.0 ---- */
+.pill.daily{border-color:rgba(34,211,238,.6);color:#a5f3fc;background:rgba(34,211,238,.10)}
+.pill.hourly{border-color:rgba(167,139,250,.6);color:#ddd6fe;background:rgba(167,139,250,.12)}
+.pnl{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px}
+.pnl-box{background:#0b1220;border:1px solid var(--border);border-radius:16px;padding:16px}
+.pnl-box small{color:var(--muted);display:block}
+.pnl-box b{display:block;font-size:24px;margin-top:8px}
+.pnl-box.big{grid-column:span 2}
+@media(max-width:760px){.pnl-box.big{grid-column:span 1}}
+.bar-row{display:grid;grid-template-columns:150px 1fr 110px;gap:10px;align-items:center;margin:8px 0;font-size:14px}
+.bar-track{height:12px;border-radius:999px;background:#111827;border:1px solid var(--border);overflow:hidden}
+.bar-fill{height:100%;background:linear-gradient(90deg,#22d3ee,#a78bfa)}
+@media(max-width:600px){.bar-row{grid-template-columns:110px 1fr 90px;font-size:13px}}
+.chk-line{display:flex;align-items:center;gap:9px;padding:11px 12px;background:#0b1220;border:1px solid var(--border);border-radius:12px}
+.chk-line input{width:20px;height:20px;accent-color:var(--cyan)}
+.chk-line label{margin:0;font-size:14px}
+.deficit{border-color:rgba(239,68,68,.55)!important;background:rgba(239,68,68,.08)!important}
+</style>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<link rel="stylesheet" href="mobile.css?v=10.0">
+<script src="mobile.js?v=10.0"></script>
+</head>
+<body class="workshop-page">
+<div class="header">
+  <div>
+    <h1>🛠️ الورشة</h1>
+    <div class="muted">الصنايعية باليومية وبالساعة، السلف، القبض الأسبوعي، مصروفات الورشة، وإنتاجها — بخزنة ورأس مال مستقلين تمامًا عن حسابات المصنع.</div>
+  </div>
+  <div class="toolbar">
+    <a class="btn" href="index.html">🏠 الرئيسية</a>
+    <button onclick="loadAll()">🔄 تحديث</button>
+  </div>
+</div>
+
+<div class="panel">
+  <div class="section-head"><h3>🗓️ الفترة</h3>
+    <div class="section-actions">
+      <button class="tab" onclick="quickRange('week')">الأسبوع ده</button>
+      <button class="tab" onclick="quickRange('month')">الشهر ده</button>
+      <button class="tab" onclick="quickRange('all')">من الأول</button>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="form-grid">
+      <div><label>من تاريخ</label><input type="date" id="fFrom" onchange="loadAll()"></div>
+      <div><label>إلى تاريخ</label><input type="date" id="fTo" onchange="loadAll()"></div>
+      <div><label> </label><button onclick="document.getElementById('fFrom').value='';document.getElementById('fTo').value='';loadAll()">♻️ إلغاء الفلتر</button></div>
+    </div>
+  </div>
+</div>
+
+<div class="grid" id="statsGrid"></div>
+
+<!-- ============ ربح وخسارة الورشة ============ -->
+<div class="panel" id="secPnl">
+  <div class="section-head"><h2>📊 الورشة كسبت ولا خسرت؟</h2>
+    <div class="section-actions"><span class="badge" id="pnlBadge">—</span><button class="tab" onclick="toggleSec('secPnl')">طي / فتح</button></div>
+  </div>
+  <div class="section-body">
+    <div class="note-box">الحساب على الفترة المختارة فوق: <b>إيراد الإنتاج</b> (قيمة الشغلانات اللي استلمتها الورشة) ناقص <b>تكلفة التشغيل</b> (مستحقات الصنايعية + مصروفات الورشة). الأرقام دي بتاعة الورشة لوحدها ومالهاش أي علاقة بأرباح المصنع في صفحة الحسابات.</div>
+    <div class="pnl" id="pnlGrid"></div>
+    <h3 class="mini-title">المصروف راح فين؟</h3>
+    <div id="costBreak"></div>
+  </div>
+</div>
+
+<!-- ============ الصنايعية ============ -->
+<div class="panel" id="secWorkers">
+  <div class="section-head"><h2>👷 الصنايعية</h2>
+    <div class="section-actions"><span class="badge" id="workersBadge">0</span><button class="tab" onclick="toggleSec('secWorkers')">طي / فتح</button></div>
+  </div>
+  <div class="section-body">
+    <div id="workerForm" class="hidden">
+      <div class="note-box">في صنايعية بتتحاسب <b>باليومية</b> وفي بتتحاسب <b>بالساعة</b> — اختار نظام كل واحد هنا، والسيستم هيحسب مستحقه بالطريقة الصح. في الحالتين القبض بيفضل آخر الأسبوع من قسم «السلف والقبض».</div>
+      <div class="form-grid">
+        <input type="hidden" id="wId">
+        <div><label>اسم الصنايعي *</label><input id="wName" placeholder="مثال: أسطى رمضان"></div>
+        <div><label>الشغلانة</label><input id="wJob" placeholder="تصنيع / تركيب يد / قص"></div>
+        <div><label>نظام الحساب *</label><select id="wPayType" onchange="togglePayFields()">
+          <option value="daily">باليومية</option>
+          <option value="hourly">بالساعة</option>
+        </select></div>
+        <div id="wWageBox"><label>اليومية (جنيه) *</label><input id="wWage" type="number" min="0" step="1"></div>
+        <div id="wRateBox" class="hidden"><label>سعر الساعة (جنيه) *</label><input id="wRate" type="number" min="0" step="0.5"></div>
+        <div id="wHoursBox" class="hidden"><label>ساعات اليوم المعتادة</label><input id="wHours" type="number" min="0" step="0.5" value="8"></div>
+        <div><label>التليفون</label><input id="wPhone" type="tel" dir="ltr" inputmode="numeric"></div>
+        <div><label>تاريخ الاستلام</label><input id="wStart" type="date"></div>
+        <div><label>الحالة</label><select id="wActive"><option value="1">شغّال</option><option value="0">موقوف</option></select></div>
+        <div style="grid-column:1/-1"><label>ملاحظات</label><input id="wNotes"></div>
+      </div>
+      <div class="actions" style="margin-top:12px;justify-content:flex-start">
+        <button class="filled" onclick="saveWorker()">💾 حفظ</button>
+        <button onclick="resetWorker()">مسح</button>
+      </div>
+    </div>
+    <div class="cards-grid" id="workerCards"></div>
+  </div>
+</div>
+
+<!-- ============ تسجيل الشغل ============ -->
+<div class="panel" id="secAtt">
+  <div class="section-head"><h2>📋 تسجيل شغل اليوم</h2>
+    <div class="section-actions"><button class="tab" onclick="toggleSec('secAtt')">طي / فتح</button></div>
+  </div>
+  <div class="section-body">
+    <div id="attForm" class="hidden">
+      <div class="note-box">اختار اليوم وعلّم مين حضر. اللي شغّال <b>باليومية</b> بتحدّدله يوم كامل ولا نص ولا ربع، واللي شغّال <b>بالساعة</b> بتكتبله عدد الساعات. السعر بيتاخد من ملف الصنايعي وتقدر تعدّله لأي حد في نفس السطر.</div>
+      <div class="form-grid">
+        <div><label>تاريخ اليوم</label><input type="date" id="attDate" onchange="renderAttendanceSheet()"></div>
+        <div><label> </label><button class="filled" onclick="saveAttendanceSheet()">💾 حفظ شغل اليوم</button></div>
+      </div>
+      <div class="table-wrap"><table id="attSheet"><thead><tr>
+        <th>الصنايعي</th><th>حضر؟</th><th>النظام</th><th>يوم / ساعات</th><th>السعر</th><th>إضافي</th><th>خصم</th><th>الصافي</th><th>ملاحظة</th>
+      </tr></thead><tbody id="attSheetBody"></tbody></table></div>
+    </div>
+    <h3 class="mini-title">سجل الشغل في الفترة</h3>
+    <div class="table-wrap"><table><thead><tr>
+      <th>التاريخ</th><th>الصنايعي</th><th>النظام</th><th>يوم / ساعات</th><th>السعر</th><th>إضافي</th><th>خصم</th><th>المستحق</th><th>ملاحظة</th><th>تحكم</th>
+    </tr></thead><tbody id="attBody"></tbody></table></div>
+  </div>
+</div>
+
+<!-- ============ السلف والقبض ============ -->
+<div class="panel" id="secPay">
+  <div class="section-head"><h2>💵 السلف والقبض الأسبوعي</h2>
+    <div class="section-actions"><button class="tab" onclick="toggleSec('secPay')">طي / فتح</button></div>
+  </div>
+  <div class="section-body">
+    <div id="payForms" class="hidden">
+      <h3 class="mini-title">➕ سلفة</h3>
+      <div class="form-grid">
+        <div><label>الصنايعي *</label><select id="aWorker"></select></div>
+        <div><label>المبلغ *</label><input id="aAmount" type="number" min="0" step="1"></div>
+        <div><label>التاريخ</label><input id="aDate" type="date"></div>
+        <div><label>ملاحظة</label><input id="aNote"></div>
+        <div><label> </label><button class="filled" onclick="saveAdvance()">💾 سجّل السلفة</button></div>
+      </div>
+
+      <h3 class="mini-title">💰 قبض آخر الأسبوع</h3>
+      <div class="note-box" id="payoutHint">اختار الصنايعي والفترة، والسيستم هيحسب المستحق (يومية أو ساعات) ويخصم السلف تلقائي.</div>
+      <div class="form-grid">
+        <div><label>الصنايعي *</label><select id="pWorker" onchange="loadPayoutSuggestion()"></select></div>
+        <div><label>من تاريخ</label><input id="pFrom" type="date" onchange="loadPayoutSuggestion()"></div>
+        <div><label>إلى تاريخ</label><input id="pTo" type="date" onchange="loadPayoutSuggestion()"></div>
+        <div><label>مستحق الفترة</label><input id="pEarned" type="number" readonly></div>
+        <div><label>سلف الفترة</label><input id="pAdvances" type="number" readonly></div>
+        <div><label>مكافأة</label><input id="pBonus" type="number" value="0" oninput="recalcPayout()"></div>
+        <div><label>خصم</label><input id="pDeduct" type="number" value="0" oninput="recalcPayout()"></div>
+        <div><label>الصافي المقبوض *</label><input id="pNet" type="number"></div>
+        <div><label>تاريخ القبض</label><input id="pDate" type="date"></div>
+        <div><label>ملاحظة</label><input id="pNote"></div>
+        <div><label> </label><button class="filled" onclick="savePayout()">💾 سجّل القبض</button></div>
+      </div>
+    </div>
+
+    <h3 class="mini-title">سجل السلف</h3>
+    <div class="table-wrap"><table><thead><tr><th>التاريخ</th><th>الصنايعي</th><th>المبلغ</th><th>ملاحظة</th><th>تحكم</th></tr></thead><tbody id="advBody"></tbody></table></div>
+    <h3 class="mini-title">سجل القبض</h3>
+    <div class="table-wrap"><table><thead><tr><th>تاريخ القبض</th><th>الصنايعي</th><th>الفترة</th><th>مستحق</th><th>سلف</th><th>مكافأة</th><th>خصم</th><th>الصافي</th><th>تحكم</th></tr></thead><tbody id="payBody"></tbody></table></div>
+  </div>
+</div>
+
+<!-- ============ مصروفات الورشة (خامات + مصاريف في حاجة واحدة) ============ -->
+<div class="panel" id="secCost">
+  <div class="section-head"><h2>🧰 مصروفات الورشة</h2>
+    <div class="section-actions"><span class="badge" id="costBadge">0</span><button class="tab" onclick="toggleSec('secCost')">طي / فتح</button></div>
+  </div>
+  <div class="section-body">
+    <div id="costForms" class="hidden">
+      <div class="note-box">فورم واحدة لكل حاجة بتتصرف في الورشة. اختار <b>البند</b> — خامة، كهربا، إيجار، نقل، صيانة، أي حاجة — وحط المبلغ، والكمية والسعر لو البند ليه كمية. لو البند مش في القائمة اختار «➕ بند جديد» واكتبه، وهيفضل موجود في القائمة بعد كده.</div>
+      <div class="form-grid">
+        <input type="hidden" id="cstId">
+        <div><label>البند *</label><select id="cstType" onchange="onCostTypeChange()"></select></div>
+        <div id="cstNewBox" class="hidden"><label>اسم البند الجديد *</label><input id="cstNewType" placeholder="مثال: صيانة ماكينة"></div>
+        <div><label>الوصف / الصنف</label><input id="cstItem" placeholder="غراء / فاتورة شهر 8 / قطع غيار"></div>
+        <div><label>الكمية</label><input id="cstQty" type="number" step="0.01" oninput="calcCost()"></div>
+        <div><label>الوحدة</label><input id="cstUnit" placeholder="كيلو / لتر / علبة"></div>
+        <div><label>سعر الوحدة</label><input id="cstPrice" type="number" step="0.01" oninput="calcCost()"></div>
+        <div><label>الإجمالي *</label><input id="cstTotal" type="number" step="0.01"></div>
+        <div><label>التاريخ</label><input id="cstDate" type="date"></div>
+        <div><label>المورد / الجهة</label><input id="cstSupplier"></div>
+        <div><label>ملاحظة</label><input id="cstNote"></div>
+        <div><label> </label><button class="filled" onclick="saveCost()">💾 حفظ المصروف</button></div>
+        <div><label> </label><button onclick="resetCost()">مسح الفورم</button></div>
+      </div>
+    </div>
+    <div class="table-wrap"><table><thead><tr><th>التاريخ</th><th>البند</th><th>الوصف</th><th>الكمية</th><th>سعر الوحدة</th><th>الإجمالي</th><th>المورد</th><th>ملاحظة</th><th>تحكم</th></tr></thead><tbody id="costBody"></tbody></table></div>
+  </div>
+</div>
+
+<!-- ============ إنتاج الورشة ============ -->
+<div class="panel" id="secProd">
+  <div class="section-head"><h2>🧾 إنتاج الورشة</h2>
+    <div class="section-actions"><span class="badge" id="prodBadge">0</span><button class="tab" onclick="toggleSec('secProd')">طي / فتح</button></div>
+  </div>
+  <div class="section-body">
+    <div id="prodForms" class="hidden">
+      <div class="note-box">سجّل هنا كل شغلانة الورشة استلمتها: <b>اسم الشغلانة</b>، <b>عدد الشنط</b>، وقيمتها والمكسب فيها. لو الشغلانة ليها أوردر في صفحة الأوردرات اختار رقمه من القائمة — ده <b>مرجع للتوثيق بس</b>، مش هيغيّر أي حاجة في الأوردر ولا في حسابات المصنع. علّم «اتحصلت الفلوس» لو الفلوس دخلت خزنة الورشة فعلاً.</div>
+      <div class="form-grid">
+        <input type="hidden" id="prId">
+        <div><label>التاريخ</label><input id="prDate" type="date"></div>
+        <div><label>اسم الشغلانة *</label><input id="prJob" placeholder="مثال: شنط كرافت مقاس 30 لمحل النور"></div>
+        <div><label>عدد الشنط *</label><input id="prQty" type="number" min="0" step="1" oninput="calcProd()"></div>
+        <div><label>سعر الشنطة</label><input id="prPrice" type="number" step="0.01" oninput="calcProd()"></div>
+        <div><label>إجمالي قيمة الشغلانة *</label><input id="prTotal" type="number" step="0.01" oninput="calcProfit()"></div>
+        <div><label>تكلفة الشغلانة (تقديري)</label><input id="prCost" type="number" step="0.01" oninput="calcProfit()"></div>
+        <div><label>المكسب فيها *</label><input id="prProfit" type="number" step="0.01"></div>
+        <div><label>الحالة</label><select id="prStatus">
+          <option value="تحت التنفيذ">تحت التنفيذ</option>
+          <option value="خلصت">خلصت</option>
+          <option value="اتسلمت">اتسلمت</option>
+        </select></div>
+        <div><label>بحث في الأوردرات</label><input id="prOrderSearch" placeholder="رقم أوردر أو اسم عميل" oninput="filterOrders()"></div>
+        <div><label>رقم الأوردر (اختياري)</label><select id="prOrder"></select></div>
+        <div style="grid-column:1/-1"><div class="chk-line"><input type="checkbox" id="prCollected"><label for="prCollected">💰 اتحصلت الفلوس ودخلت خزنة الورشة</label></div></div>
+        <div style="grid-column:1/-1"><label>ملاحظة</label><input id="prNote"></div>
+        <div><label> </label><button class="filled" onclick="saveProduction()">💾 حفظ الشغلانة</button></div>
+        <div><label> </label><button onclick="resetProduction()">مسح الفورم</button></div>
+      </div>
+    </div>
+    <div class="table-wrap"><table><thead><tr><th>التاريخ</th><th>الشغلانة</th><th>الأوردر</th><th>عدد الشنط</th><th>سعر الشنطة</th><th>القيمة</th><th>التكلفة</th><th>المكسب</th><th>الحالة</th><th>اتحصلت؟</th><th>تحكم</th></tr></thead><tbody id="prodBody"></tbody></table></div>
+  </div>
+</div>
+
+<!-- ============ خزنة الورشة ============ -->
+<div class="panel" id="secCash">
+  <div class="section-head"><h2>🏦 خزنة الورشة ورأس مالها</h2>
+    <div class="section-actions"><span class="badge" id="cashBadge">0</span><button class="tab" onclick="toggleSec('secCash')">طي / فتح</button></div>
+  </div>
+  <div class="section-body">
+    <div class="note-box">خزنة الورشة مستقلة تمامًا. رأس المال هو الفلوس اللي بتحطها في الورشة، وكل سلفة أو قبض أو مصروف بينزل منها وتحصيل الإنتاج بيدخلها. <b>الرصيد ممكن يبقى بالسالب عادي</b> — يعني الورشة صرفت أكتر من اللي دخلها، والسيستم هيسجل الحركة عادي ويوريك العجز بالأحمر. مالهاش أي علاقة بسيولة المصنع في صفحة الحسابات.</div>
+    <div id="cashForm" class="hidden">
+      <div class="form-grid">
+        <div><label>نوع الحركة</label><select id="cKind">
+          <option value="capital_in">➕ إضافة رأس مال</option>
+          <option value="capital_out">➖ سحب من رأس المال</option>
+          <option value="adjust_in">تسوية بالزيادة</option>
+          <option value="adjust_out">تسوية بالنقص</option>
+        </select></div>
+        <div><label>المبلغ *</label><input id="cAmount" type="number" step="0.01"></div>
+        <div><label>التاريخ</label><input id="cDate" type="date"></div>
+        <div><label>ملاحظة</label><input id="cNote"></div>
+        <div><label> </label><button class="filled" onclick="saveCash()">💾 حفظ</button></div>
+      </div>
+    </div>
+    <div class="table-wrap"><table><thead><tr><th>التاريخ</th><th>الحركة</th><th>داخل</th><th>خارج</th><th>الرصيد بعدها</th><th>ملاحظة</th><th>تحكم</th></tr></thead><tbody id="cashBody"></tbody></table></div>
+  </div>
+</div>
+
+<!-- ============ كشف حساب ============ -->
+<div class="panel" id="secStatement">
+  <div class="section-head"><h2>📄 كشف حساب صنايعي</h2>
+    <div class="section-actions"><button class="tab" onclick="toggleSec('secStatement')">طي / فتح</button></div>
+  </div>
+  <div class="section-body">
+    <div class="form-grid">
+      <div><label>الصنايعي</label><select id="sWorker" onchange="loadStatement()"></select></div>
+      <div><label>من</label><input id="sFrom" type="date" onchange="loadStatement()"></div>
+      <div><label>إلى</label><input id="sTo" type="date" onchange="loadStatement()"></div>
+      <div><label> </label><button onclick="printStatement()">🖨️ طباعة</button></div>
+    </div>
+    <div id="statementBox"></div>
+  </div>
+</div>
+
+<script>
+const token=localStorage.getItem('token'); const user=JSON.parse(localStorage.getItem('user')||'null');
+if(!token||!user) location.href='login.html';
+function isSuper(){return user.username==='admin'||user.role==='super_admin';}
+function hasPerm(k){return isSuper()||Number(user[k]||0)===1;}
+if(!hasPerm('perm_view_workshop')&&!hasPerm('perm_manage_workshop')) location.href='index.html';
+
+let D={workers:[],summary:[],attendance:[],advances:[],payouts:[],costs:[],production:[],cash_log:[],totals:{},cost_types:[],can:{}};
+let ORDERS=[];
+function authFetch(url,opts={}){opts.headers=Object.assign({},opts.headers||{},{Authorization:'Bearer '+token});
+  return fetch(url,opts).then(async r=>{const d=await r.json().catch(()=>({}));
+    if(r.status===401){localStorage.clear();location.href='login.html';throw new Error('unauthorized');}
+    if(!r.ok)throw new Error(d.error||'حصل خطأ');return d;});}
+function jpost(url,body){return authFetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});}
+function jdel(url){return authFetch(url,{method:'DELETE'});}
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const money=v=>(Number(v)||0).toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:2});
+const $=id=>document.getElementById(id);
+const today=()=>new Date().toISOString().slice(0,10);
+const NEW_TYPE='__new__';
+function toggleSec(id){const el=$(id);el.classList.toggle('collapsed');try{localStorage.setItem('ws_'+id,el.classList.contains('collapsed')?'1':'0');}catch(e){}}
+function restoreSecs(){['secPnl','secWorkers','secAtt','secPay','secCost','secProd','secCash','secStatement'].forEach(id=>{try{if(localStorage.getItem('ws_'+id)==='1')$(id).classList.add('collapsed');}catch(e){}});}
+function qs(){const f=$('fFrom').value,t=$('fTo').value;const p=[];if(f)p.push('from='+f);if(t)p.push('to='+t);return p.length?'?'+p.join('&'):'';}
+function quickRange(kind){const n=new Date();let f='',t=today();
+  if(kind==='week'){const d=new Date(n);d.setDate(d.getDate()-6);f=d.toISOString().slice(0,10);}
+  else if(kind==='month'){f=t.slice(0,8)+'01';}
+  else {f='';t='';}
+  $('fFrom').value=f;$('fTo').value=t;loadAll();}
+
+/* ===================== الإحصائيات ===================== */
+function statCard(label,value,hint,cls){return `<div class="stat"><small>${label}</small><b class="${cls||''}">${value}</b>${hint?`<div class="muted" style="margin-top:6px">${hint}</div>`:''}</div>`;}
+function renderStats(){const t=D.totals||{};
+  const bal=Number(t.cash_balance)||0;
+  $('statsGrid').innerHTML=[
+    statCard('رصيد خزنة الورشة',money(bal)+' ج',bal<0?'عجز — الورشة صرفت أكتر من اللي دخلها':'رأس مال داخل '+money(t.capital_in), bal<0?'negative':'positive'),
+    statCard('صافي ربح الورشة',money(t.net_profit)+' ج','إيراد '+money(t.revenue)+' − تشغيل '+money(t.operating_cost), Number(t.net_profit)>=0?'positive':'negative'),
+    statCard('إنتاج الفترة',money(t.production_qty)+' شنطة',(t.production_jobs||0)+' شغلانة بقيمة '+money(t.revenue)+' ج'),
+    statCard('مستحق للصنايعية',money(t.workers_due),'اللي لسه ليهم عندك'),
+    statCard('مستحق الفترة',money(t.earned),money(t.period_days)+' يوم + '+money(t.period_hours)+' ساعة'),
+    statCard('سلف الفترة',money(t.advances),'مدفوعة تحت حساب الشغل'),
+    statCard('مقبوض الفترة',money(t.payouts),'قبض الصنايعية'),
+    statCard('مصروفات الورشة',money(t.costs),'خامات وكهربا وكل البنود'),
+    statCard('تكلفة تشغيل الورشة',money(t.operating_cost),'مستحقات الصنايعية + المصروفات'),
+    statCard('إجمالي الكاش الخارج',money(t.cash_out),'سلف + قبض + مصروفات'),
+  ].join('');
+  $('workersBadge').textContent=(t.workers_count||0)+' شغّال ('+(t.workers_daily||0)+' يومية / '+(t.workers_hourly||0)+' ساعة)';
+  $('cashBadge').textContent=money(bal)+' ج';
+  $('costBadge').textContent=(D.costs||[]).length+' حركة';
+  $('prodBadge').textContent=(D.production||[]).length+' شغلانة';
+}
+
+/* ===================== ربح وخسارة ===================== */
+function renderPnl(){const t=D.totals||{};
+  const rev=Number(t.revenue)||0, lab=Number(t.earned)||0, cst=Number(t.costs)||0;
+  const op=Number(t.operating_cost)||0, net=Number(t.net_profit)||0;
+  const margin=rev>0?Math.round((net/rev)*1000)/10:0;
+  const win=net>=0;
+  $('pnlBadge').textContent = rev===0&&op===0 ? 'مفيش بيانات في الفترة دي' : (win?'مكسب '+money(net)+' ج':'خسارة '+money(Math.abs(net))+' ج');
+  $('pnlGrid').innerHTML=[
+    `<div class="pnl-box"><small>إيراد الإنتاج</small><b class="positive">${money(rev)} ج</b><div class="muted">${money(t.production_qty)} شنطة في ${(t.production_jobs||0)} شغلانة</div></div>`,
+    `<div class="pnl-box"><small>مستحقات الصنايعية</small><b class="negative">${money(lab)} ج</b><div class="muted">${money(t.period_days)} يوم + ${money(t.period_hours)} ساعة</div></div>`,
+    `<div class="pnl-box"><small>مصروفات الورشة</small><b class="negative">${money(cst)} ج</b><div class="muted">خامات وكهربا وباقي البنود</div></div>`,
+    `<div class="pnl-box"><small>إجمالي تكلفة التشغيل</small><b class="negative">${money(op)} ج</b><div class="muted">صنايعية + مصروفات</div></div>`,
+    `<div class="pnl-box big ${win?'':'deficit'}"><small>${win?'✅ الورشة كسبت':'⚠️ الورشة خسرت'}</small><b class="${win?'positive':'negative'}">${money(Math.abs(net))} ج</b>
+      <div class="muted">هامش ${margin}% من الإيراد · المكسب اللي أنت كاتبه على الشغلانات ${money(t.declared_profit)} ج · اتحصل فعلاً ${money(t.revenue_collected)} ج</div></div>`,
+  ].join('');
+
+  const by=t.costs_by_type||{};
+  const entries=Object.entries(by).sort((a,b)=>b[1]-a[1]);
+  const totalAll=entries.reduce((a,e)=>a+Number(e[1]||0),0)+lab;
+  const rows=[['أجور الصنايعية',lab],...entries].filter(r=>Number(r[1])>0);
+  $('costBreak').innerHTML=rows.length?rows.map(([k,v])=>{
+    const pct=totalAll>0?Math.round((Number(v)/totalAll)*100):0;
+    return `<div class="bar-row"><span>${esc(k)}</span><div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div><b>${money(v)} ج · ${pct}%</b></div>`;
+  }).join(''):'<div class="muted">مفيش مصروفات مسجلة في الفترة دي.</div>';
+}
+
+/* ===================== الصنايعية ===================== */
+function payPill(pt){return pt==='hourly'?'<span class="pill hourly">بالساعة</span>':'<span class="pill daily">باليومية</span>';}
+function togglePayFields(){const hourly=$('wPayType').value==='hourly';
+  $('wWageBox').classList.toggle('hidden',hourly);
+  $('wRateBox').classList.toggle('hidden',!hourly);
+  $('wHoursBox').classList.toggle('hidden',!hourly);}
+
+function renderWorkers(){
+  $('workerCards').innerHTML=(D.summary||[]).map(w=>{
+    const hourly=w.pay_type==='hourly';
+    return `<div class="card">
+      <h3>${esc(w.name)} ${payPill(w.pay_type)} ${w.is_active?'':'<span class="pill">موقوف</span>'}</h3>
+      <div class="muted">${esc(w.job_title||'-')} · ${hourly?('سعر الساعة '+money(w.hourly_rate)+' ج'):('يومية '+money(w.daily_wage)+' ج')} ${w.phone?'· '+esc(w.phone):''}</div>
+      <div class="metric"><span>${hourly?'ساعات الفترة':'أيام الفترة'}</span><b>${money(hourly?w.period_hours:w.period_days)}</b></div>
+      <div class="metric"><span>مستحق الفترة</span><b>${money(w.period_earned)}</b></div>
+      <div class="metric"><span>سلف الفترة</span><b>${money(w.period_advances)}</b></div>
+      <div class="metric"><span>مقبوض الفترة</span><b>${money(w.period_paid)}</b></div>
+      <div class="metric"><span>الرصيد الكلي</span><b class="${Number(w.balance)>=0?'positive':'negative'}">${money(w.balance)}</b></div>
+      ${D.can.manage?`<div class="actions" style="margin-top:10px">
+        <button onclick='editWorker(${JSON.stringify(w.id)})'>✏️ تعديل</button>
+        <button class="danger" onclick='delWorker(${JSON.stringify(w.id)})'>🗑️ حذف</button>
+      </div>`:''}
+    </div>`;}).join('')||'<div class="muted">لسه مفيش صنايعية. ضيف أول واحد من الفورم فوق.</div>';
+  const opts=(D.workers||[]).filter(w=>Number(w.is_active||1)===1).map(w=>`<option value="${w.id}">${esc(w.name)}</option>`).join('');
+  ['aWorker','pWorker','sWorker'].forEach(id=>{const el=$(id);const cur=el.value;el.innerHTML=opts;if(cur)el.value=cur;});}
+
+/* ===================== شيت الشغل ===================== */
+function renderAttendanceSheet(){
+  const d=$('attDate').value||today();
+  const done={}; (D.attendance||[]).filter(a=>a.work_date===d).forEach(a=>done[a.worker_id]=a);
+  $('attSheetBody').innerHTML=(D.workers||[]).filter(w=>Number(w.is_active||1)===1).map(w=>{
+    const a=done[w.id];
+    const pt=(a&&a.pay_type)?a.pay_type:(w.pay_type==='hourly'?'hourly':'daily');
+    const hourly=pt==='hourly';
+    const unitCell=hourly
+      ? `<input class="att-hours" type="number" min="0" step="0.5" value="${a?Number(a.hours||0):Number(w.default_hours||8)}" style="min-width:80px">`
+      : `<select class="att-frac"><option value="1" ${a&&Number(a.day_fraction)===1?'selected':''}>يوم كامل</option><option value="0.5" ${a&&Number(a.day_fraction)===0.5?'selected':''}>نص يوم</option><option value="0.25" ${a&&Number(a.day_fraction)===0.25?'selected':''}>ربع يوم</option></select>`;
+    const priceCell=hourly
+      ? `<input class="att-rate" type="number" step="0.5" value="${a?Number(a.hourly_rate||0):Number(w.hourly_rate||0)}" style="min-width:90px">`
+      : `<input class="att-wage" type="number" value="${a?Number(a.daily_wage||0):Number(w.daily_wage||0)}" style="min-width:90px">`;
+    const baseNet=hourly?Number(w.hourly_rate||0)*Number(w.default_hours||8):Number(w.daily_wage||0);
+    return `<tr data-wid="${w.id}" data-pt="${pt}">
+      <td style="text-align:start"><b>${esc(w.name)}</b><br><small class="muted">${esc(w.job_title||'')}</small></td>
+      <td><input type="checkbox" class="att-present" ${a?'checked':''} style="width:20px;height:20px"></td>
+      <td>${payPill(pt)}</td>
+      <td>${unitCell}</td>
+      <td>${priceCell}</td>
+      <td><input class="att-extra" type="number" value="${a?Number(a.extra_amount||0):0}" style="min-width:80px"></td>
+      <td><input class="att-ded" type="number" value="${a?Number(a.deduction_amount||0):0}" style="min-width:80px"></td>
+      <td><b class="att-net">${a?money(a.amount):money(baseNet)}</b></td>
+      <td><input class="att-note" value="${a?esc(a.note||''):''}"></td>
+    </tr>`;}).join('')||'<tr><td colspan="9" class="muted">ضيف صنايعية الأول</td></tr>';
+  $('attSheetBody').querySelectorAll('input,select').forEach(el=>el.addEventListener('input',recalcSheetRow));}
+
+function recalcSheetRow(e){const tr=e.target.closest('tr');if(!tr)return;
+  const hourly=tr.dataset.pt==='hourly';
+  const x=Number(tr.querySelector('.att-extra').value)||0, d=Number(tr.querySelector('.att-ded').value)||0;
+  let base=0;
+  if(hourly){ base=(Number(tr.querySelector('.att-rate').value)||0)*(Number(tr.querySelector('.att-hours').value)||0); }
+  else { base=(Number(tr.querySelector('.att-wage').value)||0)*(Number(tr.querySelector('.att-frac').value)||0); }
+  tr.querySelector('.att-net').textContent=money(Math.max(0,base+x-d));}
+
+async function saveAttendanceSheet(){
+  const work_date=$('attDate').value||today();
+  const rows=[...$('attSheetBody').querySelectorAll('tr[data-wid]')].map(tr=>{
+    const hourly=tr.dataset.pt==='hourly';
+    return {
+      worker_id:Number(tr.dataset.wid), work_date, pay_type:hourly?'hourly':'daily',
+      absent: tr.querySelector('.att-present').checked?0:1,
+      day_fraction: hourly?0:(Number(tr.querySelector('.att-frac').value)||1),
+      daily_wage: hourly?0:(Number(tr.querySelector('.att-wage').value)||0),
+      hours: hourly?(Number(tr.querySelector('.att-hours').value)||0):0,
+      hourly_rate: hourly?(Number(tr.querySelector('.att-rate').value)||0):0,
+      extra_amount:Number(tr.querySelector('.att-extra').value)||0,
+      deduction_amount:Number(tr.querySelector('.att-ded').value)||0,
+      note:tr.querySelector('.att-note').value };});
+  if(!rows.length) return;
+  try{ await jpost('/save-workshop-attendance',{rows}); await loadAll(); alert('اتسجل شغل يوم '+work_date); }
+  catch(e){ alert(e.message); }}
+
+/* ===================== الجداول ===================== */
+function rowsHtml(list,cols,empty,span){return list.length?list.map(cols).join(''):`<tr><td colspan="${span||11}" class="muted">${empty}</td></tr>`;}
+function renderTables(){
+  $('attBody').innerHTML=rowsHtml(D.attendance||[],a=>{
+    const hourly=a.pay_type==='hourly';
+    return `<tr>
+    <td>${esc(a.work_date)}</td><td>${esc(a.worker_name)}</td><td>${payPill(a.pay_type)}</td>
+    <td>${hourly?money(a.hours)+' ساعة':a.day_fraction+' يوم'}</td>
+    <td>${money(hourly?a.hourly_rate:a.daily_wage)}</td>
+    <td>${money(a.extra_amount)}</td><td>${money(a.deduction_amount)}</td><td><b>${money(a.amount)}</b></td><td>${esc(a.note||'')}</td>
+    <td>${D.can.manage?`<button class="danger" onclick="delRow('/delete-workshop-attendance/${a.id}')">حذف</button>`:''}</td></tr>`;},'مفيش شغل مسجل في الفترة دي');
+
+  $('advBody').innerHTML=rowsHtml(D.advances||[],a=>`<tr>
+    <td>${esc(a.advance_date)}</td><td>${esc(a.worker_name)}</td><td><b>${money(a.amount)}</b></td><td>${esc(a.note||'')}</td>
+    <td>${D.can.pay?`<button class="danger" onclick="delRow('/delete-workshop-advance/${a.id}')">حذف</button>`:''}</td></tr>`,'مفيش سلف',5);
+
+  $('payBody').innerHTML=rowsHtml(D.payouts||[],p=>`<tr>
+    <td>${esc(p.payout_date)}</td><td>${esc(p.worker_name)}</td><td>${esc(p.period_from||'')} → ${esc(p.period_to||'')}</td>
+    <td>${money(p.earned_amount)}</td><td>${money(p.advances_amount)}</td><td>${money(p.bonus_amount)}</td><td>${money(p.deduction_amount)}</td>
+    <td><b class="positive">${money(p.net_amount)}</b></td>
+    <td>${D.can.pay?`<button class="danger" onclick="delRow('/delete-workshop-payout/${p.id}')">حذف</button>`:''}</td></tr>`,'مفيش قبض',9);
+
+  $('costBody').innerHTML=rowsHtml(D.costs||[],c=>`<tr>
+    <td>${esc(c.cost_date)}</td><td><b>${esc(c.cost_type)}</b></td><td>${esc(c.item_name||'')}</td>
+    <td>${Number(c.qty)?money(c.qty)+' '+esc(c.unit||''):'—'}</td><td>${Number(c.unit_price)?money(c.unit_price):'—'}</td>
+    <td><b>${money(c.total_amount)}</b></td><td>${esc(c.supplier_name||'')}</td><td>${esc(c.note||'')}</td>
+    <td>${D.can.manage?`<button onclick='editCost(${JSON.stringify(c.id)})'>✏️</button> <button class="danger" onclick="delRow('/delete-workshop-cost/${c.id}')">حذف</button>`:''}</td></tr>`,'مفيش مصروفات في الفترة دي',9);
+
+  $('prodBody').innerHTML=rowsHtml(D.production||[],p=>`<tr>
+    <td>${esc(p.prod_date)}</td><td style="text-align:start"><b>${esc(p.job_name)}</b>${p.note?`<br><small class="muted">${esc(p.note)}</small>`:''}</td>
+    <td>${p.order_ref?`<span class="pill">#${esc(p.order_ref)}</span>${p.customer_name?`<br><small class="muted">${esc(p.customer_name)}</small>`:''}`:'—'}</td>
+    <td><b>${money(p.qty)}</b></td><td>${money(p.unit_price)}</td><td><b>${money(p.total_amount)}</b></td>
+    <td>${money(p.cost_amount)}</td><td><b class="${Number(p.profit_amount)>=0?'positive':'negative'}">${money(p.profit_amount)}</b></td>
+    <td><span class="pill">${esc(p.status||'')}</span></td>
+    <td>${Number(p.collected)?'<span class="pill" style="color:#bbf7d0">اتحصلت</span>':'<span class="pill">لسه</span>'}</td>
+    <td>${D.can.manage?`<button onclick='editProduction(${JSON.stringify(p.id)})'>✏️</button> <button class="danger" onclick="delRow('/delete-workshop-production/${p.id}')">حذف</button>`:''}</td></tr>`,'مفيش إنتاج مسجل في الفترة دي',11);
+
+  const KIND={capital_in:'إضافة رأس مال',capital_out:'سحب رأس مال',advance:'سلفة',payout:'قبض',cost:'مصروف ورشة',production_in:'تحصيل إنتاج',material:'خامات',expense:'مصروف',adjust_in:'تسوية +',adjust_out:'تسوية −'};
+  $('cashBody').innerHTML=rowsHtml(D.cash_log||[],c=>`<tr>
+    <td>${esc(c.entry_date)}</td><td>${esc(KIND[c.entry_kind]||c.entry_kind)}${Number(c.is_auto)?' <span class="pill">تلقائي</span>':''}</td>
+    <td class="positive">${Number(c.delta)>0?money(c.delta):''}</td><td class="negative">${Number(c.delta)<0?money(-c.delta):''}</td>
+    <td><b class="${Number(c.balance_after)<0?'negative':''}">${money(c.balance_after)}</b></td><td>${esc(c.note||'')}</td>
+    <td>${D.can.capital&&!Number(c.is_auto)?`<button class="danger" onclick="delRow('/delete-workshop-cash-entry/${c.id}')">حذف</button>`:''}</td></tr>`,'مفيش حركات',7);}
+
+async function delRow(url){ if(!confirm('تأكيد الحذف؟'))return; try{ await jdel(url); await loadAll(); }catch(e){ alert(e.message); } }
+
+/* ===================== الصنايعي ===================== */
+function resetWorker(){['wId','wName','wJob','wWage','wRate','wPhone','wNotes'].forEach(i=>$(i).value='');
+  $('wHours').value=8;$('wStart').value=today();$('wActive').value='1';$('wPayType').value='daily';togglePayFields();}
+function editWorker(id){const w=(D.workers||[]).find(x=>x.id===id);if(!w)return;
+  $('wId').value=w.id;$('wName').value=w.name||'';$('wJob').value=w.job_title||'';
+  $('wPayType').value=(w.pay_type==='hourly')?'hourly':'daily'; togglePayFields();
+  $('wWage').value=w.daily_wage||0;$('wRate').value=w.hourly_rate||0;$('wHours').value=w.default_hours||8;
+  $('wPhone').value=w.phone||'';$('wStart').value=w.start_date||today();$('wActive').value=String(Number(w.is_active||1));$('wNotes').value=w.notes||'';
+  window.scrollTo({top:$('secWorkers').offsetTop-20,behavior:'smooth'});}
+async function saveWorker(){ try{
+  await jpost('/save-workshop-worker',{id:Number($('wId').value)||0,name:$('wName').value,job_title:$('wJob').value,
+    pay_type:$('wPayType').value,
+    daily_wage:Number($('wWage').value)||0, hourly_rate:Number($('wRate').value)||0, default_hours:Number($('wHours').value)||8,
+    phone:$('wPhone').value,start_date:$('wStart').value,
+    is_active:Number($('wActive').value),notes:$('wNotes').value});
+  resetWorker(); await loadAll(); }catch(e){ alert(e.message); } }
+async function delWorker(id){ if(!confirm('تأكيد حذف الصنايعي؟'))return; try{ await jdel('/delete-workshop-worker/'+id); await loadAll(); }catch(e){ alert(e.message); } }
+
+/* ===================== سلف وقبض ===================== */
+async function saveAdvance(){ try{
+  await jpost('/save-workshop-advance',{worker_id:Number($('aWorker').value),amount:Number($('aAmount').value)||0,
+    advance_date:$('aDate').value||today(),note:$('aNote').value});
+  $('aAmount').value='';$('aNote').value=''; await loadAll(); }catch(e){ alert(e.message); } }
+
+async function loadPayoutSuggestion(){
+  const w=Number($('pWorker').value); if(!w) return;
+  const p=new URLSearchParams({worker_id:w}); if($('pFrom').value)p.set('from',$('pFrom').value); if($('pTo').value)p.set('to',$('pTo').value);
+  try{ const d=await authFetch('/workshop-payout-suggestion?'+p.toString());
+    $('pEarned').value=d.earned; $('pAdvances').value=d.advances; $('pNet').value=d.suggested_net;
+    const workUnit=d.worker.pay_type==='hourly'?`${money(d.hours)} ساعة`:`${money(d.days)} يوم`;
+    $('payoutHint').innerHTML=`<b>${esc(d.worker.name)}</b> (${esc(d.worker.pay_type_label)}) — شغل ${workUnit} بمستحق ${money(d.earned)} ج، أخد سلف ${money(d.advances)} ج${d.already_paid?`، وقبض قبل كده ${money(d.already_paid)} ج`:''}. <b>الصافي المقترح ${money(d.suggested_net)} ج</b>. رصيده الكلي: ${money(d.lifetime_balance)} ج.`;
+  }catch(e){ $('payoutHint').textContent=e.message; } }
+function recalcPayout(){ const e=Number($('pEarned').value)||0,a=Number($('pAdvances').value)||0,
+  b=Number($('pBonus').value)||0,d=Number($('pDeduct').value)||0; $('pNet').value=Math.max(0,e-a+b-d); }
+async function savePayout(){ try{
+  await jpost('/save-workshop-payout',{worker_id:Number($('pWorker').value),period_from:$('pFrom').value,period_to:$('pTo').value,
+    earned_amount:Number($('pEarned').value)||0,advances_amount:Number($('pAdvances').value)||0,
+    bonus_amount:Number($('pBonus').value)||0,deduction_amount:Number($('pDeduct').value)||0,
+    net_amount:Number($('pNet').value)||0,payout_date:$('pDate').value||today(),note:$('pNote').value});
+  $('pNote').value=''; await loadAll(); alert('اتسجل القبض'); }catch(e){ alert(e.message); } }
+
+/* ===================== مصروفات الورشة ===================== */
+function renderCostTypes(){
+  const sel=$('cstType'); const cur=sel.value;
+  const list=D.cost_types||[];
+  sel.innerHTML=list.map(t=>`<option value="${esc(t)}">${esc(t)}</option>`).join('')+`<option value="${NEW_TYPE}">➕ بند جديد…</option>`;
+  if(cur&&[...sel.options].some(o=>o.value===cur)) sel.value=cur;
+  onCostTypeChange();}
+function onCostTypeChange(){const isNew=$('cstType').value===NEW_TYPE;
+  $('cstNewBox').classList.toggle('hidden',!isNew);
+  if(isNew) setTimeout(()=>$('cstNewType').focus(),50);}
+function calcCost(){const q=Number($('cstQty').value)||0,p=Number($('cstPrice').value)||0;if(q&&p)$('cstTotal').value=Math.round(q*p*100)/100;}
+function resetCost(){['cstId','cstItem','cstQty','cstUnit','cstPrice','cstTotal','cstSupplier','cstNote','cstNewType'].forEach(i=>$(i).value='');
+  $('cstDate').value=today(); if($('cstType').options.length)$('cstType').selectedIndex=0; onCostTypeChange();}
+function editCost(id){const c=(D.costs||[]).find(x=>x.id===id);if(!c)return;
+  $('cstId').value=c.id;
+  if(![...$('cstType').options].some(o=>o.value===c.cost_type)){
+    $('cstType').insertAdjacentHTML('afterbegin',`<option value="${esc(c.cost_type)}">${esc(c.cost_type)}</option>`);}
+  $('cstType').value=c.cost_type; onCostTypeChange();
+  $('cstItem').value=c.item_name||'';$('cstQty').value=c.qty||'';$('cstUnit').value=c.unit||'';
+  $('cstPrice').value=c.unit_price||'';$('cstTotal').value=c.total_amount||'';$('cstDate').value=c.cost_date||today();
+  $('cstSupplier').value=c.supplier_name||'';$('cstNote').value=c.note||'';
+  window.scrollTo({top:$('secCost').offsetTop-20,behavior:'smooth'});}
+async function saveCost(){ try{
+  let type=$('cstType').value;
+  if(type===NEW_TYPE){ type=($('cstNewType').value||'').trim(); if(!type) return alert('اكتب اسم البند الجديد'); }
+  await jpost('/save-workshop-cost',{id:Number($('cstId').value)||0,cost_type:type,item_name:$('cstItem').value,
+    qty:Number($('cstQty').value)||0,unit:$('cstUnit').value,unit_price:Number($('cstPrice').value)||0,
+    total_amount:Number($('cstTotal').value)||0,cost_date:$('cstDate').value||today(),
+    supplier_name:$('cstSupplier').value,note:$('cstNote').value});
+  resetCost(); await loadAll(); }catch(e){ alert(e.message); } }
+
+/* ===================== إنتاج الورشة ===================== */
+function calcProd(){const q=Number($('prQty').value)||0,p=Number($('prPrice').value)||0;
+  if(q&&p)$('prTotal').value=Math.round(q*p*100)/100; calcProfit();}
+function calcProfit(){const t=Number($('prTotal').value)||0,c=Number($('prCost').value)||0;
+  if(t||c)$('prProfit').value=Math.round((t-c)*100)/100;}
+function resetProduction(){['prId','prJob','prQty','prPrice','prTotal','prCost','prProfit','prNote','prOrderSearch'].forEach(i=>$(i).value='');
+  $('prDate').value=today();$('prStatus').value='تحت التنفيذ';$('prCollected').checked=false;
+  filterOrders();$('prOrder').value='';}
+function editProduction(id){const p=(D.production||[]).find(x=>x.id===id);if(!p)return;
+  $('prId').value=p.id;$('prDate').value=p.prod_date||today();$('prJob').value=p.job_name||'';
+  $('prQty').value=p.qty||'';$('prPrice').value=p.unit_price||'';$('prTotal').value=p.total_amount||'';
+  $('prCost').value=p.cost_amount||'';$('prProfit').value=p.profit_amount||'';
+  $('prStatus').value=p.status||'تحت التنفيذ';$('prCollected').checked=Number(p.collected)===1;$('prNote').value=p.note||'';
+  if(p.order_id){ if(![...$('prOrder').options].some(o=>o.value===String(p.order_id)))
+      $('prOrder').insertAdjacentHTML('beforeend',`<option value="${p.order_id}">#${esc(p.order_ref||p.order_id)} — ${esc(p.customer_name||'')}</option>`);
+    $('prOrder').value=String(p.order_id); } else $('prOrder').value='';
+  window.scrollTo({top:$('secProd').offsetTop-20,behavior:'smooth'});}
+function orderLabel(o){return `#${o.store_ref||o.id} — ${o.custName||'بدون اسم'} · ${o.qty||0} ${o.product_type||'قطعة'} · ${o.orderDate||''}`;}
+function filterOrders(){const q=($('prOrderSearch').value||'').trim().toLowerCase();
+  const list=q?ORDERS.filter(o=>String(o.id).includes(q)||String(o.store_ref||'').toLowerCase().includes(q)||String(o.custName||'').toLowerCase().includes(q)):ORDERS;
+  const cur=$('prOrder').value;
+  $('prOrder').innerHTML='<option value="">— من غير أوردر —</option>'+list.slice(0,200).map(o=>`<option value="${o.id}">${esc(orderLabel(o))}</option>`).join('');
+  if(cur&&[...$('prOrder').options].some(o=>o.value===cur))$('prOrder').value=cur;}
+async function loadOrders(){ try{ const d=await authFetch('/workshop-orders-lookup'); ORDERS=d.orders||[]; filterOrders(); }catch(e){ ORDERS=[]; filterOrders(); } }
+async function saveProduction(){ try{
+  const oid=Number($('prOrder').value)||0;
+  const o=ORDERS.find(x=>Number(x.id)===oid);
+  await jpost('/save-workshop-production',{id:Number($('prId').value)||0,prod_date:$('prDate').value||today(),
+    job_name:$('prJob').value,qty:Number($('prQty').value)||0,unit_price:Number($('prPrice').value)||0,
+    total_amount:Number($('prTotal').value)||0,cost_amount:Number($('prCost').value)||0,
+    profit_amount:$('prProfit').value===''?undefined:Number($('prProfit').value),
+    order_id:oid, order_ref:o?(o.store_ref||String(o.id)):'', customer_name:o?(o.custName||''):'',
+    status:$('prStatus').value, collected:$('prCollected').checked?1:0, note:$('prNote').value});
+  resetProduction(); await loadAll(); }catch(e){ alert(e.message); } }
+
+/* ===================== الخزنة ===================== */
+async function saveCash(){ try{
+  await jpost('/save-workshop-cash-entry',{entry_kind:$('cKind').value,amount:Number($('cAmount').value)||0,
+    entry_date:$('cDate').value||today(),note:$('cNote').value});
+  $('cAmount').value='';$('cNote').value=''; await loadAll(); }catch(e){ alert(e.message); } }
+
+/* ===================== كشف حساب ===================== */
+async function loadStatement(){
+  const w=Number($('sWorker').value); if(!w){ $('statementBox').innerHTML=''; return; }
+  const p=new URLSearchParams(); if($('sFrom').value)p.set('from',$('sFrom').value); if($('sTo').value)p.set('to',$('sTo').value);
+  try{ const d=await authFetch('/workshop-worker-statement/'+w+'?'+p.toString());
+    const rate=d.worker.pay_type==='hourly'?`سعر الساعة ${money(d.worker.hourly_rate)} ج`:`يومية ${money(d.worker.daily_wage)} ج`;
+    $('statementBox').innerHTML=`
+      <div class="note-box"><b>${esc(d.worker.name)}</b> — ${esc(d.worker.job_title||'')} · ${esc(d.worker.pay_type_label)} · ${rate}
+      <br>رصيد أول المدة: <b>${money(d.opening_balance)}</b> · مستحق الفترة: <b>${money(d.totals.earned)}</b> · سلف: <b>${money(d.totals.advances)}</b> · مقبوض: <b>${money(d.totals.paid)}</b>
+      <br>الرصيد النهائي: <b class="${d.closing_balance>=0?'positive':'negative'}">${money(d.closing_balance)} ج</b> ${d.closing_balance>=0?'(ليه عندك)':'(أخد بالزيادة)'}</div>
+      <div class="table-wrap"><table><thead><tr><th>التاريخ</th><th>الحركة</th><th>التفاصيل</th><th>ليه</th><th>عليه</th><th>الرصيد</th></tr></thead>
+      <tbody>${d.rows.length?d.rows.map(r=>`<tr><td>${esc(r.date)}</td><td>${esc(r.kind)}</td><td>${esc(r.detail||'')}</td>
+        <td class="positive">${r.credit?money(r.credit):''}</td><td class="negative">${r.debit?money(r.debit):''}</td>
+        <td><b>${money(r.balance)}</b></td></tr>`).join(''):'<tr><td colspan="6" class="muted">مفيش حركات</td></tr>'}</tbody></table></div>`;
+  }catch(e){ $('statementBox').innerHTML='<div class="note-box negative">'+esc(e.message)+'</div>'; } }
+function printStatement(){ const b=$('statementBox').innerHTML; if(!b) return alert('اختار صنايعي الأول');
+  const w=window.open('','_blank'); w.document.write(`<html dir="rtl"><head><meta charset="utf-8"><title>كشف حساب</title>
+  <style>body{font-family:Tahoma;padding:24px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #999;padding:7px;text-align:center}
+  .note-box{border:1px solid #999;padding:12px;margin-bottom:14px;line-height:1.9}</style></head><body>${b}</body></html>`);
+  w.document.close(); w.print(); }
+
+/* ===================== التحميل ===================== */
+async function loadAll(){
+  try{
+    D=await authFetch('/workshop-dashboard-data'+qs());
+    $('workerForm').classList.toggle('hidden',!D.can.manage);
+    $('costForms').classList.toggle('hidden',!D.can.manage);
+    $('attForm').classList.toggle('hidden',!D.can.manage);
+    $('prodForms').classList.toggle('hidden',!D.can.manage);
+    $('payForms').classList.toggle('hidden',!D.can.pay);
+    $('cashForm').classList.toggle('hidden',!D.can.capital);
+    $('secPnl').classList.toggle('hidden',!D.can.totals);
+    renderCostTypes(); renderStats(); renderPnl(); renderWorkers(); renderTables(); renderAttendanceSheet();
+    if($('sWorker').value) loadStatement();
+  }catch(e){ alert('تعذر تحميل بيانات الورشة: '+e.message); }
+}
+
+(function init(){
+  restoreSecs();
+  ['attDate','aDate','pDate','cstDate','cDate','prDate'].forEach(i=>$(i).value=today());
+  const d=new Date(); d.setDate(d.getDate()-6);
+  $('pFrom').value=d.toISOString().slice(0,10); $('pTo').value=today();
+  resetWorker();
+  loadAll();
+  loadOrders();
+  document.documentElement.classList.remove('auth-loading');
+  document.documentElement.classList.add('auth-ready');
+})();
+</script>
+</body>
+</html>
