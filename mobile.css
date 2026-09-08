@@ -1,0 +1,1066 @@
+/* ==========================================================================
+   Craft Zone — طبقة الموبايل (Mobile Layer)  v1.0
+   --------------------------------------------------------------------------
+   قاعدة أساسية: كل قواعد التنسيق هنا مكتوبة جوّه @media (max-width:768px)
+   يعني شاشة الكمبيوتر (أي عرض أكبر من 768px) مش بتتأثر بأي حرف في الملف ده.
+   الاستثناء الوحيد بره الميديا كويري هو إخفاء عناصر الواجهة الجديدة (cz-*)
+   وهي عناصر مش موجودة أصلاً في التصميم الأصلي، فإخفاؤها ما بيغيّرش أي حاجة.
+   ========================================================================== */
+
+/* --- عناصر شل الموبايل مخفية تماماً على الكمبيوتر --- */
+.cz-appbar,
+.cz-tabbar,
+.cz-drawer,
+.cz-scrim { display: none !important; }
+
+
+@media (max-width: 768px) {
+
+  /* ====================== 1) متغيّرات الشل ====================== */
+  :root {
+    --cz-accent: #22d3ee;
+    --cz-accent-2: #0891b2;
+    --cz-shell: rgba(9, 18, 34, .93);
+    --cz-shell-solid: #0b1526;
+    --cz-line: rgba(148, 163, 184, .20);
+    --cz-txt: #e8f1fb;
+    --cz-dim: #8fa6bd;
+    --cz-bar: 56px;
+    --cz-tab: 62px;
+    --cz-top: calc(56px + env(safe-area-inset-top, 0px));
+    --cz-bot: calc(62px + env(safe-area-inset-bottom, 0px));
+  }
+
+  /* ====================== 2) أساسيات الصفحة ====================== */
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    touch-action: auto;
+  }
+  /* ⚠️ مهم جداً: ممنوع نحط أي overflow على html أو body.
+     سفاري الآيفون بيقفل تمرير الصفحة كله لما يلاقي overflow عليهم،
+     وده كان سبب إن الصفحة ما كانتش بتتحرك فوق ولا تحت على التليفون. */
+  body {
+    max-width: 100%;
+    touch-action: auto;
+    overscroll-behavior-y: auto;
+  }
+
+  body {
+    padding: 12px !important;
+    padding-top: calc(var(--cz-top) + 10px) !important;
+    padding-bottom: calc(var(--cz-bot) + 16px) !important;
+    -webkit-tap-highlight-color: rgba(34, 211, 238, .14);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  /* صفحات من غير شل (زي صفحة الدخول) */
+  html.cz-noshell body {
+    padding: 16px !important;
+    padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  img, svg, video, canvas, iframe { max-width: 100% !important; height: auto; }
+  pre, code { white-space: pre-wrap; word-break: break-word; }
+
+  /* ====================== 3) الحاويات والتخطيط ====================== */
+  .wrap, .container, .page, .content, .main { max-width: 100% !important; }
+
+  /* أي تخطيط بعمودين أو أكتر يرجع عمود واحد */
+  .layout, .layout-suppliers, .grid, .form-grid, .menu, .material-grid,
+  .settings-grid, .cost-grid, .modal-summary, .source-grid, .partner-top-grid,
+  .editor-layout, .stage-toggle-grid, .cut-batch-jobs, .subgrid, .summary,
+  .two-col, .cols, .row-grid {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+
+  /* كروت الأرقام (الإحصائيات) تفضل عمودين — أوضح وأسرع في القراءة */
+  .stats, .cz-tiles {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+  }
+  .cz-tiles > .full, .stats > .full { grid-column: 1 / -1 !important; }
+
+  /* قائمة الصفحات في الرئيسية = شبكة أيقونات زي شاشة التطبيقات */
+  .menu {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+  }
+  .menu a {
+    padding: 16px 10px !important;
+    text-align: center;
+    font-size: 13px !important;
+    line-height: 1.45;
+    border-radius: 16px !important;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    min-height: 78px;
+  }
+
+  /* ====================== 4) البانلات والكروت ====================== */
+  .panel, .card, .box, .stat, .module-card, .summary-card, .metric, .note {
+    border-radius: 14px !important;
+  }
+  .panel { padding: 12px !important; margin-bottom: 12px !important; }
+  .stat, .metric, .summary-card { padding: 12px !important; }
+  .stat b, .metric b, .summary-card b { font-size: 19px !important; margin-top: 4px !important; word-break: break-word; }
+  .stat small, .metric small { font-size: 11.5px !important; line-height: 1.4; }
+
+  /* ====================== 5) العناوين والهيدر ====================== */
+  h1 { font-size: 19px !important; }
+  h2 { font-size: 17px !important; }
+  h3 { font-size: 15px !important; }
+  h4, h5 { font-size: 14px !important; }
+  h1, h2, h3, h4 { line-height: 1.45 !important; word-break: break-word; }
+
+  .top, .header, .toolbar, .section-head, .section-actions, .actions,
+  .chips, .filters, .filter-bar, .head, .head-row {
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+  .top, .header, .head, .head-row { align-items: flex-start !important; }
+  .top > *, .header > *, .toolbar > *, .section-head > * { min-width: 0; max-width: 100%; }
+
+  /* شريط أزرار الهيدر: أزرار مرتبة تملى العرض */
+  .top > div, .header > div { max-width: 100%; }
+
+  /* ====================== 6) الأزرار (مساحات لمس مريحة) ====================== */
+  .btn, button, a.btn, input[type="button"], input[type="submit"], .btn-ghost {
+    box-sizing: border-box !important;   /* بعض الصفحات بتسيب الروابط content-box فبتطلع أعرض من اللازم */
+    min-height: 42px;
+    padding: 10px 13px !important;
+    font-size: 13.5px !important;
+    border-radius: 12px !important;
+    touch-action: manipulation;
+    max-width: 100%;
+  }
+  .btn.mini, button.mini, .mini .btn, .pill, .chip, .tag, .badge, .tab, .perm {
+    min-height: 0 !important;
+    padding: 6px 10px !important;
+    font-size: 12px !important;
+  }
+  .actions { justify-content: stretch !important; }
+  .actions > .btn, .actions > button { flex: 1 1 44%; justify-content: center; }
+
+  /* أزرار الهيدر: صفّين مرتبين بدل ما تبقى مبعثرة */
+  .top > div > .btn, .top > div > button, .top > div > a.btn,
+  .header > div > .btn, .header > div > button, .header > div > a.btn,
+  .toolbar > .btn, .toolbar > button, .toolbar > a.btn,
+  .section-actions > .btn, .section-actions > button {
+    flex: 1 1 44%;
+    justify-content: center;
+    text-align: center;
+  }
+
+  /* أشرطة أفقية بدل التكديس */
+  .chips, .tabs, .tab-bar, .pills {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 4px;
+  }
+  .chips::-webkit-scrollbar, .tabs::-webkit-scrollbar { display: none; }
+  .chips > *, .tabs > * { flex: 0 0 auto; }
+
+  /* ====================== 7) الفورمات والإدخال ====================== */
+  input, select, textarea, button { font-family: inherit; }
+  input, select, textarea {
+    box-sizing: border-box !important;
+    font-size: 16px !important;      /* بيمنع تكبير الشاشة التلقائي في iOS */
+    max-width: 100%;
+    border-radius: 12px !important;
+  }
+  input:not([type="checkbox"]):not([type="radio"]), select, textarea {
+    min-height: 46px;
+    padding: 11px 12px !important;
+  }
+  textarea { min-height: 96px !important; }
+  input[type="checkbox"], input[type="radio"] {
+    width: 20px !important; height: 20px !important;
+    min-height: 0 !important; flex: 0 0 auto;
+  }
+  label { font-size: 12.5px !important; }
+  .field, .form-field { min-width: 0 !important; max-width: 100% !important; }
+  .search, input.search, #q { min-width: 0 !important; width: 100% !important; }
+
+  /* ====================== 8) الجداول → كروت ====================== */
+  /* أي جدول ما اتحوّلش لكروت بيتزحلق أفقياً بالإصبع */
+  .table-wrap, .tablewrap, .table-scroll, .scroll-x, .orders-table-shell {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+    max-width: 100%;
+    touch-action: auto;
+    overscroll-behavior-y: auto;
+  }
+  table:not(.cz-cards) {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  table:not(.cz-cards) th, table:not(.cz-cards) td {
+    white-space: nowrap;
+    padding: 9px 10px !important;
+    font-size: 12.5px !important;
+  }
+
+  /* ---------- وضع الكروت ----------
+     ملاحظة مهمة: مفيش !important على أي display هنا، علشان لو السيستم بيخفي صف
+     أو خلية بـ style="display:none" (زي أصناف الأوردر المجمّع) يفضل مخفي فعلاً. */
+  table.cz-cards {
+    display: block;
+    width: 100% !important;
+    /* أي جدول بيتحوّل لكروت مش محتاج min-width — ده كان بيمدّ الصفحة أفقيًا
+       في صفحات زي الفورم اللي جدولها min-width:1250px */
+    min-width: 0 !important;
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+    overflow: visible !important;
+    touch-action: pan-y pinch-zoom;
+  }
+
+  /* بعد تحويل الجدول لكروت مابقاش محتاج حاوية تمرير داخلية. إزالة الحاوية
+     الداخلية مهمة في Safari وبعض WebView لأنها كانت تلتقط سحبة الإصبع الأولى
+     بدل ما تبعتها لتمرير الصفحة. */
+  .table-wrap.cz-card-wrap, .tablewrap.cz-card-wrap,
+  .table-scroll.cz-card-wrap, .scroll-x.cz-card-wrap, .orders-table-shell.cz-card-wrap {
+    overflow: visible !important;
+    -webkit-overflow-scrolling: auto;
+    touch-action: pan-y pinch-zoom;
+    overscroll-behavior: auto;
+  }
+  table.cz-cards thead { display: none; }
+  table.cz-cards tbody, table.cz-cards tfoot { display: block; width: 100%; }
+
+  table.cz-cards tr {
+    display: block;
+    background: rgba(15, 23, 42, .92);
+    border: 1px solid var(--cz-line);
+    border-radius: 14px;
+    padding: 10px 12px;
+    margin-bottom: 10px;
+  }
+  table.cz-cards tfoot tr {
+    background: rgba(34, 211, 238, .07);
+    border-color: rgba(34, 211, 238, .28);
+  }
+  /* أي صف أو خلية السيستم مخفيها تفضل مخفية */
+  table.cz-cards tr.hidden, table.cz-cards td.hidden,
+  table.cz-cards tr[hidden], table.cz-cards td[hidden] { display: none !important; }
+
+  table.cz-cards td {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+    width: 100% !important;
+    padding: 7px 0 !important;
+    border: 0 !important;
+    border-bottom: 1px dashed rgba(148, 163, 184, .16) !important;
+    text-align: start !important;
+    white-space: normal !important;
+    word-break: break-word;
+    font-size: 13px !important;
+    vertical-align: top;
+  }
+  table.cz-cards tr > td:last-child { border-bottom: 0 !important; }
+
+  table.cz-cards td::before {
+    content: attr(data-label);
+    flex: 0 0 40%;
+    color: var(--cz-dim);
+    font-size: 11.5px;
+    font-weight: 700;
+    text-align: start;
+    padding-top: 2px;
+    line-height: 1.45;
+  }
+
+  /* الخلية الأولى = عنوان الكارت */
+  table.cz-cards td.cz-title {
+    display: block;
+    font-weight: 800;
+    font-size: 14.5px !important;
+    color: var(--cz-txt);
+    padding-bottom: 9px !important;
+    margin-bottom: 2px;
+    border-bottom: 1px solid rgba(148, 163, 184, .24) !important;
+  }
+  table.cz-cards td.cz-title::before {
+    display: block;
+    font-size: 10.5px;
+    margin-bottom: 3px;
+    font-weight: 700;
+    letter-spacing: .2px;
+  }
+
+  /* خلايا فيها إدخال: العنوان فوق والإدخال تحت بعرض كامل */
+  table.cz-cards td.cz-input { display: block; }
+  table.cz-cards td.cz-input::before { display: block; margin-bottom: 5px; }
+  table.cz-cards td.cz-input input,
+  table.cz-cards td.cz-input select,
+  table.cz-cards td.cz-input textarea { width: 100% !important; }
+
+  /* خلية الأزرار: صف كامل تحت والأزرار تملى العرض */
+  table.cz-cards td.cz-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding-top: 10px !important;
+  }
+  table.cz-cards td.cz-actions::before { display: none; }
+  table.cz-cards td.cz-actions > * { flex: 1 1 44%; }
+  table.cz-cards td.cz-actions > .action-menu,
+  table.cz-cards td.cz-actions > .actions { flex: 1 1 100%; }
+  table.cz-cards td.cz-actions .actions { display: flex; flex-wrap: wrap; gap: 8px; width: 100%; }
+  table.cz-cards td.cz-actions .btn,
+  table.cz-cards td.cz-actions button { flex: 1 1 44%; justify-content: center; }
+  table.cz-cards td.cz-actions .action-menu .btn { flex: 1 1 100%; }
+
+  /* خلية فيها تشيك بوكس بس */
+  table.cz-cards td.cz-check {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 0 !important;
+  }
+  table.cz-cards td.cz-check::before { flex: 0 0 auto; }
+  table.cz-cards tr.cz-card > td.cz-check { display: flex; }
+  table.cz-cards tr.cz-card > td.cz-check.cz-more { display: none; }
+  table.cz-cards tr.cz-card.cz-open > td.cz-check.cz-more { display: flex; }
+
+  /* خلية بتمتد على عرض الجدول (رسائل زي: لا توجد بيانات) */
+  table.cz-cards td.cz-full { display: block; text-align: center !important; }
+  table.cz-cards td.cz-full::before { display: none; }
+
+  /* خلايا فاضية تتخفي علشان الكارت يفضل نضيف */
+  table.cz-cards td.cz-empty { display: none !important; }
+
+  /* ---------- كارت مضغوط للجداول العريضة (زي قائمة الأوردرات) ----------
+     بدل ما الكارت يبقى 15 سطر وطوله شاشة كاملة، بيبقى ملخص من عمودين
+     وباقي التفاصيل بتتفتح باللمس. ده اللي بيخلي القائمة مترتبة وسريعة. */
+  table.cz-cards tr.cz-card {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 12px;
+    align-content: start;
+    align-items: start;
+  }
+  /* في الوضع المضغوط: بلاش خطوط الجدول، وسطور أنضف */
+  table.cz-cards tr.cz-card > td { border-bottom: 0 !important; padding: 7px 0 !important; }
+  /* في الوضع المضغوط بنقصّ الخانات الطويلة علشان يبان أكتر من كارت في الشاشة،
+     وأي حاجة اتقصّت بتبان كاملة أول ما تفتح التفاصيل */
+  table.cz-cards tr.cz-card > td:not(.cz-actions):not(.cz-input) {
+    position: relative;
+    max-height: 5.6em;
+    overflow: hidden;
+  }
+  table.cz-cards tr.cz-card > td.cz-title { max-height: 6.4em; }
+  table.cz-cards tr.cz-card > td:not(.cz-actions):not(.cz-input)::after {
+    content: '';
+    position: absolute;
+    inset-inline: 0; bottom: 0; height: 18px;
+    background: linear-gradient(to bottom, rgba(15, 23, 42, 0), rgba(15, 23, 42, .96));
+    pointer-events: none;
+  }
+  table.cz-cards tr.cz-card.cz-open > td:not(.cz-actions):not(.cz-input) { max-height: none; }
+  table.cz-cards tr.cz-card.cz-open > td:not(.cz-actions):not(.cz-input)::after { display: none; }
+  /* خلية الأزرار من غير عنوان حتى في الوضع المضغوط */
+  table.cz-cards tr.cz-card > td.cz-actions::before { display: none; }
+  table.cz-cards tr.cz-card > td {
+    display: block;
+    padding: 6px 0 !important;
+    font-size: 13px !important;
+  }
+  table.cz-cards tr.cz-card > td::before {
+    display: block;
+    flex: none;
+    font-size: 10.5px;
+    margin-bottom: 2px;
+  }
+  table.cz-cards tr.cz-card > td.cz-title { order: -1; }
+  table.cz-cards tr.cz-card > td.cz-title,
+  table.cz-cards tr.cz-card > td.cz-full,
+  table.cz-cards tr.cz-card > td.cz-actions { grid-column: 1 / -1; }
+  /* خانة فيها textarea بس هي اللي تاخد الصف كله */
+  table.cz-cards tr.cz-card > td.cz-wide { grid-column: 1 / -1; }
+  table.cz-cards tr.cz-card > td.cz-title { font-size: 14px !important; }
+
+  /* التفاصيل المخفية + زرار الفتح */
+  table.cz-cards tr.cz-card > td.cz-more { display: none; order: 2; }
+  table.cz-cards tr.cz-card.cz-open > td.cz-more { display: block; }
+  table.cz-cards tr.cz-card.cz-open > td.cz-more.cz-empty { display: none; }
+  table.cz-cards tr.cz-card > td.cz-actions { order: 3; border-top: 1px solid rgba(148,163,184,.18); margin-top: 4px; }
+
+  table.cz-cards tr.cz-card::after {
+    content: '⌄ باقي التفاصيل';
+    order: 1;
+    grid-column: 1 / -1;
+    display: block;
+    text-align: center;
+    padding: 9px 0 4px;
+    margin-top: 4px;
+    font-size: 11.5px;
+    font-weight: 800;
+    color: var(--cz-accent);
+    border-top: 1px solid rgba(148, 163, 184, .18);
+  }
+  table.cz-cards tr.cz-card.cz-open::after { content: '⌃ إخفاء التفاصيل'; }
+
+  /* نص طويل جداً: بيتقص ويتفتح باللمس */
+  table.cz-cards td.cz-long {
+    position: relative;
+    max-height: 8em;
+    overflow: hidden;
+    cursor: pointer;
+  }
+  table.cz-cards td.cz-long::after {
+    content: '⌄ اضغط للمزيد';
+    position: absolute;
+    inset-inline: 0; bottom: 0;
+    padding: 14px 0 2px;
+    text-align: center;
+    font-size: 10.5px;
+    font-weight: 700;
+    color: var(--cz-accent);
+    background: linear-gradient(to bottom, rgba(15, 23, 42, 0), rgba(15, 23, 42, .96) 55%);
+  }
+  table.cz-cards td.cz-long.cz-open { max-height: none; }
+  table.cz-cards td.cz-long.cz-open::after { content: '⌃ اضغط للأقل'; background: none; position: static; display: block; }
+
+  table.cz-cards td .actions { justify-content: flex-end; }
+  table.cz-cards td .btn { font-size: 12.5px !important; }
+
+  /* ====================== 9) المودالات → شاشة كاملة ====================== */
+  /* المودال بيغطي الشريط العلوي والسفلي علشان يبقى شاشة كاملة زي التطبيقات */
+  .modal, .modal-wrap, .modal-backdrop { z-index: 9600 !important; }
+  .modal { padding: 0 !important; }
+  .modal-content, .modal-box, .modal-card, .modal-wrap > div {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    min-height: 100vh;
+    border-radius: 0 !important;
+    border-inline: 0 !important;
+    padding: 14px !important;
+    padding-top: calc(14px + env(safe-area-inset-top, 0px)) !important;
+    padding-bottom: calc(26px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+  .modal-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+  .modal-actions > * { flex: 1 1 44%; }
+
+  /* ====================== 10) الشريط العلوي ====================== */
+  .cz-appbar {
+    display: flex !important;
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 9000;
+    align-items: center;
+    gap: 6px;
+    height: var(--cz-top);
+    padding: 0 8px;
+    padding-top: env(safe-area-inset-top, 0px);
+    background: var(--cz-shell-solid);
+    border-bottom: 1px solid var(--cz-line);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, .35);
+  }
+  .cz-ab-btn {
+    flex: 0 0 auto;
+    width: 40px; height: 40px;
+    min-height: 0 !important;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(148, 163, 184, .10) !important;
+    border: 1px solid var(--cz-line) !important;
+    color: var(--cz-txt) !important;
+    border-radius: 12px !important;
+    font-size: 17px !important;
+    padding: 0 !important;
+    cursor: pointer;
+  }
+  .cz-ab-btn:active { background: rgba(34, 211, 238, .18) !important; }
+  .cz-ab-title {
+    flex: 1 1 auto;
+    min-width: 0;
+    text-align: center;
+    padding: 0 4px;
+  }
+  .cz-ab-t {
+    display: block;
+    font-size: 15px; font-weight: 800; color: var(--cz-txt);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .cz-ab-s {
+    display: block;
+    font-size: 10px; color: var(--cz-dim); margin-top: 1px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .cz-ab-spacer { flex: 0 0 40px; }
+
+  /* ====================== 11) الشريط السفلي ====================== */
+  .cz-tabbar {
+    display: flex !important;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    z-index: 9000;
+    align-items: stretch;
+    justify-content: space-around;
+    background: var(--cz-shell-solid);
+    border-top: 1px solid var(--cz-line);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, .35);
+  }
+  .cz-tab {
+    flex: 1 1 0;
+    min-width: 0;
+    height: var(--cz-tab);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    color: var(--cz-dim) !important;
+    text-decoration: none !important;
+    background: none !important;
+    border: 0 !important;
+    font-size: 10px !important;
+    font-weight: 700;
+    padding: 0 2px !important;
+    min-height: 0 !important;
+    border-radius: 0 !important;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .cz-tab .cz-ic { font-size: 19px; line-height: 1; }
+  .cz-tab .cz-lb {
+    max-width: 100%;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .cz-tab.is-active { color: var(--cz-accent) !important; }
+  .cz-tab.is-active .cz-lb { font-weight: 800; }
+  .cz-tab:active { background: rgba(148, 163, 184, .08) !important; }
+
+  /* زرار الإضافة الوسطاني */
+  .cz-tab.cz-fab .cz-ic {
+    width: 46px; height: 46px;
+    margin-top: -20px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 50%;
+    background: linear-gradient(180deg, var(--cz-accent), var(--cz-accent-2));
+    color: #052430;
+    font-size: 23px; font-weight: 900;
+    box-shadow: 0 8px 20px rgba(34, 211, 238, .38);
+    border: 3px solid var(--cz-shell-solid);
+  }
+  .cz-tab.cz-fab { color: var(--cz-txt) !important; }
+  .cz-tab.cz-fab .cz-lb { margin-top: -2px; }
+
+  /* ====================== 12) القائمة الجانبية ====================== */
+  .cz-drawer {
+    display: none !important;
+    position: fixed;
+    inset: 0;
+    z-index: 9500;
+    visibility: hidden;
+    pointer-events: none;
+  }
+  /* القائمة وهي مقفولة تتشال من شجرة العرض تماماً. بعض WebView القديمة كانت
+     تعتبر الطبقة الشفافة ذات inset:0 سطح لمس وتطلب إصبعين لتمرير الصفحة. */
+  .cz-drawer.is-open {
+    display: block !important;
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  .cz-drawer-bd {
+    position: absolute; inset: 0;
+    background: rgba(2, 6, 23, .62);
+    opacity: 0;
+    transition: opacity .22s ease;
+  }
+  .cz-drawer.is-open .cz-drawer-bd { opacity: 1; }
+
+  .cz-drawer-panel {
+    position: absolute;
+    top: 0; bottom: 0; right: 0;
+    width: min(84vw, 330px);
+    display: flex;
+    flex-direction: column;
+    background: var(--cz-shell-solid);
+    border-left: 1px solid var(--cz-line);
+    transform: translateX(100%);
+    transition: transform .26s cubic-bezier(.22, .61, .36, 1);
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    box-shadow: -14px 0 40px rgba(0, 0, 0, .45);
+  }
+  .cz-drawer.is-open .cz-drawer-panel { transform: translateX(0); }
+
+  .cz-dr-head {
+    display: flex; align-items: center; gap: 10px;
+    padding: 14px 14px 12px;
+    border-bottom: 1px solid var(--cz-line);
+  }
+  .cz-dr-avatar {
+    flex: 0 0 auto;
+    width: 42px; height: 42px; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(180deg, var(--cz-accent), var(--cz-accent-2));
+    color: #052430; font-weight: 900; font-size: 17px;
+  }
+  .cz-dr-who { flex: 1 1 auto; min-width: 0; }
+  .cz-dr-name {
+    font-size: 14px; font-weight: 800; color: var(--cz-txt);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .cz-dr-role { font-size: 11.5px; color: var(--cz-dim); margin-top: 2px; }
+  .cz-dr-close {
+    flex: 0 0 auto;
+    width: 34px; height: 34px; min-height: 0 !important;
+    padding: 0 !important;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(148, 163, 184, .10) !important;
+    border: 1px solid var(--cz-line) !important;
+    color: var(--cz-txt) !important;
+    border-radius: 10px !important;
+    font-size: 15px !important;
+  }
+
+  .cz-dr-links {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .cz-dr-link {
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 12px !important;
+    min-height: 0 !important;
+    border-radius: 12px !important;
+    color: #cbd7e6 !important;
+    text-decoration: none !important;
+    background: transparent !important;
+    border: 1px solid transparent !important;
+    font-size: 13.5px !important;
+    font-weight: 700;
+  }
+  .cz-dr-link .cz-ic { font-size: 17px; width: 24px; text-align: center; flex: 0 0 auto; }
+  .cz-dr-link.is-active {
+    background: rgba(34, 211, 238, .12) !important;
+    border-color: rgba(34, 211, 238, .32) !important;
+    color: var(--cz-accent) !important;
+  }
+  .cz-dr-link:active { background: rgba(148, 163, 184, .10) !important; }
+
+  .cz-dr-foot { padding: 10px 12px 14px; border-top: 1px solid var(--cz-line); }
+  .cz-dr-logout {
+    width: 100%;
+    justify-content: center;
+    display: flex; align-items: center; gap: 8px;
+    background: rgba(248, 113, 113, .12) !important;
+    border: 1px solid rgba(248, 113, 113, .38) !important;
+    color: #fecaca !important;
+    font-weight: 800;
+  }
+  .cz-dr-ver { text-align: center; color: var(--cz-dim); font-size: 10.5px; margin-top: 9px; }
+
+  /* منع تمرير الصفحة ورا القائمة من غير ما نقفل تمرير الصفحة كلها
+     (القفل العام كان بيعلّق الصفحة على الآيفون) */
+  .cz-drawer-bd { touch-action: auto; }
+  .cz-drawer.is-open .cz-drawer-bd { touch-action: none; }
+  .cz-dr-links { overscroll-behavior: contain; }
+
+  /* ====================== 13) لمسات أخيرة ====================== */
+  .muted, .hint, .note small { font-size: 12px !important; line-height: 1.6; }
+  .history { max-height: 300px !important; }
+  hr { margin: 10px 0; }
+  .no-mobile { display: none !important; }
+
+  /* ==================================================================
+     قائمة الأوردرات على الموبايل — كارت أوردر كامل ومتناسق
+     ------------------------------------------------------------------
+     كل بيانات الأوردر ظاهرة من غير طي، مرتبة في بلاطات متساوية الارتفاع:
+       هيدر (رقم الأوردر) ← بيانات العميل ← بلاطات البيانات (عمودين)
+       ← الحالة بعرض كامل ← التحكم ومعاينات ملفات الـPDF.
+     كل القواعد متربطة بـ #ordersBody علشان ما تلمسش جداول المودالات.
+     ================================================================== */
+  body.orders-page .orders-table-shell {
+    border: 0;
+    box-shadow: none;
+    background: transparent;
+  }
+  body.orders-page table.cz-cards { min-width: 0 !important; }
+
+  /* ---------- 1) إلغاء الطي: كل الخانات ظاهرة وبترتيب الجدول نفسه ---------- */
+  /* order:0 مهمة — من غيرها الخانات المطويّة كانت بتتأخّر عن ترتيبها الطبيعي */
+  body.orders-page #ordersBody tr.cz-card > td.cz-more { display: block; order: 0; }
+  body.orders-page #ordersBody tr.cz-card > td.cz-check.cz-more { display: flex; }
+  body.orders-page #ordersBody tr.cz-card::after { content: none; display: none; }
+  /* من غير قص ولا تدرّج شفاف على الخانات */
+  body.orders-page #ordersBody tr.cz-card > td { max-height: none !important; overflow: visible; }
+  body.orders-page #ordersBody tr.cz-card > td::after { display: none !important; }
+  body.orders-page #ordersBody td.cz-long { max-height: none; cursor: default; }
+
+  /* خانة تحديد الطباعة تفضل مخفية زي الكمبيوتر لحد ما نفتح وضع الطباعة */
+  body.orders-page:not(.print-mode) #ordersBody td.select-col { display: none !important; }
+  body.orders-page.print-mode #ordersBody tr.cz-card > td.select-col {
+    grid-column: 1 / -1;
+    order: -4;
+    background: rgba(34, 211, 238, .08);
+    border: 1px solid rgba(34, 211, 238, .28);
+    border-radius: 11px;
+    padding: 8px 10px !important;
+    margin-bottom: 2px;
+  }
+
+  /* ---------- 2) الكارت نفسه ---------- */
+  body.orders-page #ordersBody tr.cz-card {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: stretch;
+    column-gap: 8px;
+    row-gap: 8px;
+    padding: 12px;
+    margin-bottom: 12px;
+    border: 1px solid rgba(148, 163, 184, .20);
+    border-radius: 18px;
+    background: linear-gradient(180deg, rgba(30, 41, 59, .96), rgba(13, 21, 38, .96));
+    box-shadow: 0 8px 20px rgba(2, 6, 23, .30);
+  }
+  body.orders-page #ordersBody tr.group-parent-row { border-color: rgba(74, 222, 128, .38); }
+  body.orders-page #ordersBody tr.ready-stock-row { border-color: rgba(34, 211, 238, .38); }
+  body.orders-page #ordersBody tr.group-child-row {
+    border-inline-start: 3px solid rgba(74, 222, 128, .45);
+    margin-inline-start: 12px;
+  }
+  body.orders-page #ordersBody tr.print-row-selected { border-color: rgba(34, 211, 238, .8); }
+  body.orders-page #ordersBody tr.cz-card > td { background: none; }
+
+  /* ---------- 3) هيدر الكارت: رقم الأوردر ---------- */
+  body.orders-page #ordersBody tr.cz-card > td[data-label="م"] {
+    order: -3;
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 0 0 9px !important;
+    border-bottom: 1px solid rgba(148, 163, 184, .16) !important;
+  }
+  body.orders-page #ordersBody tr.cz-card > td[data-label="م"]::before { display: none; }
+  body.orders-page #ordersBody tr.cz-card > td[data-label="م"] br { display: none; }
+  body.orders-page #ordersBody tr.cz-card > td[data-label="م"] small { font-size: 11px !important; }
+  body.orders-page #ordersBody .order-display-no {
+    padding: 5px 13px;
+    border-radius: 999px;
+    background: rgba(34, 211, 238, .13);
+    border: 1px solid rgba(34, 211, 238, .38);
+    font-size: 14px !important;
+    letter-spacing: .3px;
+  }
+
+  /* ---------- 4) بيانات العميل ---------- */
+  body.orders-page #ordersBody td.customer-cell.cz-title {
+    order: -2;
+    background: rgba(34, 211, 238, .06);
+    border: 1px solid rgba(34, 211, 238, .18) !important;
+    border-radius: 13px;
+    padding: 11px !important;
+    margin-bottom: 0;
+    line-height: 1.85;
+  }
+  body.orders-page #ordersBody td.customer-cell.cz-title::before { display: none; }
+  body.orders-page #ordersBody td.customer-cell b { font-size: 15px !important; }
+  body.orders-page #ordersBody td.customer-cell small { font-size: 11.5px !important; }
+  body.orders-page #ordersBody .order-note-inline {
+    max-width: none;
+    margin-top: 8px;
+    font-size: 11.5px;
+  }
+
+  /* ---------- 5) بلاطات البيانات: نفس الشكل ونفس الارتفاع ---------- */
+  body.orders-page #ordersBody tr.cz-card > td:not(.cz-title):not(.cz-actions):not(.cz-full):not(.select-col):not([data-label="م"]) {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 3px;
+    min-width: 0 !important;   /* .order-source-cell كان min-width:170px فبيكبّر عمود */
+    padding: 9px 10px !important;
+    border: 1px solid rgba(148, 163, 184, .13) !important;
+    border-radius: 12px;
+    background: rgba(15, 23, 42, .55);
+    line-height: 1.65;
+    text-align: center !important;
+  }
+  body.orders-page #ordersBody tr.cz-card > td::before {
+    flex: none;
+    color: var(--cz-dim);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: .2px;
+    margin-bottom: 1px;
+    text-align: center;
+  }
+  /* أحجام موحّدة للأرقام والتفاصيل جوّه البلاطات (بتغلب الـinline styles) */
+  body.orders-page #ordersBody tr.cz-card > td:not(.cz-title) b { font-size: 14px !important; }
+  body.orders-page #ordersBody tr.cz-card > td:not(.cz-title) small { font-size: 10.5px !important; }
+  body.orders-page #ordersBody .tag,
+  body.orders-page #ordersBody .status-badge,
+  body.orders-page #ordersBody .ready-stock-tag,
+  body.orders-page #ordersBody .ready-stock-ok,
+  body.orders-page #ordersBody .ready-stock-missing,
+  body.orders-page #ordersBody .ready-stock-pending {
+    font-size: 10.5px !important;
+    padding: 5px 9px !important;
+  }
+  body.orders-page #ordersBody .payment-wrap { gap: 4px; }
+  body.orders-page #ordersBody .bosta-track,
+  body.orders-page #ordersBody .bosta-estimate { font-size: 10.5px; padding: 6px 8px; margin-top: 6px; }
+
+  /* الدفع آخر بلاطة وبتفضل لوحدها في سطر، فبنخليها بعرض الكارت علشان ما يبقاش فيه فراغ */
+  body.orders-page #ordersBody tr.cz-card > td[data-label="الدفع"] {
+    grid-column: 1 / -1;
+  }
+  body.orders-page #ordersBody td[data-label="الدفع"] .payment-wrap {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 6px 12px;
+  }
+
+  /* ---------- 6) الحالة: صف كامل ---------- */
+  body.orders-page #ordersBody tr.cz-card > td.cz-input {
+    grid-column: 1 / -1;
+    order: 2;
+    text-align: center !important;
+  }
+  body.orders-page #ordersBody .status-wrap { width: 100%; gap: 7px; }
+  body.orders-page #ordersBody .status-select {
+    width: 100% !important;
+    min-width: 0 !important;
+    font-size: 13px !important;
+    padding: 11px 34px 11px 12px !important;
+  }
+
+  /* ---------- 7) التحكم وملفات التصميم ---------- */
+  /* شبكة عمود واحد بدل flex-column.
+     مهم: flex-direction:column مع flex-wrap:wrap و flex:1 1 100% كانت بتحطّ
+     كل عنصر في عمود لوحده، فالأزرار ومعاينات الـPDF كانت بتخرج بره الكارت. */
+  body.orders-page #ordersBody td.action-cell.cz-actions {
+    position: static !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    grid-column: 1 / -1;
+    order: 3;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr);
+    grid-auto-flow: row;
+    align-content: start;
+    gap: 9px;
+    padding: 11px 0 0 !important;
+    margin-top: 2px;
+    background: transparent !important;
+    box-shadow: none !important;
+    border-top: 1px solid rgba(148, 163, 184, .18);
+  }
+  body.orders-page #ordersBody .action-cell > * {
+    flex: none !important;
+    width: 100% !important;
+    min-width: 0;
+  }
+  body.orders-page #ordersBody .action-cell .action-toggle {
+    min-height: 44px;
+    justify-content: center;
+    border-radius: 12px;
+  }
+  body.orders-page #ordersBody .action-cell .action-menu.open { gap: 8px; }
+  body.orders-page #ordersBody .action-cell .action-menu .btn { min-height: 42px; }
+
+  /* معاينات الـPDF: مصغّرة (~96px) وفي شبكة متساوية زي الكمبيوتر */
+  body.orders-page .order-files-control {
+    grid-template-columns: repeat(auto-fill, minmax(102px, 1fr));
+    gap: 8px;
+    margin-top: 2px;
+    padding-top: 10px;
+  }
+  body.orders-page .pdf-preview-card { max-width: 118px; }
+  /* مهم: قاعدة أزرار الموبايل (flex:1 1 44% + min-height:42px + font-size:13.5px)
+     كانت بتتطبق على زراير المعاينة فتضغط صورة الـPDF وتكبّر زر التحميل.
+     هنا بنرجّعها لمقاسها الطبيعي. */
+  body.orders-page .pdf-preview-card,
+  body.orders-page .pdf-preview-open,
+  body.orders-page .pdf-preview-download,
+  body.orders-page .pdf-preview-sheet { flex: none !important; }
+  body.orders-page .pdf-preview-open {
+    min-height: 0 !important;
+    padding: 4px !important;
+    font-size: 10px !important;
+  }
+  body.orders-page .pdf-preview-sheet { height: 96px; }
+  body.orders-page .pdf-preview-name { font-size: 10px !important; }
+  body.orders-page .pdf-preview-download {
+    min-height: 34px !important;
+    padding: 6px !important;
+    font-size: 10.5px !important;
+  }
+
+  /* ---------- 8) رسالة "لا توجد أوردرات" ---------- */
+  body.orders-page #ordersBody td.orders-empty-cell {
+    padding: 30px 14px !important;
+    border-radius: 16px;
+    line-height: 1.9;
+  }
+  body.orders-page .status-select { width: 100% !important; min-width: 0 !important; }
+
+  /* ==================================================================
+     صفحة الفورم — نفس معالجة قائمة الأوردرات
+     كل بيانات الفورمة ظاهرة في كارت مرتب، وصورة المنتج فوق الكارت،
+     ومعاينة الـPDF وفلتر النوع بيتظبطوا للموبايل.
+     ================================================================== */
+  body.forms-page #rows tr.cz-card > td.cz-more { display: block; order: 0; }
+  body.forms-page #rows tr.cz-card::after { content: none; display: none; }
+  body.forms-page #rows tr.cz-card > td { max-height: none !important; overflow: visible; }
+  body.forms-page #rows tr.cz-card > td::after { display: none !important; }
+  body.forms-page #rows td.cz-long { max-height: none; cursor: default; }
+
+  body.forms-page #rows tr.cz-card {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: stretch;
+    column-gap: 8px; row-gap: 8px;
+    padding: 12px; margin-bottom: 12px;
+    border: 1px solid rgba(148, 163, 184, .20);
+    border-radius: 18px;
+    background: linear-gradient(180deg, rgba(30, 41, 59, .96), rgba(13, 21, 38, .96));
+    box-shadow: 0 8px 20px rgba(2, 6, 23, .30);
+  }
+  /* عمود الصورة: بانر فوق الكارت */
+  body.forms-page #rows tr.cz-card > td[data-label="صورة"] {
+    order: -3; grid-column: 1 / -1;
+    display: flex; align-items: center; justify-content: center;
+    padding: 0 0 10px !important;
+    border-bottom: 1px solid rgba(148, 163, 184, .16) !important;
+  }
+  body.forms-page #rows tr.cz-card > td[data-label="صورة"]::before { display: none; }
+  body.forms-page #rows .thumb {
+    width: 100% !important; max-width: 190px; height: 120px !important;
+    object-fit: contain; background: #fff;
+    border-radius: 12px; border: 1px solid rgba(148, 163, 184, .3);
+  }
+  body.forms-page #rows td.cz-title {
+    order: -2; grid-column: 1 / -1;
+    display: flex !important; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px;
+    background: rgba(34, 211, 238, .06);
+    border: 1px solid rgba(34, 211, 238, .18) !important;
+    border-radius: 13px; padding: 11px !important; line-height: 1.8;
+  }
+  body.forms-page #rows td.cz-title::before { flex: 1 1 100%; margin-bottom: 2px; text-align: start; }
+  body.forms-page #rows td.cz-title button { min-height: 34px; padding: 6px 12px !important; font-size: 12px !important; }
+  /* بلاطات متساوية زي صفحة الأوردرات */
+  body.forms-page #rows tr.cz-card > td:not(.cz-title):not(.cz-actions):not(.cz-full):not([data-label="صورة"]) {
+    display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+    gap: 3px; min-width: 0 !important;
+    padding: 9px 10px !important;
+    border: 1px solid rgba(148, 163, 184, .13) !important;
+    border-radius: 12px; background: rgba(15, 23, 42, .55);
+    line-height: 1.65; text-align: center !important;
+  }
+  body.forms-page #rows tr.cz-card > td::before {
+    flex: none; color: var(--cz-dim); font-size: 10px; font-weight: 800;
+    margin-bottom: 1px; text-align: center;
+  }
+  body.forms-page #rows tr.cz-card > td:not(.cz-title) b { font-size: 13.5px !important; }
+  body.forms-page #rows tr.cz-card > td:not(.cz-title) small { font-size: 10.5px !important; }
+  body.forms-page #rows tr.cz-card > td.cz-actions {
+    grid-column: 1 / -1; order: 3;
+    display: grid !important; grid-template-columns: minmax(0, 1fr); gap: 8px;
+    padding: 11px 0 0 !important; margin-top: 2px;
+    border-top: 1px solid rgba(148, 163, 184, .18);
+  }
+  body.forms-page #rows td.cz-actions > * { flex: none !important; width: 100% !important; }
+
+  /* فلتر النوع والبحث */
+  body.forms-page .type-filter-menu {
+    position: fixed !important; inset-inline: 12px; top: auto !important;
+    width: auto !important; max-height: 60vh; overflow: auto; z-index: 9500;
+  }
+  body.forms-page .filters, body.forms-page .form-grid { grid-template-columns: 1fr !important; }
+  body.forms-page .preview-frame { height: 240px !important; }
+  body.forms-page .detail-image { max-height: 240px !important; }
+  body.forms-page .workflow { grid-template-columns: 1fr !important; }
+
+  /* ==================================================================
+     صفحة الورشة
+     ================================================================== */
+  body.workshop-page #attSheet { min-width: 0 !important; }
+  body.workshop-page table.cz-cards tr.cz-card > td.cz-more { display: block; order: 0; }
+  body.workshop-page table.cz-cards tr.cz-card::after { content: none; display: none; }
+  body.workshop-page table.cz-cards tr.cz-card > td { max-height: none !important; overflow: visible; }
+  body.workshop-page table.cz-cards tr.cz-card > td::after { display: none !important; }
+  body.workshop-page table.cz-cards tr.cz-card {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: stretch; column-gap: 8px; row-gap: 8px;
+    padding: 12px; margin-bottom: 12px; border-radius: 16px;
+  }
+  body.workshop-page table.cz-cards tr.cz-card > td:not(.cz-title):not(.cz-actions):not(.cz-full) {
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+    min-width: 0 !important; padding: 8px 9px !important;
+    border: 1px solid rgba(148, 163, 184, .13) !important;
+    border-radius: 11px; background: rgba(15, 23, 42, .55);
+    text-align: center !important;
+  }
+  body.workshop-page table.cz-cards tr.cz-card > td::before {
+    flex: none; font-size: 10px; font-weight: 800; text-align: center; color: var(--cz-dim);
+  }
+  /* شيت الحضور: صف لكل صنايعي بعرض الكارت */
+  body.workshop-page #attSheet.cz-cards tr.cz-card { grid-template-columns: 1fr 1fr; }
+  body.workshop-page #attSheet input[type="checkbox"] { width: 24px !important; height: 24px !important; }
+  body.workshop-page .form-grid { grid-template-columns: 1fr !important; }
+  body.workshop-page .cards-grid { grid-template-columns: 1fr !important; }
+  body.workshop-page .grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  body.workshop-page .stat b { font-size: 20px !important; }
+  body.workshop-page .section-actions { width: 100%; }
+  body.workshop-page .section-actions input[type="date"] { width: 100% !important; }
+  /* v10.0 — كروت الربح والخسارة وشريط توزيع المصروف */
+  body.workshop-page .pnl { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  body.workshop-page .pnl-box.big { grid-column: 1 / -1 !important; }
+  body.workshop-page .pnl-box b { font-size: 19px !important; }
+  body.workshop-page .bar-row { grid-template-columns: 1fr !important; gap: 4px !important; }
+  body.workshop-page .bar-row b { text-align: start; }
+
+  /* ==================================================================
+     صفحتَي التجار والشركاء — الأقسام الجديدة
+     ================================================================== */
+  body .grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  #traderFinanceHost .form-grid, #partnerEquityHost .form-grid { grid-template-columns: 1fr !important; }
+  #traderFinanceHost .section-actions, #partnerEquityHost .section-actions { width: 100%; flex-wrap: wrap; }
+  #traderFinanceHost .section-actions input[type="date"],
+  #partnerEquityHost .section-actions input[type="date"],
+  #traderFinanceHost .section-actions select,
+  #partnerEquityHost .section-actions select { width: 100% !important; }
+
+  /* في الوضع الأفقي القصير نصغّر الأشرطة شوية */
+  @media (orientation: landscape) and (max-height: 460px) {
+    :root { --cz-bar: 48px; --cz-tab: 54px; --cz-top: calc(48px + env(safe-area-inset-top, 0px)); --cz-bot: calc(54px + env(safe-area-inset-bottom, 0px)); }
+    .cz-tab .cz-ic { font-size: 17px; }
+  }
+}
+
+/* شاشات صغيرة جداً */
+@media (max-width: 360px) {
+  .stats, .cz-tiles, .menu { grid-template-columns: 1fr !important; }
+  .cz-tab .cz-lb { font-size: 9px !important; }
+}
+
+/* عند الطباعة: ما نطبعش عناصر الشل */
+@media print {
+  .cz-appbar, .cz-tabbar, .cz-drawer { display: none !important; }
+}

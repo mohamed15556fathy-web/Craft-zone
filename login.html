@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+
+<meta name="theme-color" content="#07182b">
+<title>دخول السيستم | Craft Zone</title>
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
+<link rel="icon" type="image/png" sizes="64x64" href="/assets/favicon-64.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/favicon-180.png">
+<style>
+:root{
+  --bg:#07182b;
+  --card:#0f2237;
+  --card-border:rgba(255,255,255,.08);
+  --text:#eaf2fb;
+  --muted:#8fa6bd;
+  --field:#0a1a2c;
+  --field-border:rgba(255,255,255,.12);
+  --gold:#d59a38;
+  --gold-2:#b8792b;
+  --danger:#f87171;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family:'Segoe UI',system-ui,-apple-system,'Noto Kufi Arabic',Tahoma,sans-serif;
+  color:var(--text);
+  background:
+    radial-gradient(1100px 620px at 50% -10%,rgba(213,154,56,.10),transparent 60%),
+    radial-gradient(900px 520px at 12% 105%,rgba(56,132,255,.08),transparent 60%),
+    var(--bg);
+  display:flex;align-items:center;justify-content:center;
+  min-height:100vh;padding:24px;
+}
+.login-card{
+  width:min(430px,100%);
+  background:linear-gradient(180deg,rgba(21,42,66,.96),rgba(12,29,47,.96));
+  border:1px solid var(--card-border);
+  border-radius:20px;
+  padding:34px 30px 28px;
+  box-shadow:0 28px 70px rgba(0,0,0,.5);
+  text-align:center;
+  animation:rise .35s ease both;
+}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.login-card > img{width:200px;max-width:78%;height:auto;margin:0 auto 18px;display:block}
+.login-card h1{margin:0 0 8px;font-size:25px;font-weight:800;letter-spacing:.2px}
+.login-card .sub{margin:0 0 22px;color:var(--muted);font-size:13.5px;line-height:1.7}
+.field{text-align:right;margin-bottom:16px}
+.field label{display:block;margin-bottom:7px;font-size:12.5px;font-weight:700;color:var(--muted)}
+.field input{
+  width:100%;padding:14px 15px;border-radius:12px;
+  border:1px solid var(--field-border);background:var(--field);color:var(--text);
+  font-size:15px;font-family:inherit;outline:none;
+  transition:border-color .16s ease,box-shadow .16s ease,background .16s ease;
+}
+.field input::placeholder{color:#5d7590}
+.field input:focus{border-color:rgba(213,154,56,.65);box-shadow:0 0 0 3px rgba(213,154,56,.14);background:#0c1f34}
+.field input:disabled{opacity:.6}
+.login-btn{
+  width:100%;margin-top:6px;padding:15px 16px;border:none;border-radius:12px;cursor:pointer;
+  background:linear-gradient(135deg,var(--gold),var(--gold-2));color:#fff;
+  font-size:16px;font-weight:800;font-family:inherit;letter-spacing:.2px;
+  display:flex;align-items:center;justify-content:center;gap:9px;
+  box-shadow:0 10px 24px rgba(184,121,43,.28);
+  transition:transform .12s ease,box-shadow .16s ease,filter .16s ease;
+}
+.login-btn:hover:not(:disabled){filter:brightness(1.06);box-shadow:0 12px 28px rgba(184,121,43,.38)}
+.login-btn:active:not(:disabled){transform:translateY(1px)}
+.login-btn:disabled{opacity:.7;cursor:progress}
+.login-error{
+  display:none;margin-bottom:16px;padding:11px 13px;border-radius:11px;
+  background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.36);
+  color:var(--danger);font-size:13px;font-weight:700;
+}
+.login-error.show{display:block;animation:shake .32s ease}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.microcopy{margin:16px 0 0;color:var(--muted);font-size:11.5px;line-height:1.8}
+.spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (max-width:420px){.login-card{padding:26px 20px 22px}.login-card h1{font-size:22px}}
+</style>
+
+<!-- Craft Zone Mobile Layer -->
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<link rel="stylesheet" href="mobile.css?v=9.9">
+<script src="mobile.js?v=9.9"></script>
+</head>
+<body>
+<main>
+  <form class="login-card" id="loginForm" autocomplete="on">
+    <img src="/assets/logo-craft-zone-dark.png" alt="Craft Zone">
+    <h1>دخول السيستم</h1>
+    <p class="sub">إدارة الأوردرات والمخازن والحسابات من مكان واحد.</p>
+
+    <div class="login-error" id="loginError">بيانات الدخول غير صحيحة</div>
+
+    <div class="field">
+      <label for="username">رقم التليفون أو اسم المستخدم أو البريد</label>
+      <input id="username" name="username" type="text" inputmode="text" autocomplete="username" placeholder="اكتب رقم تليفونك أو اسم المستخدم" required>
+    </div>
+
+    <div class="field">
+      <label for="password">كلمة المرور</label>
+      <input id="password" name="password" type="password" autocomplete="current-password" placeholder="••••••••" required>
+    </div>
+
+    <button class="login-btn" id="loginBtn" type="submit">
+      <span id="btnIcon" aria-hidden="true">🔒</span>
+      <span id="btnText">تسجيل الدخول بأمان</span>
+    </button>
+
+    <p class="microcopy">الدخول حسب الصلاحيات: مدير عام / مودريتور / أوبريشن / إنتاج / مخزن / محاسب</p>
+  </form>
+</main>
+<script>
+(function(){
+  var form=document.getElementById('loginForm');
+  var btn=document.getElementById('loginBtn');
+  var btnIcon=document.getElementById('btnIcon');
+  var btnText=document.getElementById('btnText');
+  var errorBox=document.getElementById('loginError');
+  var usernameInput=document.getElementById('username');
+  var passwordInput=document.getElementById('password');
+  var busy=false;
+
+  // لو المستخدم داخل بالفعل نوديه على طول للوحة التحكم.
+  try{ if(localStorage.getItem('token') && localStorage.getItem('user')) location.replace('index.html'); }catch(e){}
+
+  function showError(message){
+    errorBox.textContent=message||'بيانات الدخول غير صحيحة';
+    errorBox.classList.add('show');
+  }
+  function clearError(){ errorBox.classList.remove('show'); }
+
+  function setBusy(state){
+    busy=state;
+    btn.disabled=state;
+    usernameInput.disabled=state;
+    passwordInput.disabled=state;
+    btnIcon.innerHTML=state?'<span class="spinner"></span>':'🔒';
+    btnText.textContent=state?'جاري الدخول...':'تسجيل الدخول بأمان';
+  }
+
+  async function login(){
+    if(busy) return;
+    var username=usernameInput.value.trim();
+    var password=passwordInput.value;
+    if(!username){ clearError(); showError('اكتب رقم التليفون أو اسم المستخدم'); usernameInput.focus(); return; }
+    if(!password){ clearError(); showError('اكتب كلمة المرور'); passwordInput.focus(); return; }
+    clearError();
+    setBusy(true);
+    try{
+      var res=await fetch('/login',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({username:username,password:password})
+      });
+      var data={};
+      try{ data=await res.json(); }catch(e){}
+      if(!res.ok || !data.token){
+        setBusy(false);
+        showError(data.error||'بيانات الدخول غير صحيحة');
+        passwordInput.value='';
+        passwordInput.focus();
+        return;
+      }
+      localStorage.setItem('token',data.token);
+      localStorage.setItem('user',JSON.stringify(data.user));
+      location.href='index.html';
+    }catch(e){
+      setBusy(false);
+      showError('تعذر الاتصال بالسيرفر، جرّب تاني');
+    }
+  }
+
+  // Enter في أي خانة بيدخل على طول (الفورم نفسه بيتعامل مع Enter).
+  form.addEventListener('submit',function(e){ e.preventDefault(); login(); });
+  usernameInput.addEventListener('input',clearError);
+  passwordInput.addEventListener('input',clearError);
+  usernameInput.focus();
+})();
+</script>
+</body>
+</html>

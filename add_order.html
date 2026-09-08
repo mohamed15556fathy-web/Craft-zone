@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head><script id="auth-flicker-guard">(function(){try{var p=location.pathname.toLowerCase();if(p.endsWith('/login.html')||p==='/'||p===''){return;}if(!localStorage.getItem('token')||!localStorage.getItem('user')){location.replace('login.html');return;}document.documentElement.classList.add('auth-loading');}catch(e){location.replace('login.html');}})();</script><style id="auth-flicker-style">html.auth-loading body{visibility:hidden!important}html.auth-ready body{visibility:visible}</style>
+<meta charset="UTF-8">
+<title>إضافة أوردر</title>
+<style>
+body{font-family:'Segoe UI',sans-serif;background:#f8fafc;direction:rtl;padding:20px}
+.container{max-width:1100px;margin:auto;background:#fff;padding:28px;border-radius:18px;box-shadow:0 10px 25px rgba(0,0,0,.08)}
+h2{margin-top:0;text-align:center}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}.full{grid-column:1/-1}.title{grid-column:1/-1;background:#eff6ff;padding:10px 14px;border-radius:10px;font-weight:700}
+input,select,textarea{width:100%;box-sizing:border-box;padding:12px;border:1px solid #cbd5e1;border-radius:10px}textarea{resize:vertical}
+label{display:block;margin-bottom:6px;font-weight:700;color:#475569}.alert{padding:12px;border-radius:10px;margin-bottom:12px;display:none}.ok{background:#dcfce7;color:#166534}.bad{background:#fee2e2;color:#991b1b}.btn{background:#2563eb;color:#fff;border:none;padding:16px;border-radius:10px;width:100%;font-size:18px;cursor:pointer;margin-top:16px}
+a{color:#2563eb;text-decoration:none}
+.stock-toggle{display:flex;justify-content:space-between;align-items:center;background:#fdf2f8;border:2px solid #fbcfe8;border-radius:14px;padding:14px 18px}.order-scope{display:flex;gap:10px;flex-wrap:wrap}.scope-btn{width:auto;margin:0;padding:12px 16px;font-size:15px;background:#e2e8f0;color:#0f172a}.scope-btn.active{background:#2563eb;color:#fff}.trader-panel{display:none;background:#f0f9ff;border:1px solid #bae6fd;border-radius:14px;padding:14px}.trader-panel.active{display:block}
+.stock-toggle .txt{font-weight:700;color:#9d174d}.switch{position:relative;display:inline-block;width:56px;height:30px}.switch input{opacity:0;width:0;height:0}
+.slider{position:absolute;inset:0;cursor:pointer;background:#cbd5e1;transition:.3s;border-radius:999px}.slider:before{content:'';position:absolute;height:22px;width:22px;left:4px;top:4px;background:#fff;border-radius:50%;transition:.3s;box-shadow:0 2px 6px rgba(0,0,0,.2)}
+.switch input:checked + .slider{background:#db2777}.switch input:checked + .slider:before{transform:translateX(26px)}
+.stage-toggle-card{--stage-color:#2563eb;--stage-soft:#eff6ff;--stage-border:#bfdbfe;display:flex;align-items:center;gap:14px;min-height:84px;padding:15px 17px;background:#fff;border:1.5px solid #dbe3ee;border-radius:18px;box-shadow:0 4px 12px rgba(15,23,42,.05);transition:border-color .22s,background .22s,box-shadow .22s,transform .22s}
+.stage-toggle-card:hover{transform:translateY(-1px);box-shadow:0 9px 22px rgba(15,23,42,.09)}
+.stage-toggle-card:has(.stage-toggle-switch input:checked){background:var(--stage-soft);border-color:var(--stage-color);box-shadow:0 0 0 3px color-mix(in srgb,var(--stage-color) 13%,transparent),0 10px 24px rgba(15,23,42,.08)}
+.stage-toggle-card.stretch{--stage-color:#16a34a;--stage-soft:#f0fdf4;--stage-border:#bbf7d0}.stage-toggle-card.breaking{--stage-color:#ea580c;--stage-soft:#fff7ed;--stage-border:#fed7aa}.stage-toggle-card.lamination{--stage-color:#2563eb;--stage-soft:#eff6ff;--stage-border:#bfdbfe}
+.stage-toggle-icon{width:48px;height:48px;flex:0 0 48px;display:grid;place-items:center;border-radius:14px;background:var(--stage-soft);border:1px solid var(--stage-border);font-size:24px;transition:.22s}
+.stage-toggle-card:has(.stage-toggle-switch input:checked) .stage-toggle-icon{background:var(--stage-color);border-color:var(--stage-color);box-shadow:0 7px 16px color-mix(in srgb,var(--stage-color) 27%,transparent)}
+.stage-toggle-copy{min-width:0;flex:1}.stage-toggle-title{display:block;color:#0f172a;font-size:16px;font-weight:900;line-height:1.45}.stage-toggle-preview{display:block;color:#64748b;font-size:12px;font-weight:700;line-height:1.7;margin-top:3px;overflow-wrap:anywhere}.stage-toggle-preview:empty::before{content:attr(data-empty)}
+.stage-toggle-switch{position:relative;display:inline-block;flex:0 0 58px;width:58px;height:32px;direction:ltr}.stage-toggle-switch input{position:absolute;opacity:0;pointer-events:none}.stage-toggle-slider{position:absolute;inset:0;cursor:pointer;background:#cbd5e1;border-radius:999px;transition:.25s;box-shadow:inset 0 0 0 1px rgba(15,23,42,.08)}.stage-toggle-slider::before{content:'';position:absolute;width:24px;height:24px;left:4px;top:4px;background:#fff;border-radius:50%;transition:.25s;box-shadow:0 2px 7px rgba(15,23,42,.28)}.stage-toggle-switch input:checked + .stage-toggle-slider{background:var(--stage-color)}.stage-toggle-switch input:checked + .stage-toggle-slider::before{transform:translateX(26px)}.stage-toggle-switch input:focus-visible + .stage-toggle-slider{outline:3px solid color-mix(in srgb,var(--stage-color) 24%,transparent);outline-offset:3px}
+.print-files{display:none}.customer-picker{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.customer-picker-panel{display:none;background:#eff6ff;border:1px solid #bfdbfe;border-radius:12px;padding:12px;grid-column:1/-1}.customer-picker-list{max-height:220px;overflow:auto;display:grid;gap:8px;margin-top:10px}.customer-pill{border:1px solid #cbd5e1;background:#fff;border-radius:12px;padding:10px 12px;cursor:pointer;text-align:right}.customer-pill:hover{border-color:#2563eb;background:#eff6ff}.customer-pill b{display:block;color:#0f172a}.customer-pill small{display:block;color:#64748b;margin-top:4px}
+.item-card{border:1px solid #cbd5e1;border-radius:16px;padding:16px;background:#f8fafc;margin-bottom:16px}.item-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}.item-badge{background:#dbeafe;color:#1d4ed8;padding:8px 12px;border-radius:999px;font-weight:700}.small-btn{width:auto;padding:10px 14px;font-size:14px;margin-top:0}.danger{background:#ef4444}.muted{color:#64748b;font-weight:700}.summary-bar{display:flex;justify-content:space-between;align-items:center;gap:12px;background:#eef2ff;border:1px solid #c7d2fe;border-radius:14px;padding:12px 16px;margin:14px 0;font-weight:800}.urgent-wrap{display:flex;gap:12px;align-items:center;flex-wrap:wrap;background:#fff5f5;border:1px solid #fecaca;border-radius:14px;padding:12px 14px}.urgent-btn{background:#dc2626;color:#fff;border:none;padding:12px 18px;border-radius:12px;cursor:pointer;font-weight:800}.urgent-btn.active{background:#991b1b;box-shadow:0 0 0 3px rgba(220,38,38,.15)}.urgent-note{display:none}.finance-note{background:#eef2ff;border:1px solid #c7d2fe;border-radius:12px;padding:12px 14px;color:#4338ca;font-weight:700;line-height:1.8}
+@media (max-width:700px){.grid{grid-template-columns:1fr}.summary-bar{flex-direction:column;align-items:flex-start}.stage-toggle-card{padding:13px}.stage-toggle-icon{width:42px;height:42px;flex-basis:42px;font-size:21px}.stage-toggle-title{font-size:15px}}
+</style>
+
+<!-- Craft Zone Mobile Layer -->
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<link rel="stylesheet" href="mobile.css?v=9.9">
+<script src="mobile.js?v=9.9"></script>
+</head>
+<body>
+<div class="container">
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+    <h2>➕ تسجيل أوردر جديد</h2>
+    <div style="display:flex;gap:12px"><a href="forms.html">🧰 صفحة الفورم</a><a href="index.html">⬅️ الرئيسية</a></div>
+  </div>
+  <div class="grid">
+    <div class="title customer-scope-field">بيانات العميل</div>
+    <div class="full customer-picker customer-scope-field">
+      <button type="button" class="btn small-btn" onclick="toggleCustomerPicker()">👤 اختار من العملاء</button>
+      <span id="selectedCustomerHint" class="muted">تقدر تختار عميل مسجل أو تكتب البيانات يدويًا.</span>
+    </div>
+    <div id="customerPickerPanel" class="customer-picker-panel customer-scope-field">
+      <label>ابحث في العملاء المسجلين</label>
+      <input id="customerSearch" placeholder="اكتب اسم العميل أو التليفون" oninput="renderCustomerList()">
+      <div id="customerList" class="customer-picker-list"></div>
+    </div>
+    <div class="customer-scope-field"><label>اسم العميل</label><input id="custName"></div>
+    <div class="customer-scope-field"><label>رقم التليفون</label><input id="custPhone" type="tel" inputmode="numeric" dir="ltr" autocomplete="tel" placeholder="اكتب الرقم بالإنجليزي"></div>
+    <div class="full customer-scope-field"><label>العنوان</label><input id="custAddress"></div>
+    <div class="customer-scope-field"><label>اسم البيدج (اختياري)</label><select id="orderPageName"><option value="">بدون تحديد صفحة</option><option>El7amd Factory - مصنع الحمد</option><option>Craft Zone</option><option>Craft House - بــيت الكرافت</option><option>Craft Zone Site</option></select></div>
+    <div class="title">نوع الشغل</div>
+    <div class="full order-scope">
+      <button type="button" id="customerScopeBtn" class="btn scope-btn active" onclick="setOrderScope('customer')">👤 أوردر عميل</button>
+      <button type="button" id="traderScopeBtn" class="btn scope-btn" onclick="setOrderScope('trader')">🏪 طلبية تاجر</button>
+      <span class="muted" id="orderScopeHint">اختار هل الأوردر ده لعميل عادي ولا جزء من طلبية تاجر.</span>
+    </div>
+    <div id="traderOrderPanel" class="full trader-panel">
+      <div class="grid">
+        <div><label>التاجر</label><select id="orderTrader" onchange="onOrderTraderChange()"></select></div>
+        <div><label>الطلبية</label><select id="orderTraderBatch"></select></div>
+        <div><label>اسم طلبية جديدة لو مش موجودة</label><input id="newTraderBatchName" placeholder="مثال: طلبية أكياس شهر يناير"></div>
+      </div>
+      <div class="muted">لو اخترت تاجر، الأوردر هيتسجل عادي ويتخصم من المخزون بنفس دورة الأوردرات، وكمان هيتربط بكشف التاجر والطلبية.</div>
+    </div>
+    <div class="full urgent-wrap">
+      <button type="button" id="urgentBtn" class="urgent-btn" onclick="toggleUrgent()">🚨 مستعجل</button>
+      <span class="muted" id="urgentHint">لو الأوردر مستعجل دوس على الزرار، وساعتها تقدر تكتب ملاحظة اختيارية.</span>
+    </div>
+    <div class="full urgent-note" id="urgentNoteWrap"><label>ملاحظة الأوردر المستعجل (اختياري)</label><textarea id="urgentNote" rows="3" placeholder="اكتب أي ملاحظة مهمة عن الاستعجال لو حابب"></textarea></div>
+
+    <div class="full">
+      <div class="title">ملاحظة الأوردر</div>
+      <div class="item-card">
+        <label>Note / ملاحظة (اختياري)</label>
+        <textarea id="orderNotes" rows="3" placeholder="مثال: العميل عايز يد لوحدها، أو فيه مشكلة/تفصيلة خاصة بالأوردر"></textarea>
+      </div>
+    </div>
+
+    <div class="title">الأصناف</div>
+    <div class="full summary-bar"><span id="itemsCountText">عدد الأصناف: 1</span><button type="button" class="btn small-btn" onclick="addItemCard()">➕ إضافة صنف</button></div>
+    <div class="full" id="itemsWrap"></div>
+
+    <div id="groupFinanceSection" class="full" style="display:none">
+      <div class="title">الماليّة العامة للأوردر</div>
+      <div class="item-card">
+        <div class="finance-note full">لأن الأوردر فيه أكتر من صنف، السعر والدفع بيتسجلوا مرة واحدة على الأوردر بالكامل. السيستم هيقسّمهم داخليًا على الأصناف من غير ما يظهروا لك مكررين.</div>
+        <div class="grid" style="margin-top:14px">
+          <div id="groupTotalWrap"><label>إجمالي مبلغ الأوردر بالكامل</label><input id="group_total_price" type="number" oninput="markGroupTotalAsManual()"></div>
+          <div id="groupPaymentTypeWrap"><label>حالة الدفع للأوردر بالكامل</label><select id="group_paymentType" onchange="updateGroupPayment()"><option value="لم يتم الدفع">لم يتم الدفع</option><option value="عربون">عربون</option><option value="آجل">آجل</option><option value="مدفوع كامل">مدفوع كامل</option></select></div>
+          <div id="groupPaidWrap"><label>المبلغ المدفوع</label><input id="group_paid_amount" type="number" value="0" oninput="updateGroupPayment()"></div>
+          <div id="groupRemainingWrap"><label>المتبقي</label><input id="group_remaining_amount" type="number" readonly></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="paymentActorSection" class="full">
+      <div class="title">مكان دخول العربون / المدفوع</div>
+      <div class="item-card">
+        <div class="grid">
+          <div><label>الفلوس دخلت فين؟</label><select id="payment_actor_username"><option value="__cashbox__">الخزنة</option></select></div>
+          <div class="finance-note">لو ماحددتش أدمن، أي عربون أو مدفوع هيتسجل في الخزنة تلقائيًا.</div>
+        </div>
+      </div>
+    </div>
+    <div id="designSection" class="full" style="display:none">
+      <div class="title">ملفات التصميم</div>
+      <div class="full print-files" id="filesBox"><label>ملفات التصميم (PDF فقط - متعدد) - ستتربط بكل أصناف الأوردر</label><input id="designFiles" type="file" accept="application/pdf" multiple></div>
+    </div>
+
+    <div class="full"><button class="btn" onclick="saveOrder()">حفظ الأوردر ✅</button></div>
+  </div>
+</div>
+<script>
+const token = localStorage.getItem('token');
+const user = JSON.parse(localStorage.getItem('user') || 'null');
+if (!token || !user) location.href = 'login.html';
+if (user.username!=='admin'&&user.role!=='super_admin' && !Number(user.perm_add_order || 0)) location.href = 'index.html';
+
+const dom = {
+  custName: document.getElementById('custName'),
+  custPhone: document.getElementById('custPhone'),
+  custAddress: document.getElementById('custAddress'),
+  orderPageName: document.getElementById('orderPageName'),
+  itemsWrap: document.getElementById('itemsWrap'),
+  itemsCountText: document.getElementById('itemsCountText'),
+  designSection: document.getElementById('designSection'),
+  filesBox: document.getElementById('filesBox'),
+  designFiles: document.getElementById('designFiles'),
+  customerSearch: document.getElementById('customerSearch'),
+  customerList: document.getElementById('customerList'),
+  customerPickerPanel: document.getElementById('customerPickerPanel'),
+  selectedCustomerHint: document.getElementById('selectedCustomerHint'),
+  customerScopeFields: Array.from(document.querySelectorAll('.customer-scope-field')),
+  customerScopeBtn: document.getElementById('customerScopeBtn'),
+  traderScopeBtn: document.getElementById('traderScopeBtn'),
+  orderScopeHint: document.getElementById('orderScopeHint'),
+  traderOrderPanel: document.getElementById('traderOrderPanel'),
+  orderTrader: document.getElementById('orderTrader'),
+  orderTraderBatch: document.getElementById('orderTraderBatch'),
+  newTraderBatchName: document.getElementById('newTraderBatchName'),
+  urgentBtn: document.getElementById('urgentBtn'),
+  urgentHint: document.getElementById('urgentHint'),
+  urgentNoteWrap: document.getElementById('urgentNoteWrap'),
+  urgentNote: document.getElementById('urgentNote'),
+  orderNotes: document.getElementById('orderNotes'),
+  groupFinanceSection: document.getElementById('groupFinanceSection'),
+  groupTotal: document.getElementById('group_total_price'),
+  groupPaymentType: document.getElementById('group_paymentType'),
+  groupPaid: document.getElementById('group_paid_amount'),
+  groupRemaining: document.getElementById('group_remaining_amount'),
+  groupTotalWrap: document.getElementById('groupTotalWrap'),
+  groupPaymentTypeWrap: document.getElementById('groupPaymentTypeWrap'),
+  groupPaidWrap: document.getElementById('groupPaidWrap'),
+  groupRemainingWrap: document.getElementById('groupRemainingWrap'),
+  paymentActorUsername: document.getElementById('payment_actor_username')
+};
+
+function normalizePhoneDigits(value = '') {
+  const arabicDigits = '٠١٢٣٤٥٦٧٨٩';
+  const persianDigits = '۰۱۲۳۴۵۶۷۸۹';
+  return String(value || '')
+    .replace(/[٠-٩]/g, digit => String(arabicDigits.indexOf(digit)))
+    .replace(/[۰-۹]/g, digit => String(persianDigits.indexOf(digit)))
+    .replace(/[^0-9+]/g, '');
+}
+function enforceEnglishPhoneInput(input) {
+  if (!input) return '';
+  const normalized = normalizePhoneDigits(input.value);
+  if (input.value !== normalized) input.value = normalized;
+  return normalized;
+}
+
+function normalizePaperType(v){ v=String(v||'').trim(); return (v==='كوشيه'||v==='برستول كوشيه'||v==='ورق طبع'||v==='ورق زبدة')?v:'كرافت'; }
+// ورق الزبدة بيدخل طباعة أوفست بس، وتكلفته ورق + قص + تصميم + طباعة من غير تصنيع ولا يد.
+function isButterPaperType(v){ return normalizePaperType(v)==='ورق زبدة'; }
+function isCoatedPaperType(v){ const t=normalizePaperType(v); return t==='كوشيه'||t==='برستول كوشيه'; }
+function isFixedWhitePaperType(v){ const t=normalizePaperType(v); return isCoatedPaperType(t)||t==='ورق طبع'||t==='ورق زبدة'; }
+function normalizeHandleType(v,paperType){ v=String(v||'').trim(); const t=(v==='دوبار'||v==='دوبارة'||v==='دوباره')?'دوباره':(v==='ستان'||v==='ساتان'||v.toLowerCase()==='satin')?'ستان':(v==='مجدول'?'مجدول':''); if(isCoatedPaperType(paperType)) return t==='ستان'?'ستان':'دوباره'; return t||'مجدول'; }
+function effectiveItemBagColor(index){ return isFixedWhitePaperType(el(index,'paper_type')?.value) ? 'أبيض' : String(el(index,'color')?.value || '').trim(); }
+function syncHandleTypeOptions(index){ const select=el(index,'handle_type'); if(!select) return; const coated=isCoatedPaperType(el(index,'paper_type')?.value); Array.from(select.options).forEach(opt=>{ opt.disabled=coated && opt.value==='مجدول'; }); if(coated && select.value==='مجدول') select.value='دوباره'; }
+function syncHandleColorUI(index){ const select=el(index,'handle_color'); if(!select) return; const bagColor=effectiveItemBagColor(index); const autoOption=select.querySelector('option[value="auto"]'); if(autoOption) autoOption.textContent=`تلقائي: نفس لون الشنطة${bagColor?` (${bagColor})`:''}`; const hasHandle=String(el(index,'handle')?.value||'')==='بيد'; select.disabled=!hasHandle; }
+function resolvedHandleColor(index){ const selected=String(el(index,'handle_color')?.value||'auto').trim(); return (!selected||selected==='auto') ? effectiveItemBagColor(index) : selected; }
+function forceColorByPaperType(index){ const type=normalizePaperType(el(index,'paper_type')?.value); if(isFixedWhitePaperType(type)){ el(index,'color').value='أبيض'; el(index,'color').disabled=true; syncHandleTypeOptions(index); } else { el(index,'color').disabled=false; syncHandleTypeOptions(index); if(!el(index,'handle_type').value) el(index,'handle_type').value='مجدول'; } syncHandleColorUI(index); }
+function updateLaminationUI(index){ const on=!!el(index,'has_lamination')?.checked; const wrap=el(index,'laminationTypeWrap'); if(wrap) wrap.style.display=on?'grid':'none'; updateStagePreview(index); }
+function updateItemMaterialUI(index){ forceColorByPaperType(index); rebuildPrintTypeOptions(index); updateLaminationUI(index); if(typeof applyItemProductTypeUI==='function')applyItemProductTypeUI(index); checkStock(index); suggestReadyStockSaleTotal(index); }
+
+function authFetch(url, opts = {}) {
+  opts.headers = Object.assign({}, opts.headers || {}, { Authorization: 'Bearer ' + token });
+  return fetch(url, opts).then(async (response) => {
+    const data = await response.json().catch(() => ({}));
+    if (response.status === 401) {
+      localStorage.clear();
+      location.href = 'login.html';
+      throw new Error('unauthorized');
+    }
+    if (!response.ok) throw new Error(data.error || 'error');
+    return data;
+  });
+}
+
+let customersData = [];
+let tradersData = [];
+let traderBatchesData = [];
+let orderStageOptions = { forms:[], settings:{} };
+let orderScope = 'customer';
+let itemSeq = 0;
+let urgentMode = false;
+let selectedCustomerId = 0;
+let selectedCustomerMeta = {};
+let lastSharedFinanceMode = false;
+
+function mapCustomerRecord(raw = {}) {
+  return {
+    id: Number(raw.id || 0),
+    custName: String(raw.custName || raw.name || '').trim(),
+    custPhone: normalizePhoneDigits(raw.custPhone || raw.phone || ''),
+    custAddress: String(raw.custAddress || raw.address || '').trim(),
+    governorate: String(raw.governorate || raw.customer_governorate || '').trim(),
+    zone: String(raw.zone || raw.customer_zone || '').trim(),
+    email: String(raw.email || raw.customer_email || '').trim(),
+    notes: String(raw.notes || '').trim()
+  };
+}
+
+function normalizeCustomerKey(customer = {}) {
+  const row = mapCustomerRecord(customer);
+  return `${row.id}|${row.custName}|${row.custPhone}|${row.custAddress}`;
+}
+
+async function loadCustomersList() {
+  if (customersData.length) return customersData;
+  try {
+    const rows = await authFetch('/customers-list');
+    const uniq = new Map();
+    (rows || []).map(mapCustomerRecord).forEach((customer) => {
+      const key = normalizeCustomerKey(customer);
+      if (!key.replace(/\|/g, '')) return;
+      if (!uniq.has(key)) uniq.set(key, customer);
+    });
+    customersData = [...uniq.values()];
+  } catch (_) {
+    customersData = [];
+  }
+  return customersData;
+}
+
+async function loadTraderOrderOptions() {
+  try {
+    const data = await authFetch('/traders-order-options');
+    tradersData = Array.isArray(data.traders) ? data.traders : [];
+    traderBatchesData = Array.isArray(data.batches) ? data.batches : [];
+  } catch (_) {
+    tradersData = [];
+    traderBatchesData = [];
+  }
+  renderTraderOrderOptions();
+}
+
+function renderTraderOrderOptions() {
+  if (!dom.orderTrader || !dom.orderTraderBatch) return;
+  const escapeOption = (v) => String(v || '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  dom.orderTrader.innerHTML = tradersData.length
+    ? tradersData.map(t => `<option value="${t.id}">${escapeOption(t.name)}</option>`).join('')
+    : '<option value="">لا يوجد تجار</option>';
+  fillOrderTraderBatches();
+}
+
+function fillOrderTraderBatches() {
+  if (!dom.orderTraderBatch) return;
+  const escapeOption = (v) => String(v || '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  const traderId = Number(dom.orderTrader?.value || 0);
+  const rows = traderBatchesData.filter(b => !traderId || Number(b.trader_id) === traderId);
+  dom.orderTraderBatch.innerHTML = '<option value="0">إنشاء/بدون طلبية</option>' + rows.map(b => `<option value="${b.id}">${escapeOption(b.batch_name || ('طلبية #' + b.id))}</option>`).join('');
+}
+
+function onOrderTraderChange() {
+  fillOrderTraderBatches();
+  const t = tradersData.find(x => Number(x.id) === Number(dom.orderTrader?.value || 0));
+  if (t && orderScope === 'trader') {
+    if (!String(dom.custName.value || '').trim()) dom.custName.value = t.name || '';
+    if (!String(dom.custPhone.value || '').trim()) dom.custPhone.value = normalizePhoneDigits(t.phone || '');
+    if (!String(dom.custAddress.value || '').trim()) dom.custAddress.value = t.address || '';
+  }
+}
+
+function setOrderScope(scope) {
+  orderScope = scope === 'trader' ? 'trader' : 'customer';
+  const isTrader = orderScope === 'trader';
+  dom.customerScopeBtn?.classList.toggle('active', !isTrader);
+  dom.traderScopeBtn?.classList.toggle('active', isTrader);
+  dom.traderOrderPanel?.classList.toggle('active', isTrader);
+  (dom.customerScopeFields || []).forEach((node) => {
+    if (!node) return;
+    node.style.display = isTrader ? 'none' : '';
+  });
+  if (isTrader && dom.customerPickerPanel) dom.customerPickerPanel.style.display = 'none';
+  if(dom.orderScopeHint) dom.orderScopeHint.textContent = isTrader
+    ? 'الأوردر هيظهر في كشف التاجر والطلبية، والمخزون هيتعامل معاه كأي أوردر عادي.'
+    : 'الأوردر هيتسجل كأوردر عميل عادي.';
+  if (isTrader && !tradersData.length) loadTraderOrderOptions();
+  if (isTrader) onOrderTraderChange();
+}
+
+async function toggleCustomerPicker() {
+  const willOpen = dom.customerPickerPanel.style.display !== 'block';
+  dom.customerPickerPanel.style.display = willOpen ? 'block' : 'none';
+  if (willOpen) {
+    await loadCustomersList();
+    renderCustomerList();
+    dom.customerSearch.focus();
+  }
+}
+
+function pickCustomer(index) {
+  const customer = customersData[index];
+  if (!customer) return;
+  selectedCustomerId = Number(customer.id || 0);
+  selectedCustomerMeta = { ...customer };
+  dom.custName.value = customer.custName || '';
+  dom.custPhone.value = normalizePhoneDigits(customer.custPhone || '');
+  dom.custAddress.value = customer.custAddress || '';
+  dom.selectedCustomerHint.textContent = `تم اختيار: ${customer.custName || ''}${customer.custPhone ? ` - ${customer.custPhone}` : ''}`;
+  dom.customerPickerPanel.style.display = 'none';
+}
+
+function clearSelectedCustomer(reason = '') {
+  selectedCustomerId = 0;
+  selectedCustomerMeta = {};
+  if (reason) dom.selectedCustomerHint.textContent = reason;
+}
+
+function renderCustomerList() {
+  const query = String(dom.customerSearch.value || '').trim().toLowerCase();
+  const rows = (customersData || []).filter((customer) => {
+    const name = String(customer.custName || '').toLowerCase();
+    const phone = String(customer.custPhone || '').toLowerCase();
+    const address = String(customer.custAddress || '').toLowerCase();
+    return !query || name.includes(query) || phone.includes(query) || address.includes(query);
+  });
+  dom.customerList.innerHTML = rows.length
+    ? rows.map((customer) => {
+        const idx = customersData.findIndex((row) => normalizeCustomerKey(row) === normalizeCustomerKey(customer));
+        return `<button type="button" class="customer-pill" onclick="pickCustomer(${idx})"><b>${customer.custName || 'بدون اسم'}</b><small>${customer.custPhone || 'بدون تليفون'}</small><small>${customer.custAddress || 'بدون عنوان'}</small></button>`;
+      }).join('')
+    : '<div class="muted">لا يوجد عملاء مطابقون.</div>';
+}
+
+function itemId(index, suffix) { return `item_${index}_${suffix}`; }
+function el(index, suffix) { return document.getElementById(itemId(index, suffix)); }
+function itemCardIndices() {
+  return [...dom.itemsWrap.querySelectorAll('.item-card')]
+    .map((card) => Number(String(card.id || '').replace('card_', '')))
+    .filter((value) => Number.isFinite(value) && value > 0);
+}
+function isSharedFinanceMode() { return itemCardIndices().length > 1; }
+
+function toggleUrgent(forceValue) {
+  urgentMode = typeof forceValue === 'boolean' ? forceValue : !urgentMode;
+  dom.urgentBtn.classList.toggle('active', urgentMode);
+  dom.urgentNoteWrap.style.display = urgentMode ? 'block' : 'none';
+  dom.urgentHint.textContent = urgentMode ? 'تم تفعيل الأوردر المستعجل.' : 'لو الأوردر مستعجل دوس على الزرار، وساعتها تقدر تكتب ملاحظة اختيارية.';
+  if (!urgentMode) dom.urgentNote.value = '';
+}
+
+function refreshDesignFilesVisibility() {
+  const hasPrinted = itemCardIndices().some((index) => {
+    const printType = String(el(index, 'pt')?.value || '').trim();
+    return printType === 'سلك سكرين' || printType === 'أوفست';
+  });
+  dom.designSection.style.display = hasPrinted ? 'block' : 'none';
+  dom.filesBox.style.display = hasPrinted ? 'block' : 'none';
+  if (!hasPrinted) dom.designFiles.value = '';
+}
+
+function availablePrintTypes(useReadyStock, paperType='كرافت') {
+  if(isButterPaperType(paperType)) return ['أوفست'];
+  if(isCoatedPaperType(paperType)) return useReadyStock ? ['سادة'] : ['سادة', 'أوفست'];
+  return useReadyStock ? ['سادة', 'سلك سكرين'] : ['سادة', 'سلك سكرين', 'أوفست'];
+}
+
+function itemCardHtml(index) {
+  return `
+    <div class="item-card" id="card_${index}">
+      <div class="item-head">
+        <span class="item-badge">الصنف ${index}</span>
+        ${index > 1 ? `<button type="button" class="btn small-btn danger" onclick="removeItemCard(${index})">🗑 حذف الصنف</button>` : ''}
+      </div>
+      <div id="${itemId(index, 'stockAlert')}" class="alert"></div>
+      <div class="grid">
+        <div><label>نوع المنتج</label><select id="${itemId(index, 'product_type')}" onchange="onItemProductTypeChange(${index})">${stageProductTypeOptionsHtml()}</select></div>
+        <div id="${itemId(index, 'lengthWrap')}"><label>الطول (ط)</label><input id="${itemId(index, 'l')}" type="number" oninput="suggestReadyStockGusset(${index}); checkStock(${index}); suggestReadyStockSaleTotal(${index});autoPickFormForSize(${index});updateStagePreview(${index})"></div>
+        <div id="${itemId(index, 'widthWrap')}"><label>العرض (ع)</label><input id="${itemId(index, 'w')}" type="number" oninput="suggestReadyStockGusset(${index}); checkStock(${index}); suggestReadyStockSaleTotal(${index});autoPickFormForSize(${index});updateStagePreview(${index})"></div>
+        <div id="${itemId(index, 'gussetWrap')}"><label id="${itemId(index, 'gussetLabel')}">الجنب (ج)</label><input id="${itemId(index, 'g')}" type="number" value="0" oninput="this.dataset.manual='1'; checkStock(${index}); suggestReadyStockSaleTotal(${index});autoPickFormForSize(${index});updateStagePreview(${index})"></div>
+        <div id="${itemId(index, 'gussetStyleWrap')}"><label>شكل الكعب</label><select id="${itemId(index, 'gusset_style')}" onchange="autoPickFormForSize(${index});updateStagePreview(${index})"><option>بكعب</option><option>كعب لطش</option></select></div>
+        <div id="${itemId(index, 'sizeVariantWrap')}"><label>مقاس المنتج</label><select id="${itemId(index, 'size_variant')}" onchange="onItemSizeVariantChange(${index})"></select></div>
+        <div class="full" id="${itemId(index, 'formPickWrap')}"><label id="${itemId(index, 'formPickLabel')}">الفورمة المستخدمة</label><select id="${itemId(index, 'form_id')}" onchange="onItemFormChange(${index})">${stageFormOptionsHtml()}</select><small class="muted" id="${itemId(index, 'formPickHint')}" style="display:block;margin-top:6px">⭐ = الفورمة المطابقة للطول والعرض والمنفاخ.</small></div>
+        <div><label>الكمية</label><input id="${itemId(index, 'qty')}" type="number" oninput="checkStock(${index}); suggestReadyStockSaleTotal(${index});updateStagePreview(${index})"></div>
+        <div><label>نوع الورق</label><select id="${itemId(index, 'paper_type')}" onchange="updateItemMaterialUI(${index})"><option>كرافت</option><option>ورق طبع</option><option>برستول كوشيه</option><option>كوشيه</option><option>ورق زبدة</option></select></div>
+        <div><label>اللون</label><select id="${itemId(index, 'color')}" onchange="syncHandleColorUI(${index}); suggestReadyStockGusset(${index}); checkStock(${index}); suggestReadyStockSaleTotal(${index})"><option value="">اختر</option><option>بني</option><option>أبيض</option><option>أسود</option></select></div>
+        <div id="${itemId(index, 'handleWrap')}"><label>نوع اليد</label><select id="${itemId(index, 'handle')}" onchange="syncHandleColorUI(${index}); suggestReadyStockGusset(${index}); checkStock(${index}); suggestReadyStockSaleTotal(${index})"><option>بيد</option><option>بدون يد</option></select></div>
+        <div id="${itemId(index, 'handleTypeWrap')}"><label>خامة اليد</label><select id="${itemId(index, 'handle_type')}" onchange="syncHandleTypeOptions(${index}); checkStock(${index}); suggestReadyStockSaleTotal(${index})"><option>مجدول</option><option>دوباره</option><option>ستان</option></select></div>
+        <div id="${itemId(index, 'handleColorWrap')}"><label>لون اليد</label><select id="${itemId(index, 'handle_color')}"><option value="auto">تلقائي: نفس لون الشنطة</option><option>بني</option><option>أبيض</option><option>أسود</option></select></div>
+        <div class="full stage-toggle-card stretch" id="${itemId(index, 'stretchWrap')}"><div class="stage-toggle-icon">📐</div><div class="stage-toggle-copy"><span class="stage-toggle-title">استريشة أرضية الشنطة</span><small id="${itemId(index, 'stretchPreview')}" class="stage-toggle-preview" data-empty="تتحسب تلقائيًا من العرض والجنب والكمية"></small></div><label class="stage-toggle-switch" aria-label="إضافة الاستريشة"><input id="${itemId(index, 'has_stretch')}" type="checkbox" checked onchange="updateStagePreview(${index})"><span class="stage-toggle-slider"></span></label></div>
+        <div class="full stage-toggle-card breaking"><div class="stage-toggle-icon">🧱</div><div class="stage-toggle-copy"><span class="stage-toggle-title">مرحلة التكسير</span><small id="${itemId(index, 'breakingPreview')}" class="stage-toggle-preview" data-empty="حدد الفورمة ومقاس التشغيل وعدد الضربات"></small></div><label class="stage-toggle-switch" aria-label="إضافة التكسير"><input id="${itemId(index, 'has_breaking')}" type="checkbox" onchange="updateStageDetails(${index})"><span class="stage-toggle-slider"></span></label></div>
+        <div class="full" id="${itemId(index, 'breakingDetails')}" style="display:none;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px"><div><label>مقاس التكسير</label><select id="${itemId(index, 'breaking_sheet_class')}" onchange="updateStagePreview(${index})"><option value="auto">تلقائي حسب المقاس</option><option value="quarter">ربع فرخ</option><option value="half">نصف فرخ</option><option value="full">فرخ كامل</option></select></div><div><label>مقاس القص الفعلي</label><input id="${itemId(index, 'cutSizePreview')}" readonly value="-"></div></div>
+        <div class="full stage-toggle-card lamination" id="${itemId(index, 'laminationWrap')}"><div class="stage-toggle-icon">✨</div><div class="stage-toggle-copy"><span class="stage-toggle-title">مرحلة السلوفان</span><small id="${itemId(index, 'laminationPreview')}" class="stage-toggle-preview" data-empty="حدد النوع ومقاس التشغيل لتظهر التكلفة"></small></div><label class="stage-toggle-switch" aria-label="إضافة السلوفان"><input id="${itemId(index, 'has_lamination')}" type="checkbox" onchange="updateLaminationUI(${index})"><span class="stage-toggle-slider"></span></label></div>
+        <div class="full" id="${itemId(index, 'laminationTypeWrap')}" style="display:none;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px"><div><label>نوع السلوفان</label><select id="${itemId(index, 'lamination_type')}"><option value="">اختر</option><option>لامع</option><option>مط</option></select></div><div><label>مقاس التشغيل</label><select id="${itemId(index, 'lamination_sheet_class')}" onchange="updateStagePreview(${index})"><option value="auto">تلقائي حسب المقاس</option><option value="quarter">ربع فرخ</option><option value="half">نصف فرخ</option><option value="full">فرخ كامل</option></select></div></div>
+        <div class="full stock-toggle" id="${itemId(index, 'readyStockWrap')}"><div class="txt">📦 سحب من مخزن الشنط الجاهزة</div><label class="switch"><input id="${itemId(index, 'useReadyStock')}" type="checkbox" onchange="checkStock(${index}); handlePrintUI(${index}); suggestReadyStockSaleTotal(${index})"><span class="slider"></span></label></div>
+        <div><label>نوع الطباعة</label><select id="${itemId(index, 'pt')}" onchange="handlePrintUI(${index}); suggestReadyStockSaleTotal(${index})"><option>سادة</option><option>سلك سكرين</option><option>أوفست</option></select></div>
+        <div id="${itemId(index, 'totalWrap')}" class="item-finance-field"><label>إجمالي مبلغ هذا الصنف</label><input id="${itemId(index, 'total_price')}" type="number" oninput="markTotalAsManual(${index})"></div>
+        <div id="${itemId(index, 'silkBox')}" style="display:none"><label>لون الطباعة</label><input id="${itemId(index, 'silkColor')}"></div>
+        <div id="${itemId(index, 'offsetBox')}" style="display:none"><label>عدد الألوان</label><select id="${itemId(index, 'offsetCount')}" onchange="renderOffsetInputs(${index})"><option value="0">اختر</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option></select></div>
+        <div class="full" id="${itemId(index, 'offsetInputsContainer')}" style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px"></div>
+        <div id="${itemId(index, 'paymentTypeWrap')}" class="item-finance-field"><label>حالة الدفع</label><select id="${itemId(index, 'paymentType')}" onchange="updatePayment(${index})"><option value="لم يتم الدفع">لم يتم الدفع</option><option value="عربون">عربون</option><option value="آجل">آجل</option><option value="مدفوع كامل">مدفوع كامل</option></select></div>
+        <div id="${itemId(index, 'paidWrap')}" class="item-finance-field"><label>المبلغ المدفوع</label><input id="${itemId(index, 'paid_amount')}" type="number" value="0" oninput="updatePayment(${index})"></div>
+        <div id="${itemId(index, 'remainingWrap')}" class="item-finance-field"><label>المتبقي</label><input id="${itemId(index, 'remaining_amount')}" type="number" readonly></div>
+        <div><label>جرام الورق (اختياري)</label><input id="${itemId(index, 'paperGrammage')}" type="number"></div>
+      </div>
+    </div>`;
+}
+
+function updateItemsCount() {
+  dom.itemsCountText.textContent = `عدد الأصناف: ${itemCardIndices().length}`;
+}
+
+function inferGroupPaymentType(total, paid, preferred = '') {
+  const totalValue = Number(total) || 0;
+  const paidValue = Math.max(0, Number(paid) || 0);
+  const hint = String(preferred || '').trim();
+  if (totalValue > 0 && paidValue >= totalValue) return 'مدفوع كامل';
+  if (hint === 'لم يتم الدفع') return 'لم يتم الدفع';
+  if (paidValue > 0) return (hint && hint !== 'مدفوع كامل' && hint !== 'لم يتم الدفع') ? hint : 'عربون';
+  return (hint && hint !== 'مدفوع كامل') ? hint : 'آجل';
+}
+
+function sumItemTotals() {
+  return itemCardIndices().reduce((sum, index) => sum + (Number(el(index, 'total_price')?.value || 0) || 0), 0);
+}
+
+function sumItemPaid() {
+  return itemCardIndices().reduce((sum, index) => sum + (Number(el(index, 'paid_amount')?.value || 0) || 0), 0);
+}
+
+function updateGroupPaymentVisibility() {
+  const paymentType = dom.groupPaymentType.value;
+  dom.groupTotalWrap.style.display = 'block';
+  dom.groupPaymentTypeWrap.style.display = 'block';
+  dom.groupPaidWrap.style.display = 'block';
+  dom.groupRemainingWrap.style.display = 'block';
+  if (paymentType === 'لم يتم الدفع' || paymentType === 'مدفوع كامل') {
+    dom.groupPaidWrap.style.display = 'none';
+    dom.groupRemainingWrap.style.display = 'none';
+  }
+}
+
+function updateGroupPayment() {
+  const total = Number(dom.groupTotal.value || 0) || 0;
+  let paid = Number(dom.groupPaid.value || 0) || 0;
+  const paymentType = dom.groupPaymentType.value;
+  if (paymentType === 'مدفوع كامل') paid = total;
+  if (paymentType === 'لم يتم الدفع') paid = 0;
+  if (paid > total) paid = total;
+  if (paid < 0) paid = 0;
+  dom.groupPaid.value = String(paid);
+  dom.groupRemaining.value = String(Math.max(total - paid, 0));
+  updateGroupPaymentVisibility();
+}
+
+function markGroupTotalAsManual() {
+  dom.groupTotal.dataset.manual = '1';
+  updateGroupPayment();
+}
+
+function setSuggestedGroupTotal(total) {
+  const input = dom.groupTotal;
+  const nextValue = String(Number(total) || 0);
+  const currentValue = String(input.value || '');
+  const lastSuggested = String(input.dataset.lastSuggested || '');
+  const allowUpdate = !input.dataset.manual || !currentValue || currentValue === lastSuggested;
+  input.dataset.lastSuggested = nextValue;
+  if (allowUpdate) {
+    input.value = nextValue;
+    delete input.dataset.manual;
+  }
+  updateGroupPayment();
+}
+
+function suggestGroupTotalFromItems() {
+  if (!isSharedFinanceMode()) return;
+  setSuggestedGroupTotal(sumItemTotals());
+}
+
+function syncItemFinanceVisibility(index) {
+  const shared = isSharedFinanceMode();
+  ['totalWrap', 'paymentTypeWrap', 'paidWrap', 'remainingWrap'].forEach((key) => {
+    const node = el(index, key);
+    if (node) node.style.display = shared ? 'none' : 'block';
+  });
+  if (!shared) updatePaymentVisibility(index);
+}
+
+function updateFinancialMode() {
+  const shared = isSharedFinanceMode();
+  dom.groupFinanceSection.style.display = shared ? 'block' : 'none';
+
+  if (shared && !lastSharedFinanceMode) {
+    const totalSeed = sumItemTotals();
+    const paidSeed = sumItemPaid();
+    if (!String(dom.groupTotal.value || '').trim()) dom.groupTotal.value = totalSeed ? String(totalSeed) : '';
+    if (!String(dom.groupPaid.value || '').trim()) dom.groupPaid.value = String(paidSeed || 0);
+    dom.groupPaymentType.value = inferGroupPaymentType(Number(dom.groupTotal.value || totalSeed || 0), Number(dom.groupPaid.value || paidSeed || 0), dom.groupPaymentType.value || 'آجل');
+  }
+
+  if (!shared && lastSharedFinanceMode) {
+    const firstIndex = itemCardIndices()[0];
+    if (firstIndex) {
+      el(firstIndex, 'total_price').value = String(Number(dom.groupTotal.value || el(firstIndex, 'total_price')?.value || 0) || 0);
+      el(firstIndex, 'paymentType').value = dom.groupPaymentType.value || el(firstIndex, 'paymentType').value;
+      el(firstIndex, 'paid_amount').value = String(Number(dom.groupPaid.value || el(firstIndex, 'paid_amount')?.value || 0) || 0);
+      delete el(firstIndex, 'total_price').dataset.manual;
+      updatePayment(firstIndex);
+    }
+  }
+
+  itemCardIndices().forEach(syncItemFinanceVisibility);
+  if (shared) {
+    suggestGroupTotalFromItems();
+    updateGroupPayment();
+  } else {
+    itemCardIndices().forEach(updatePayment);
+  }
+  lastSharedFinanceMode = shared;
+}
+
+function addItemCard() {
+  itemSeq += 1;
+  dom.itemsWrap.insertAdjacentHTML('beforeend', itemCardHtml(itemSeq));
+  handlePrintUI(itemSeq);
+  updateItemMaterialUI(itemSeq);
+  syncHandleColorUI(itemSeq);
+  updatePayment(itemSeq);
+  updateItemsCount();
+  refreshDesignFilesVisibility();
+  updateFinancialMode();
+  renderStageFormSelect(itemSeq);
+  applyItemProductTypeUI(itemSeq);
+  updateStagePreview(itemSeq);
+}
+
+function removeItemCard(index) {
+  const card = document.getElementById(`card_${index}`);
+  if (card) card.remove();
+  updateItemsCount();
+  refreshDesignFilesVisibility();
+  updateFinancialMode();
+}
+
+async function suggestReadyStockGusset(index) {
+  const lengthValue = Number(el(index, 'l').value || 0);
+  const widthValue = Number(el(index, 'w').value || 0);
+  const colorValue = String(el(index, 'color').value || '').trim();
+  const handleValue = String(el(index, 'handle').value || '').trim();
+  const gInput = el(index, 'g');
+  if (!lengthValue || !widthValue || !gInput) return null;
+  try {
+    const data = await authFetch('/get-bags');
+    let matches = (data || []).filter((row) => Number(row.length) === lengthValue && Number(row.width) === widthValue && (!colorValue || String(row.color || '').trim() === colorValue) && (!handleValue || String(row.handle || '').trim() === handleValue));
+    if (!matches.length) matches = (data || []).filter((row) => Number(row.length) === lengthValue && Number(row.width) === widthValue);
+    matches.sort((a,b)=>Number(b.total_qty||0)-Number(a.total_qty||0));
+    if (matches.length) {
+      const suggested = Number(matches[0].gusset || 0) || 0;
+      const forceFromReadyStock = !!el(index, 'useReadyStock')?.checked;
+      gInput.placeholder = suggested ? `مقترح من المخزن: ${suggested}` : '';
+      if (suggested && (forceFromReadyStock || (!gInput.dataset.manual && (!String(gInput.value || '').trim() || Number(gInput.value || 0) === 0)))) {
+        gInput.value = suggested;
+        if (forceFromReadyStock) delete gInput.dataset.manual;
+      }
+      return suggested;
+    }
+  } catch (_) {}
+  return null;
+}
+
+async function syncReadyStockGusset(index) {
+  const isBag = itemProductType(index) === 'شنط';
+  if (!isBag) { el(index, 'gussetWrap').style.display = orderTypeProfile(itemProductType(index)).mode === 'variant' ? 'none' : ''; return; }
+  if (!el(index, 'useReadyStock').checked) {
+    el(index, 'gussetWrap').style.display = 'block';
+    await suggestReadyStockGusset(index);
+    return;
+  }
+  el(index, 'gussetWrap').style.display = 'none';
+  await suggestReadyStockGusset(index);
+}
+
+function rebuildPrintTypeOptions(index) {
+  const current = el(index, 'pt').value;
+  const list = availablePrintTypes(el(index, 'useReadyStock').checked, el(index, 'paper_type').value);
+  el(index, 'pt').innerHTML = list.map((value) => `<option ${value === current ? 'selected' : ''}>${value}</option>`).join('');
+  if (!list.includes(current)) el(index, 'pt').value = list[0];
+}
+
+function markTotalAsManual(index) {
+  el(index, 'total_price').dataset.manual = '1';
+  updatePayment(index);
+}
+
+function setSuggestedTotal(index, total) {
+  const input = el(index, 'total_price');
+  const nextValue = String(Number(total) || 0);
+  const currentValue = String(input.value || '');
+  const lastSuggested = String(input.dataset.lastSuggested || '');
+  const allowUpdate = !input.dataset.manual || !currentValue || currentValue === lastSuggested;
+  input.dataset.lastSuggested = nextValue;
+  if (allowUpdate) {
+    input.value = nextValue;
+    delete input.dataset.manual;
+  }
+  updatePayment(index);
+}
+
+async function suggestReadyStockSaleTotal(index) {
+  await syncReadyStockGusset(index);
+  if (!el(index, 'useReadyStock').checked) {
+    delete el(index, 'total_price').dataset.lastSuggested;
+    updatePayment(index);
+    return;
+  }
+  const qtyValue = Number(el(index, 'qty').value || 0) || 0;
+  let suggestedTotal = 0;
+  try {
+    const data = await authFetch('/get-bags');
+    const match = (data || []).find((row) => Number(row.length) === Number(el(index, 'l').value || 0) && Number(row.width) === Number(el(index, 'w').value || 0) && Number(row.gusset) === Number(el(index, 'g').value || 0) && row.color === el(index, 'color').value && row.handle === el(index, 'handle').value);
+    suggestedTotal = (Number(match?.sell_price) || 0) * qtyValue;
+    if (el(index, 'pt').value === 'سلك سكرين') suggestedTotal += qtyValue * stageSetting('silk_ready_stock_extra_unit', 5);
+  } catch (_) {}
+  setSuggestedTotal(index, suggestedTotal);
+}
+
+function handlePrintUI(index) {
+  syncReadyStockGusset(index);
+  rebuildPrintTypeOptions(index);
+  const printType = el(index, 'pt').value;
+  el(index, 'silkBox').style.display = printType === 'سلك سكرين' ? 'block' : 'none';
+  el(index, 'offsetBox').style.display = printType === 'أوفست' ? 'block' : 'none';
+  if (printType !== 'أوفست') el(index, 'offsetInputsContainer').innerHTML = '';
+  refreshDesignFilesVisibility();
+}
+
+function renderOffsetInputs(index) {
+  const box = el(index, 'offsetInputsContainer');
+  box.innerHTML = '';
+  for (let colorIndex = 1; colorIndex <= Number(el(index, 'offsetCount').value || 0); colorIndex += 1) {
+    box.innerHTML += `<div><label>اللون ${colorIndex}</label><input class="offset-color-input" data-item="${index}"></div>`;
+  }
+}
+
+function updatePaymentVisibility(index) {
+  if (isSharedFinanceMode()) return;
+  const paymentType = el(index, 'paymentType').value;
+  const hasTotal = (Number(el(index, 'total_price').value) || 0) > 0;
+  el(index, 'totalWrap').style.display = 'block';
+  el(index, 'paymentTypeWrap').style.display = 'block';
+  el(index, 'paidWrap').style.display = 'block';
+  el(index, 'remainingWrap').style.display = 'block';
+  if (paymentType === 'لم يتم الدفع') {
+    el(index, 'paidWrap').style.display = 'none';
+    el(index, 'remainingWrap').style.display = 'none';
+  } else if (paymentType === 'مدفوع كامل') {
+    el(index, 'paidWrap').style.display = 'none';
+    el(index, 'remainingWrap').style.display = 'none';
+    if (hasTotal) el(index, 'totalWrap').style.display = 'none';
+  }
+}
+
+function updatePayment(index) {
+  const total = Number(el(index, 'total_price').value || 0) || 0;
+  let paid = Number(el(index, 'paid_amount').value || 0) || 0;
+  const paymentType = el(index, 'paymentType').value;
+  if (paymentType === 'مدفوع كامل') paid = total;
+  if (paymentType === 'لم يتم الدفع') paid = 0;
+  if (paid > total) paid = total;
+  if (paid < 0) paid = 0;
+  el(index, 'paid_amount').value = String(paid);
+  el(index, 'remaining_amount').value = String(Math.max(total - paid, 0));
+  if (isSharedFinanceMode()) {
+    suggestGroupTotalFromItems();
+    updateGroupPayment();
+    return;
+  }
+  updatePaymentVisibility(index);
+}
+
+async function checkStock(index) {
+  const alertBox = el(index, 'stockAlert');
+  const useReadyStock = el(index, 'useReadyStock').checked && itemProductType(index) === 'شنط';
+  if (!useReadyStock) {
+    alertBox.style.display = 'none';
+    return;
+  }
+  await syncReadyStockGusset(index);
+  const lengthValue = el(index, 'l').value;
+  const widthValue = el(index, 'w').value;
+  const gussetValue = el(index, 'g').value || 0;
+  const colorValue = el(index, 'color').value;
+  const handleValue = el(index, 'handle').value;
+  const qtyRequired = Number(el(index, 'qty').value || 0) || 0;
+  if (!lengthValue || !widthValue || !colorValue) {
+    alertBox.style.display = 'none';
+    return;
+  }
+  try {
+    const data = await authFetch('/get-bags');
+    const match = (data || []).find((row) => Number(row.length) === Number(lengthValue) && Number(row.width) === Number(widthValue) && Number(row.gusset) === Number(gussetValue) && row.color === colorValue && row.handle === handleValue);
+    alertBox.style.display = 'block';
+    if (match && Number(match.total_qty) >= qtyRequired && qtyRequired > 0) {
+      alertBox.className = 'alert ok';
+      alertBox.innerText = `✅ متاح بالمخزن: ${match.total_qty} قطعة`;
+    } else if (match) {
+      alertBox.className = 'alert bad';
+      alertBox.innerText = `⚠️ عجز بالمخزن. المتاح: ${match.total_qty}`;
+    } else {
+      alertBox.className = 'alert bad';
+      alertBox.innerText = '❌ الصنف غير موجود في مخزن الشنط';
+    }
+  } catch (_) {}
+}
+
+function collectItems() {
+  return itemCardIndices().map((index, visualOrder) => {
+    let printType = el(index, 'pt').value;
+    if(isCoatedPaperType(el(index, 'paper_type').value) && printType === 'سلك سكرين') printType = 'أوفست';
+    let colorSpecs = 'سادة';
+    if (printType === 'سلك سكرين') {
+      colorSpecs = 'سلك سكرين: ' + (el(index, 'silkColor').value || '');
+    } else if (printType === 'أوفست') {
+      const colors = Array.from(document.querySelectorAll(`.offset-color-input[data-item="${index}"]`)).map((input) => input.value).filter(Boolean).join(' + ');
+      colorSpecs = `أوفست (${el(index, 'offsetCount').value} لون): ${colors}`;
+    }
+    const isBagItem = itemProductType(index) === 'شنط';
+    const itemProfile = orderTypeProfile(itemProductType(index));
+    return {
+      product_type: itemProductType(index),
+      size_variant: itemProfile.mode === 'variant' ? String(el(index, 'size_variant')?.value || '') : '',
+      gusset_style: itemProfile.mode === 'sandwich' ? String(el(index, 'gusset_style')?.value || '') : '',
+      l: el(index, 'l').value,
+      w: el(index, 'w').value,
+      g: el(index, 'g').value,
+      qty: el(index, 'qty').value,
+      paper_type: normalizePaperType(el(index, 'paper_type').value),
+      color: isFixedWhitePaperType(el(index, 'paper_type').value) ? 'أبيض' : el(index, 'color').value,
+      handle: isBagItem ? el(index, 'handle').value : 'بدون يد',
+      handle_color: isBagItem ? resolvedHandleColor(index) : '',
+      handle_type: isBagItem ? normalizeHandleType(el(index, 'handle_type').value, el(index, 'paper_type').value) : '',
+      has_lamination: el(index, 'has_lamination')?.checked ? '1' : '0',
+      lamination_type: el(index, 'lamination_type')?.value || '',
+      lamination_sheet_class: el(index, 'lamination_sheet_class')?.value || 'auto',
+      has_breaking: el(index, 'has_breaking')?.checked ? '1' : '0',
+      breaking_sheet_class: el(index, 'breaking_sheet_class')?.value || 'auto',
+      form_id: el(index, 'form_id')?.value || '0',
+      has_stretch: (isBagItem && el(index, 'has_stretch')?.checked) ? '1' : '0',
+      useReadyStock: (isBagItem && el(index, 'useReadyStock').checked) ? '1' : '0',
+      printType,
+      colorSpecs,
+      total_price: el(index, 'total_price').value,
+      paymentType: el(index, 'paymentType').value,
+      paid_amount: el(index, 'paid_amount').value,
+      paperGrammage: el(index, 'paperGrammage').value,
+      item_no: visualOrder + 1
+    };
+  }).filter((item) => Number(item.qty || 0) > 0);
+}
+
+
+
+function readyStockKey(item){
+  return [Number(item.l || 0), Number(item.w || 0), Number(item.g || 0), String(item.color || '').trim(), String(item.handle || '').trim()].join('|');
+}
+function readyStockLabel(item){
+  return `${Number(item.l || 0)}×${Number(item.w || 0)}×${Number(item.g || 0)} - ${String(item.color || '').trim()} - ${String(item.handle || '').trim()}`;
+}
+async function validateReadyStockBeforeSave(items){
+  const readyItems = (items || []).filter(item => Number(item.useReadyStock || 0) === 1);
+  if (!readyItems.length) return true;
+  const requests = new Map();
+  for (const item of readyItems) {
+    const reqItem = { ...item, g: item.g || 0 };
+    const key = readyStockKey(reqItem);
+    const old = requests.get(key) || { ...reqItem, qty: 0 };
+    old.qty += Number(item.qty || 0) || 0;
+    requests.set(key, old);
+  }
+  let bags = [];
+  try {
+    bags = await authFetch('/get-bags');
+  } catch (e) {
+    alert('تعذر مراجعة مخزن الشنط الجاهزة الآن. سيتم حفظ الأوردر، لكن راجع المخزون من قائمة الأوردرات قبل جعله جاهز للشحن.');
+    return true;
+  }
+  const errors = [];
+  for (const req of requests.values()) {
+    let match = (bags || []).find(row => Number(row.length) === Number(req.l) && Number(row.width) === Number(req.w) && Number(row.gusset) === Number(req.g || 0) && String(row.color || '').trim() === String(req.color || '').trim() && String(row.handle || '').trim() === String(req.handle || '').trim());
+    if (!match && (!req.g || Number(req.g) <= 0)) {
+      match = (bags || []).find(row => Number(row.length) === Number(req.l) && Number(row.width) === Number(req.w) && String(row.color || '').trim() === String(req.color || '').trim() && String(row.handle || '').trim() === String(req.handle || '').trim());
+      if (match) req.g = match.gusset || 0;
+    }
+    const available = Number(match?.total_qty || 0) || 0;
+    if (!match) errors.push(`❌ ${readyStockLabel(req)} غير موجود في مخزن الشنط الجاهزة`);
+    else if (available < Number(req.qty || 0)) errors.push(`⚠️ ${readyStockLabel(req)}: المطلوب ${Number(req.qty || 0)} والمتاح ${available}`);
+  }
+  if (errors.length) {
+    alert('تنبيه: سيتم حفظ الأوردر عادي، لكن فيه عجز في مخزن الشنط الجاهزة ولن تقدر تخليه جاهز للشحن إلا بعد توفير الكمية:\n\n' + errors.join('\n'));
+  }
+  return true;
+}
+
+
+async function loadPaymentActorOptions(){
+  const sel = dom.paymentActorUsername;
+  if (!sel) return;
+  try {
+    const data = await authFetch('/active-users-lite?tracked_only=1');
+    const rows = Array.isArray(data.transfer_users) && data.transfer_users.length ? data.transfer_users : (Array.isArray(data.users) ? data.users : []);
+    const seen = new Set();
+    const options = [];
+    for (const row of rows) {
+      const username = String(row.username || row.admin_username || '').trim();
+      if (!username || seen.has(username.toLowerCase())) continue;
+      seen.add(username.toLowerCase());
+      const isCashbox = username === '__cashbox__' || username === 'cashbox' || String(row.full_name || '').trim() === 'الخزنة';
+      const label = isCashbox ? 'الخزنة' : (String(row.full_name || row.display_name || username).trim() + (String(row.full_name || '').trim() && String(row.full_name || '').trim() !== username ? ` (${username})` : ''));
+      options.push(`<option value="${username}">${label}</option>`);
+    }
+    if (!options.some(html => html.includes('value="__cashbox__"'))) options.unshift('<option value="__cashbox__">الخزنة</option>');
+    sel.innerHTML = options.join('');
+    sel.value = '__cashbox__';
+  } catch (e) {
+    sel.innerHTML = '<option value="__cashbox__">الخزنة</option>';
+    sel.value = '__cashbox__';
+  }
+}
+
+async function saveOrder() {
+  const items = collectItems();
+  if (!items.length) {
+    alert('أضف صنف واحد على الأقل واكتب الكمية');
+    return;
+  }
+  await validateReadyStockBeforeSave(items);
+  const formData = new FormData();
+  formData.append('custName', dom.custName.value);
+  formData.append('custPhone', enforceEnglishPhoneInput(dom.custPhone));
+  formData.append('custAddress', dom.custAddress.value);
+  formData.append('order_page_name', String(dom.orderPageName?.value || '').trim());
+  formData.append('orderDate', new Date().toISOString().slice(0, 10));
+  formData.append('priority', urgentMode ? 'مستعجل' : 'عادي');
+  formData.append('notes', String(dom.orderNotes?.value || '').trim());
+  formData.append('urgent_note', String(dom.urgentNote.value || '').trim());
+  formData.append('items_json', JSON.stringify(items));
+  formData.append('payment_actor_username', String(dom.paymentActorUsername?.value || '__cashbox__'));
+  if (isSharedFinanceMode()) {
+    formData.append('group_total_price', String(dom.groupTotal.value || 0));
+    formData.append('group_paymentType', String(dom.groupPaymentType.value || 'آجل'));
+    formData.append('group_paid_amount', String(dom.groupPaid.value || 0));
+  }
+  if (selectedCustomerId) formData.append('selected_customer_id', String(selectedCustomerId));
+  if (selectedCustomerMeta.governorate) formData.append('customer_governorate', selectedCustomerMeta.governorate);
+  if (selectedCustomerMeta.zone) formData.append('customer_zone', selectedCustomerMeta.zone);
+  if (selectedCustomerMeta.email) formData.append('customer_email', selectedCustomerMeta.email);
+  formData.append('order_scope', orderScope);
+  if (orderScope === 'trader') {
+    formData.append('trader_id', String(dom.orderTrader?.value || 0));
+    formData.append('trader_batch_id', String(dom.orderTraderBatch?.value || 0));
+    formData.append('trader_batch_name', String(dom.newTraderBatchName?.value || '').trim());
+  }
+  Array.from(dom.designFiles.files || []).forEach((file) => formData.append('designFiles', file));
+  try {
+    const response = await fetch('/save-order', { method: 'POST', headers: { Authorization: 'Bearer ' + token }, body: formData });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || 'error');
+    alert(isSharedFinanceMode() ? `تم حفظ الأوردر المجمع (${items.length} أصناف) بنجاح` : 'تم حفظ الأوردر');
+    location.href = 'orders_list.html';
+  } catch (error) {
+    alert(error.message || 'فشل الحفظ');
+  }
+}
+
+dom.custName.addEventListener('input', () => {
+  if (selectedCustomerId && String(dom.custName.value || '').trim() !== String(selectedCustomerMeta.custName || '').trim()) {
+    clearSelectedCustomer('تم تعديل اسم العميل يدويًا، فسيتم ربط الأوردر بالبيانات المكتوبة الآن.');
+  }
+});
+
+dom.custPhone.addEventListener('input', () => {
+  const phone = enforceEnglishPhoneInput(dom.custPhone);
+  if (selectedCustomerId && phone !== normalizePhoneDigits(selectedCustomerMeta.custPhone || '')) {
+    clearSelectedCustomer('تم تعديل رقم العميل يدويًا، فسيتم ربط الأوردر بالبيانات المكتوبة الآن.');
+  }
+});
+
+// لما الشغل يتقص على مقاس فورمة بنزوّد 1.5 سم في الطول والعرض عشان نكسر بيهم السلاح.
+let FORM_CUT_ALLOWANCE_CM=1.5;
+function withCutAllowance(v){const n=Number(v||0);return n>0?+(n+FORM_CUT_ALLOWANCE_CM).toFixed(2):0}
+function stageSetting(key,def){return Number(orderStageOptions?.settings?.[key] ?? def)||def}
+function stageEsc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+const ORDER_PRODUCT_TYPES=['شنط','أكياس سندوتش','علب بطاطس','باكيتات بطاطس','كريب','علب برجر','أخرى'];
+const ORDER_TYPE_EMOJI={'شنط':'🛍️','أكياس سندوتش':'🥪','علب بطاطس':'🍟','باكيتات بطاطس':'🥔','كريب':'🌯','علب برجر':'🍔','أخرى':'📦'};
+function stageProductTypes(){const list=orderStageOptions.product_types;return Array.isArray(list)&&list.length?list:ORDER_PRODUCT_TYPES}
+function stageProductTypeOptionsHtml(selected='شنط'){return stageProductTypes().map(t=>`<option value="${stageEsc(t)}"${t===selected?' selected':''}>${ORDER_TYPE_EMOJI[t]||'📌'} ${stageEsc(t)}</option>`).join('')}
+function itemProductType(index){return el(index,'product_type')?.value||'شنط'}
+// مقاس المنتج زي ما هو مسجل في الفورمة، وكل نوع بيتكتب بطريقته.
+function stageFormSizeText(f={}){
+  if(f.product_type==='كريب')return`مقاس ${stageEsc(f.size_variant||'غير محدد')}`;
+  if(f.product_type==='أكياس سندوتش'){const style=stageNormalizeGusset(f.gusset_style);return`${Number(f.product_length||0)}×${Number(f.product_width||0)} — ${stageEsc(style)}${Number(f.product_depth||0)>0?` | جنب ${Number(f.product_depth)} سم`:''}`}
+  return`${Number(f.product_length||0)}×${Number(f.product_width||0)}×${Number(f.product_depth||0)}`;
+}
+// أي فورمة نوعها غير معروف بتتحسب "أخرى" زي ما السيرفر بيعمل بالظبط.
+function stageFormType(f={}){const t=String(f.product_type||'').trim();return stageProductTypes().includes(t)?t:'أخرى'}
+// الفورم المعروضة لازم تكون من نفس نوع منتج الصنف فقط.
+function stageFormsForType(type){return (orderStageOptions.forms||[]).filter(f=>stageFormType(f)===String(type||'شنط'))}
+const GUSSET_ALIASES=Object.assign(Object.create(null),{'متكعب':'بكعب','ب كعب':'بكعب','بكعب':'بكعب','بدون كعب':'كعب لطش','لطش':'كعب لطش','كعب لطش':'كعب لطش'});
+function stageNormalizeGusset(v){return GUSSET_ALIASES[String(v??'').trim()]||'كعب لطش'}
+// درجة تطابق الفورمة مع المقاس المطلوب: 2 = مطابقة تمامًا في الطول والعرض والمنفاخ، 1 = قريبة، 0 = بعيدة.
+function stageFormMatchRank(f={},dims={}){
+  const mode=orderTypeProfile(stageFormType(f)).mode;
+  // الأنواع بمقاس جاهز بتتطابق بالمقاس المختار مش بالأبعاد.
+  if(mode==='variant'){
+    const wanted=String(dims.variant||'').trim();
+    if(!wanted)return 0;
+    return String(f.size_variant||'').trim()===wanted?2:0;
+  }
+  // الكيس لازم كمان شكل الكعب يطابق لو المستخدم حدده.
+  if(mode==='sandwich'&&String(dims.gussetStyle||'').trim()&&stageNormalizeGusset(f.gusset_style)!==String(dims.gussetStyle).trim())return 0;
+  const l=Number(dims.l||0),w=Number(dims.w||0),g=Number(dims.g||0);
+  if(!l||!w)return 0;
+  const fl=Number(f.product_length||0),fw=Number(f.product_width||0),fd=Number(f.product_depth||0);
+  if(!fl||!fw)return 0;
+  const near=(a,b,tol)=>Math.abs(a-b)<=tol;
+  if(near(fl,l,0.5)&&near(fw,w,0.5)&&near(fd,g,0.5))return 2;
+  if(near(fl,l,1.5)&&near(fw,w,1.5))return 1;
+  return 0;
+}
+// كل نوع منتج وشكل مقاسه — نفس بروفايلات مكتبة الفورم بالظبط.
+const ORDER_TYPE_PROFILES={
+ 'شنط':{mode:'bag',depthLabel:'المنفاخ (ج)'},
+ 'أكياس سندوتش':{mode:'sandwich',depthLabel:'الجنب (اختياري)'},
+ 'علب بطاطس':{mode:'box',depthLabel:'الارتفاع'},
+ 'علب برجر':{mode:'box',depthLabel:'الارتفاع'},
+ 'باكيتات بطاطس':{mode:'variant',depthLabel:''},
+ 'كريب':{mode:'variant',depthLabel:''},
+ 'أخرى':{mode:'free',depthLabel:'الارتفاع / العمق'}
+};
+function orderTypeProfile(type){return ORDER_TYPE_PROFILES[type]||ORDER_TYPE_PROFILES['أخرى']}
+// المقاسات الجاهزة المتاحة فعلًا لنوع معيّن، من الفورم المسجلة بس.
+function stageVariantsForType(type){
+  const seen=[];
+  stageFormsForType(type).forEach(f=>{const v=String(f.size_variant||'').trim();if(v&&!seen.includes(v))seen.push(v)});
+  return ['صغير','وسط','كبير'].filter(v=>seen.includes(v));
+}
+function stageItemDims(index){return{l:Number(el(index,'l')?.value||0),w:Number(el(index,'w')?.value||0),g:Number(el(index,'g')?.value||0),variant:String(el(index,'size_variant')?.value||''),gussetStyle:String(el(index,'gusset_style')?.value||'')}}
+// بترتّب الفورم: المطابقة بالنجمة الأول، وبعدها القريبة، وبعدها الباقي.
+function stageRankedForms(type='شنط',dims={}){
+  return stageFormsForType(type)
+    .map((f,i)=>({f,rank:stageFormMatchRank(f,dims),i}))
+    .sort((a,b)=>b.rank-a.rank||a.i-b.i);
+}
+function stageFormOptionLabel(f,rank){
+  const mark=rank===2?'⭐ ':(rank===1?'◇ ':'');
+  return `${mark}رقم ${stageEsc(f.form_code||f.id)} — ${stageEsc(f.product_type||f.form_name||'فورمة')} — منتج ${stageFormSizeText(f)} — ${f.construction_mode==='pieceByPiece'?'حتة ف حتة':'حتة واحدة'} — ${Math.max(1,Number(f.piece_count||1))} قطع`;
+}
+function stageFormOptionsHtml(type='شنط',dims={}){const ranked=stageRankedForms(type,dims);if(!ranked.length)return`<option value="0">لا توجد فورم مسجلة لنوع ${stageEsc(type)}</option>`;return '<option value="0">بدون ربط فورمة</option>'+ranked.map(r=>`<option value="${Number(r.f.id)}">${stageFormOptionLabel(r.f,r.rank)}</option>`).join('');}
+function renderStageFormSelect(index){const select=el(index,'form_id');if(!select)return;const current=select.value;select.innerHTML=stageFormOptionsHtml(itemProductType(index),stageItemDims(index));if(Array.from(select.options).some(o=>o.value===current))select.value=current;else select.value='0';}
+// لما المستخدم يكتب مقاس شنطة، بنرشّح الفورمة المطابقة تلقائيًا طالما ماختارش واحدة بإيده.
+function autoPickFormForSize(index){
+  const select=el(index,'form_id');if(!select)return;
+  const dims=stageItemDims(index),ranked=stageRankedForms(itemProductType(index),dims);
+  const current=select.value;
+  select.innerHTML=stageFormOptionsHtml(itemProductType(index),dims);
+  const best=ranked.find(r=>r.rank===2)||null;
+  if(select.dataset.manual==='1'&&Array.from(select.options).some(o=>o.value===current))select.value=current;
+  else select.value=best?String(Number(best.f.id)):(Array.from(select.options).some(o=>o.value===current)?current:'0');
+  // أي فورمة مترشّحة معناها إن الشغل بيتقص على مقاسها، فالتكسير بيتفعّل تلقائيًا.
+  if(Number(select.value||0)>0&&el(index,'has_breaking')&&!el(index,'has_breaking').checked){el(index,'has_breaking').checked=true;updateStageDetails(index)}
+  updateFormPickHint(index);
+}
+function updateFormPickHint(index){
+  const hint=el(index,'formPickHint');if(!hint)return;
+  const isBag=itemProductType(index)==='شنط';
+  const dims=stageItemDims(index),ranked=stageRankedForms(itemProductType(index),dims);
+  const exact=ranked.filter(r=>r.rank===2).length,near=ranked.filter(r=>r.rank===1).length;
+  const mode=orderTypeProfile(itemProductType(index)).mode;
+  if(mode==='variant'){hint.textContent=dims.variant?`⭐ الفورم المسجلة بمقاس ${dims.variant}.`:'مفيش مقاسات جاهزة مسجلة لهذا النوع في مكتبة الفورم.';return}
+  if(!dims.l||!dims.w){hint.textContent=isBag?'اكتب الطول والعرض والمنفاخ علشان نرشّح لك الفورمة المناسبة، أو اختار الفورمة والمقاسات هتتكتب لوحدها.':'اكتب المقاس أو اختار الفورمة والمقاسات هتتكتب لوحدها.';return}
+  hint.textContent=exact?`⭐ فيه ${exact} فورمة مطابقة تمامًا للمقاس (تم اختيار أنسبها تلقائيًا).`:(near?`مفيش فورمة مطابقة تمامًا، بس فيه ${near} فورمة قريبة من المقاس (بعلامة ◇).`:'مفيش فورمة قريبة من المقاس ده؛ تقدر تختار يدويًا.');
+}
+function onItemFormChange(index){
+  const select=el(index,'form_id');
+  if(select)select.dataset.manual='1';
+  const form=selectedStageForm(index);
+  // أي فورمة متربوطة معناها إن الشغل بيتكسر على مقاسها.
+  if(form&&el(index,'has_breaking')&&!el(index,'has_breaking').checked){el(index,'has_breaking').checked=true;updateStageDetails(index)}
+  if(form)fillDimsFromForm(index,form);
+  updateFormPickHint(index);
+  updateStagePreview(index);
+}
+// اختيار الفورمة بيكتب مقاس منتجها في الخانات — لأي نوع منتج بما فيه الشنط.
+function fillDimsFromForm(index,form){
+  if(!form)return;
+  const mode=orderTypeProfile(itemProductType(index)).mode;
+  if(mode==='variant'){
+    const sel=el(index,'size_variant');
+    if(sel&&String(form.size_variant||'').trim()){renderStageVariantSelect(index);sel.value=String(form.size_variant).trim()}
+    return;
+  }
+  const l=el(index,'l'),w=el(index,'w'),g=el(index,'g');
+  if(l)l.value=Number(form.product_length||0)||'';
+  if(w)w.value=Number(form.product_width||0)||'';
+  if(g){g.value=Number(form.product_depth||0)||0;delete g.dataset.manual}
+  if(mode==='sandwich'){const gs=el(index,'gusset_style');if(gs)gs.value=stageNormalizeGusset(form.gusset_style)}
+}
+// قائمة المقاسات الجاهزة بتتبني من الفورم المسجلة بس.
+function renderStageVariantSelect(index){
+  const sel=el(index,'size_variant');if(!sel)return;
+  const list=stageVariantsForType(itemProductType(index)),current=sel.value;
+  sel.innerHTML=list.length?list.map(v=>`<option value="${stageEsc(v)}">${stageEsc(v)}</option>`).join(''):'<option value="">لا توجد مقاسات مسجلة</option>';
+  if(list.includes(current))sel.value=current;else if(list.length)sel.value=list[0];
+}
+function onItemSizeVariantChange(index){const select=el(index,'form_id');if(select)delete select.dataset.manual;autoPickFormForSize(index);updateStagePreview(index)}
+// كل نوع منتج وحقوله: الشنط بس هي اللي ليها مقاس يدوي ويد واستريشة ومخزن جاهز.
+function applyItemProductTypeUI(index){
+  // ورق الزبدة بيدخل طباعة بس، فمالوش يد ولا استريشة ولا تصنيع.
+  const butter=isButterPaperType(el(index,'paper_type')?.value);
+  const type=itemProductType(index),isBag=type==='شنط'&&!butter,p=orderTypeProfile(type);
+  const hasDims=p.mode!=='variant';
+  const show=(key,on)=>{const node=el(index,key);if(node)node.style.display=on?'':'none'};
+  renderStageVariantSelect(index);
+  show('lengthWrap',hasDims);show('widthWrap',hasDims);
+  show('gussetWrap',hasDims&&!(isBag&&el(index,'useReadyStock')?.checked));
+  show('gussetStyleWrap',p.mode==='sandwich');
+  show('sizeVariantWrap',p.mode==='variant');
+  const gLabel=el(index,'gussetLabel');
+  if(gLabel)gLabel.textContent=p.depthLabel||'الجنب';
+  show('handleWrap',isBag);show('handleTypeWrap',isBag);show('handleColorWrap',isBag);
+  show('stretchWrap',isBag);show('readyStockWrap',isBag);
+  const label=el(index,'formPickLabel');
+  if(label)label.textContent=isBag?'الفورمة المناسبة (اختياري)':'الفورمة المناسبة';
+  const card=el(index,'formPickWrap');
+  if(!isBag){
+    // بنعلّم إننا احنا اللي ألغينا حقول الشنط، عشان نرجّعها بس لو رجعنا لنوع «شنط».
+    if(card)card.dataset.clearedBagFields='1';
+    if(el(index,'handle'))el(index,'handle').value='بدون يد';
+    if(el(index,'handle_color'))el(index,'handle_color').value='auto';
+    if(el(index,'has_stretch'))el(index,'has_stretch').checked=false;
+    if(el(index,'useReadyStock'))el(index,'useReadyStock').checked=false;
+    if(el(index,'stockAlert'))el(index,'stockAlert').style.display='none';
+    const form=selectedStageForm(index);
+    if(form)fillDimsFromForm(index,form);
+    // المقاس الجاهز مالوش طول وعرض وجنب، فبنصفّرهم لو ماكانش فيه فورمة.
+    if(p.mode==='variant'&&!form){['l','w'].forEach(k=>{if(el(index,k))el(index,k).value=''});if(el(index,'g'))el(index,'g').value='0'}
+    if(el(index,'has_breaking')&&form&&!el(index,'has_breaking').checked){el(index,'has_breaking').checked=true;updateStageDetails(index)}
+  }else if(card&&card.dataset.clearedBagFields==='1'){
+    // الرجوع للشنط بيرجّع اليد والاستريشة زي ما كانوا قبل تغيير النوع.
+    delete card.dataset.clearedBagFields;
+    if(el(index,'handle'))el(index,'handle').value='بيد';
+    if(el(index,'has_stretch'))el(index,'has_stretch').checked=true;
+  }
+  rebuildPrintTypeOptions(index);
+  syncHandleColorUI(index);
+  updateFormPickHint(index);
+}
+function renderStageProductTypeSelect(index){const select=el(index,'product_type');if(!select)return;const current=select.value||'شنط';select.innerHTML=stageProductTypeOptionsHtml(current);select.value=stageProductTypes().includes(current)?current:'شنط';}
+function onItemProductTypeChange(index){const select=el(index,'form_id');if(select)delete select.dataset.manual;renderStageFormSelect(index);applyItemProductTypeUI(index);autoPickFormForSize(index);updateStagePreview(index);}
+async function loadOrderStageOptions(){try{orderStageOptions=await authFetch('/order-stage-options');if(Number(orderStageOptions?.settings?.cut_allowance_cm)>=0)FORM_CUT_ALLOWANCE_CM=Number(orderStageOptions.settings.cut_allowance_cm)||0;itemCardIndices().forEach(i=>{renderStageProductTypeSelect(i);renderStageFormSelect(i);applyItemProductTypeUI(i);autoPickFormForSize(i);updateStagePreview(i)})}catch(_){orderStageOptions={forms:[],settings:{}}}}
+function selectedStageForm(index){const id=Number(el(index,'form_id')?.value||0);return (orderStageOptions.forms||[]).find(f=>Number(f.id)===id)||null}
+function classFromDims(l,w){const mx=Math.max(Number(l||0),Number(w||0)),mn=Math.min(Number(l||0),Number(w||0));if(mx<=stageSetting('sheet_quarter_max_long',50)&&mn<=stageSetting('sheet_quarter_max_short',35))return'quarter';if(mx<=stageSetting('sheet_half_max_long',70)&&mn<=stageSetting('sheet_half_max_short',50))return'half';return'full'}
+function autoStageClass(index,requested='auto'){const form=el(index,'has_breaking')?.checked?selectedStageForm(index):null;if(form)return classFromDims(withCutAllowance(form.length),withCutAllowance(form.width));if(['quarter','half','full'].includes(requested))return requested;const l=Number(el(index,'l')?.value||0),w=Number(el(index,'w')?.value||0),g=Number(el(index,'g')?.value||0),cw=w+g+2,cl=l+g/2+2;return classFromDims(cw,cl)}
+function updateStageDetails(index){const on=!!el(index,'has_breaking')?.checked;const details=el(index,'breakingDetails');if(details)details.style.display=on?'grid':'none';updateStagePreview(index)}
+function updateStagePreview(index){const settings=orderStageOptions.settings||{},qty=Math.max(0,Number(el(index,'qty')?.value||0)),w=Number(el(index,'w')?.value||0),g=Number(el(index,'g')?.value||0),form=el(index,'has_breaking')?.checked?selectedStageForm(index):null;const labels={quarter:'ربع فرخ',half:'نصف فرخ',full:'فرخ كامل'},perFull={quarter:4,half:2,full:1};const cutPreview=el(index,'cutSizePreview');if(cutPreview)cutPreview.value=form?`${withCutAllowance(form.length)} × ${withCutAllowance(form.width)} سم (مقاس الفورمة + ${FORM_CUT_ALLOWANCE_CM} سم)`:'-';const bc=autoStageClass(index,el(index,'breaking_sheet_class')?.value),lc=autoStageClass(index,el(index,'lamination_sheet_class')?.value),pieceCount=form?Math.max(1,Number(form.piece_count||1)):1,constructionMode=form?.construction_mode==='pieceByPiece'?'pieceByPiece':'singlePiece',partsPerProduct=form&&constructionMode==='pieceByPiece'?2:1,strikes=qty>0?Math.ceil((qty*partsPerProduct)/pieceCount):0,breakRuns=strikes>0?Math.ceil(strikes/Math.max(1,stageSetting('breaking_strikes_per_run',1000))):0,lamRuns=strikes>0?Math.ceil(strikes/Math.max(1,stageSetting('lamination_units_per_run',1000))):0,fullSheets=strikes>0?Math.ceil(strikes/(perFull[bc]||1)):0;const classSelect=el(index,'breaking_sheet_class');if(classSelect&&form){classSelect.value=bc;classSelect.disabled=true}else if(classSelect)classSelect.disabled=false;const bCost=Number(settings['breaking_price_'+bc]||0)*breakRuns,lCost=Number(settings['lamination_price_'+lc]||0)*lamRuns;const reduction=Number(settings.stretch_size_reduction_cm??1),gram=Number(settings.stretch_grammage||240),price=Number(settings.stretch_price_kg||24),sl=Math.max(0,w-reduction),sw=Math.max(0,g-reduction),kg=(sl*sw*gram*qty)/10000000,sCost=kg*price;const sp=el(index,'stretchPreview'),bp=el(index,'breakingPreview'),lp=el(index,'laminationPreview');if(sp)sp.textContent=el(index,'has_stretch')?.checked?`${sl.toFixed(1)}×${sw.toFixed(1)} سم | ${kg.toFixed(4)} كجم | ${sCost.toFixed(2)} ج`:'';if(bp)bp.textContent=el(index,'has_breaking')?.checked?(form?`منتج ${stageFormSizeText(form)} | قص ${withCutAllowance(form.length)}×${withCutAllowance(form.width)} سم (فورمة ${Number(form.length)}×${Number(form.width)} + ${FORM_CUT_ALLOWANCE_CM}) | ${constructionMode==='pieceByPiece'?'حتة ف حتة':'حتة واحدة'} | ${pieceCount} قطع = ${(pieceCount/partsPerProduct).toFixed(2).replace(/\.00$/,'')} منتج/ضربة | ${strikes} ضربة = ${strikes} ${labels[bc]} | ${fullSheets} فرخ 70×100 | ${bCost.toFixed(2)} ج`:`${labels[bc]} | ${strikes} ضربة | ${bCost.toFixed(2)} ج`):'';if(lp)lp.textContent=el(index,'has_lamination')?.checked?`${labels[lc]} | ${lamRuns} تشغيلة | ${lCost.toFixed(2)} ج`:'';}
+
+loadTraderOrderOptions();
+loadOrderStageOptions();
+loadPaymentActorOptions();
+setOrderScope('customer');
+addItemCard();
+refreshDesignFilesVisibility();
+updateGroupPayment();
+</script>
+<script src="idle_guard.js"></script><script id="auth-flicker-release">(function(){function done(){document.documentElement.classList.remove('auth-loading');document.documentElement.classList.add('auth-ready');}if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',done,{once:true});}else{done();}setTimeout(done,1200);})();</script></body>
+</html>
